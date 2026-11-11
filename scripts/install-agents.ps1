@@ -1,7 +1,7 @@
 # Installs this repo's subagent team into %USERPROFILE%\.claude\agents (all projects).
 # Old-name files from the previous version are moved to .claude\agents-old, not deleted.
 $ErrorActionPreference = 'Stop'
-$base = 'https://raw.githubusercontent.com/KIMHANEULL/phisics-education/claude/explore-all-y9sauy/.claude/agents/'
+$base = 'https://raw.githubusercontent.com/KIMHANEULL/phisics-education/3a4e9284c9e530c280fd4a2a8eb5b25ff88067de/.claude/agents/'
 $dst  = Join-Path $env:USERPROFILE '.claude\agents'
 $new  = 'tricky','picky','tidy','artsy','peeky','fizzy','clicky','grumpy','geeky','nerdy','sniffy'
 $old  = 'exam-writer','exam-checker','hwp-operator','manim-director','video-qa','lab-analyst','web-builder','security-guard','code-reviewer','error-hunter','physics-checker','quiz','doc','movie','eagle','rocket','pixel','lock','lens','newton','hunter'
