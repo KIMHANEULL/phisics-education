@@ -3,7 +3,7 @@
 $ErrorActionPreference = 'Stop'
 $base = 'https://raw.githubusercontent.com/KIMHANEULL/phisics-education/0c718bdb98c4a4855450cb8a3123685cf19dcde6/.claude/agents/'
 $dst  = Join-Path $env:USERPROFILE '.claude\agents'
-$new  = 'tricky','picky','tidy','artsy','sharpy','fizzy','handy','grumpy','geeky','nerdy','sniffy'
+$new  = 'tricky','picky','tidy','artsy','sharpy','fizzy','handy','grumpy','geeky','nerdy','sniffy','chatty','sunny'
 $old  = 'exam-writer','exam-checker','hwp-operator','manim-director','video-qa','lab-analyst','web-builder','security-guard','code-reviewer','error-hunter','physics-checker','quiz','doc','movie','eagle','rocket','pixel','lock','lens','newton','hunter','peeky','clicky'
 
 New-Item -ItemType Directory -Force $dst | Out-Null
