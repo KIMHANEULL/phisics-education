@@ -3,8 +3,8 @@
 $ErrorActionPreference = 'Stop'
 $base = 'https://raw.githubusercontent.com/KIMHANEULL/phisics-education/3a4e9284c9e530c280fd4a2a8eb5b25ff88067de/.claude/agents/'
 $dst  = Join-Path $env:USERPROFILE '.claude\agents'
-$new  = 'tricky','picky','tidy','artsy','peeky','fizzy','clicky','grumpy','geeky','nerdy','sniffy'
-$old  = 'exam-writer','exam-checker','hwp-operator','manim-director','video-qa','lab-analyst','web-builder','security-guard','code-reviewer','error-hunter','physics-checker','quiz','doc','movie','eagle','rocket','pixel','lock','lens','newton','hunter'
+$new  = 'tricky','picky','tidy','artsy','sharpy','fizzy','handy','grumpy','geeky','nerdy','sniffy'
+$old  = 'exam-writer','exam-checker','hwp-operator','manim-director','video-qa','lab-analyst','web-builder','security-guard','code-reviewer','error-hunter','physics-checker','quiz','doc','movie','eagle','rocket','pixel','lock','lens','newton','hunter','peeky','clicky'
 
 New-Item -ItemType Directory -Force $dst | Out-Null
 $oldDir = Join-Path $env:USERPROFILE '.claude\agents-old'
