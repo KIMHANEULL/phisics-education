@@ -107,7 +107,7 @@ class C4Seafloor(CaseScene):
         waves = always_redraw(lambda: echo_group(tw.get_value() / TRIP * D, src, tgt, 0.3, 5,
                                                  0.7, 0.8, back_dir=UP))
         clock = Clock(tclk, "s", "{:.2f}")
-        tl = Timeline(5, 1, tclk, "s", y=-2.4, x0=-4.0, x1=4.4)
+        tl = Timeline(5, 1, tclk, "s", y=-2.2, x0=-4.0, x1=4.4)
         sn = slow_note("※ 실제보다 느리게 보여 줌")
         self.play(FadeIn(sn), FadeIn(clock), FadeIn(tl), run_time=0.8)
         m0 = tl.marker(0, "신호 발신 시각", ORANGE)
@@ -188,14 +188,15 @@ class C4Seafloor(CaseScene):
                            stroke_width=2))
             tl_ = T(f"{d} m", 17, GRAY_T).next_to([AX - 0.08, y_of(d), 0], LEFT, buff=0.06)
             ticks.add(BackgroundRectangle(tl_, color="#06111D", fill_opacity=0.65, buff=0.04), tl_)
-        axl = T("수심", 18, GRAY_T, bold=True).next_to(axis, DOWN, buff=0.1)
+        axl = T("수심", 18, GRAY_T, bold=True).next_to(axis, UP, buff=0.12)
         self.play(FadeIn(axis), FadeIn(ticks), FadeIn(axl), run_time=0.6)
 
         dots = VGroup()
         labs = VGroup()
 
         # 라벨 위치: 연결선이 지나가지 않는 쪽 (오르막 앞 = 아래/왼쪽 위, 내리막 뒤 = 오른쪽 위)
-        LAB_DIR = {-5: DOWN, -3: UL, -1: UP, 1: UR, 3: UR, 5: UR}
+        LAB_DIR = {-5: DOWN, -3: UL, -1: UP, 1: UR, 3: UR, 5: DOWN}
+        LAB_SHIFT = {-5: RIGHT * 0.35, 5: RIGHT * 0.35}
 
         def place(x, d, run=0.5):
             t = 2 * d / 1500
@@ -204,6 +205,7 @@ class C4Seafloor(CaseScene):
                          T(f"{d} m", 19, WHITE_T, bold=True)).arrange(RIGHT, buff=0.08)
             dr = LAB_DIR.get(x, UP)
             lab.next_to(dot, dr, buff=0.18 if dr is UP or dr is DOWN else 0.04)
+            lab.shift(LAB_SHIFT.get(x, ORIGIN))
             bgk = BackgroundRectangle(lab, color="#06111D", fill_opacity=0.6, buff=0.05)
             lab = VGroup(bgk, lab)
             self.play(FadeIn(dot, scale=1.8), FadeIn(lab, shift=UP * 0.1), run_time=run)

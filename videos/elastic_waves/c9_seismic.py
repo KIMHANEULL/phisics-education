@@ -90,15 +90,15 @@ def quake_waves(t):
 
 # ---------------------------------------------------------------- 지진 기록
 class Seismogram(VGroup):
-    def __init__(self, tracker, x0=-2.55, x1=2.35, tmax=25.0, **kw):
+    def __init__(self, tracker, x0=-2.85, x1=2.05, tmax=25.0, **kw):
         super().__init__(**kw)
         self.x0, self.x1, self.tmax = x0, x1, tmax
         self.base = 2.95
         self.ay = 2.12
-        box = RoundedRectangle(corner_radius=0.1, width=x1 - x0 + 0.95, height=1.95,
+        box = RoundedRectangle(corner_radius=0.1, width=x1 - x0 + 1.6, height=1.9,
                                stroke_color=PANEL_STROKE, stroke_width=1.5,
                                fill_color=PANEL_FILL, fill_opacity=0.92)
-        box.move_to([(x0 + x1) / 2 + 0.05, 2.575, 0])
+        box.move_to([(x0 + x1) / 2 + 0.35, 2.6, 0])
         self.box = box
         title = T("지진계 기록", 17, GRAY_T, bold=True)
         title.move_to(box.get_corner(UL) + np.array([title.width / 2 + 0.15, -0.2, 0]))
@@ -109,8 +109,8 @@ class Seismogram(VGroup):
             x = self.x_of(tv)
             self.add(Line([x, self.ay - 0.05, 0], [x, self.ay + 0.05, 0], color=GRAY_T,
                           stroke_width=1.5))
-            self.add(T(f"{tv}", 14, GRAY_T).move_to([x, self.ay - 0.19, 0]))
-        self.add(T("시간 (s)", 14, GRAY_T).next_to([x1, self.ay, 0], RIGHT, buff=0.08))
+            self.add(T(f"{tv}", 17, GRAY_T).move_to([x, self.ay - 0.21, 0]))
+        self.add(T("시간 (s)", 17, GRAY_T).next_to([x1, self.ay, 0], RIGHT, buff=0.1))
         rng = np.random.default_rng(3)
         self.noise_t = np.linspace(0, tmax, 1200)
         nz = rng.normal(0, 1, 1200)
@@ -210,7 +210,7 @@ class C9Seismic(CaseScene):
         sg = Seismogram(tt)
         clock = Clock(tt, "s", "{:.1f}", label="경과 시간 (지진 발생 후)")
         sn = slow_note("※ 실제보다 빠르게 보여 줌")
-        slab = T("관측소", 16, GREEN, bold=True).next_to(sta, UP, buff=0.08)
+        slab = T("관측소", 18, GREEN, bold=True).next_to(sta, RIGHT, buff=0.1)
         self.play(FadeIn(sg), FadeIn(clock), FadeIn(sn), FadeIn(slab), run_time=0.8)
         self.say("지진이 나면 P파와 S파가 동시에 출발해 사방으로 퍼진다", wait=0.3)
         self.add(waves)
@@ -224,8 +224,11 @@ class C9Seismic(CaseScene):
                       color=CYAN)
         c_q = callout(ps, "S파", "느리다 · 진행 방향에 수직으로 진동 (횡파)", RIGHT + DOWN * 0.15, 0.5,
                       color=ORANGE)
-        self.play(Create(c_p), run_time=0.7)
-        self.play(Create(c_q), run_time=0.7)
+        for c_ in (c_p, c_q):
+            c_.add_to_back(BackgroundRectangle(c_[2], color="#050B14", fill_opacity=0.7,
+                                               buff=0.08))
+        self.play(FadeIn(c_p), run_time=0.7)
+        self.play(FadeIn(c_q), run_time=0.7)
         self.say("P파는 빠르고(앞뒤로 밀고 당기는 종파),\nS파는 느리다(옆으로 흔드는 횡파)", wait=3.6)
         self.play(FadeOut(c_p), FadeOut(c_q), run_time=0.4)
         self.unsay()
@@ -272,14 +275,15 @@ class C9Seismic(CaseScene):
             r[0].align_to([-3.2, 0, 0], LEFT)
             r[1].move_to([-0.6, y, 0])
             r[2].move_to([0, y, 0]).align_to([0.0, 0, 0], LEFT)
-        cmp_body = VGroup(r1, r2)
-        cmp_ = panel(cmp_body, buff=0.3, pos=[-1.0, 2.5, 0])
+        x_ = T("÷ 2 없음", 20, RED_T, bold=True).next_to(r2[2], RIGHT, buff=0.3)
+        cmp_body = VGroup(r1, r2, x_)
+        cmp_ = panel(cmp_body, buff=0.3, pos=[-1.0, 2.65, 0])
+        cmp_.shift(RIGHT * (-2.75 - cmp_.get_left()[0]))
         self.play(FadeOut(sg), FadeOut(mp), FadeOut(ms), FadeOut(sp), FadeOut(clock),
                   FadeOut(sn), run_time=0.5)
         self.play(FadeIn(cmp_[0]), FadeIn(r1), run_time=0.7)
         self.wait(1.2)
         self.play(FadeIn(r2, shift=UP * 0.1), run_time=0.7)
-        x_ = T("÷ 2 없음", 20, RED_T, bold=True).next_to(r2[2], RIGHT, buff=0.3)
         self.play(FadeIn(x_), run_time=0.5)
         self.say("왕복이면 ÷2, 편도면 그대로", wait=2.4)
 
@@ -293,12 +297,13 @@ class C9Seismic(CaseScene):
         e3 = colored([("PS시 =", WHITE_T), ("20 s − 10 s", GREEN), ("=", WHITE_T),
                       ("10 s", GREEN)], 26)
         ex = VGroup(e0, e1, e2, e3).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
-        exp_ = panel(ex, buff=0.28, pos=[-1.0, 2.45, 0])
+        exp_ = panel(ex, buff=0.28, pos=[-1.0, 2.6, 0])
+        exp_.shift(RIGHT * (-2.75 - exp_.get_left()[0]))
         self.play(FadeIn(exp_[0]), FadeIn(e0), run_time=0.6)
         self.play(FadeIn(e1), run_time=0.6)
         self.say("P파: 6 km/s로 10 s 동안 가면 60 km", wait=2.2)
         self.play(FadeIn(e2), run_time=0.6)
-        self.say("S파는 속력이 P파의 절반이니 같은 60 km를 가는 데 2배(20 s) 걸린다", wait=2.8)
+        self.say("S파는 속력이 P파의 절반이니 같은 60 km를 가는 데 2배(20 s) 걸린다", wait=3.6)
         self.play(FadeIn(e3), run_time=0.6)
         self.say("그래서 PS시 = 10 s", wait=1.6)
 
@@ -315,23 +320,27 @@ class C9Seismic(CaseScene):
                   LaggedStart(*[Create(tk) for tk in ticks], lag_ratio=0.15), run_time=1.6)
         self.play(FadeIn(t1), run_time=0.4)
         q1 = colored([("6 km 가는 데:", WHITE_T), ("P파 1 s,", CYAN), ("S파 2 s", ORANGE),
-                      ("→  PS시 1 s", GREEN)], 24)
-        q2 = colored([("→ PS시가 1 s 늘 때마다 거리는", WHITE_T), ("6 km", GREEN), ("씩", WHITE_T)], 24)
+                      ("→  PS시 1 s", GREEN)], 23)
+        q2 = colored([("→ PS시가 1 s 늘 때마다 거리는", WHITE_T), ("6 km", GREEN), ("씩", WHITE_T)], 23)
         q3 = colored([("PS시", WHITE_T), ("(10 s)", GREEN), ("→ 거리 =", WHITE_T),
-                      ("6 km × 10", GREEN), ("=", WHITE_T), ("60 km", GREEN)], 26)
-        q4 = T("(일반식: 거리 = vP × vS ÷ (vP − vS) × PS시 = 6 × 3 ÷ 3 × 10 = 60 km)", 17, GRAY_T)
-        rv = VGroup(q1, q2, q3, q4).arrange(DOWN, aligned_edge=LEFT, buff=0.18)
-        rvp = panel(rv, buff=0.26, pos=[-0.9, 2.45, 0])
+                      ("6 km × 10", GREEN), ("=", WHITE_T), ("60 km", GREEN)], 24)
+        q4 = VGroup(T("(일반식) 거리 = vP × vS ÷ (vP − vS) × PS시", 20, GRAY_T),
+                    T("= 6 × 3 ÷ 3 × 10 = 60 km", 20, GRAY_T)).arrange(DOWN, aligned_edge=LEFT,
+                                                                       buff=0.08)
+        q4[1].shift(RIGHT * 1.2)
+        rv = VGroup(q1, q2, q3, q4).arrange(DOWN, aligned_edge=LEFT, buff=0.16)
+        rvp = panel(rv, buff=0.24, pos=[-0.9, 2.6, 0])
+        rvp.shift(RIGHT * (-2.75 - rvp.get_left()[0]) + UP * (3.92 - rvp.get_top()[1]))
         self.play(FadeIn(rvp[0]), FadeIn(q1), run_time=0.6)
         self.say("6 km마다 P파는 1 s, S파는 2 s 걸리니\nPS시가 1 s씩 벌어진다", wait=3.4)
         self.play(FadeIn(q2), run_time=0.6)
         self.wait(1.4)
-        t10 = T("60 km · PS시 10 s", 16, GREEN, bold=True).next_to(ticks[-1], DOWN + LEFT,
-                                                                 buff=0.05).shift(DOWN * 0.15)
+        t10 = T("60 km · PS시 10 s", 18, GREEN, bold=True).rotate(ang)
+        t10.move_to(HYP + (STA - HYP) * 0.86 - nrm * 0.4)
         self.play(FadeIn(q3), FadeIn(t10), Indicate(ticks, color=WHITE_T, scale_factor=1.0),
                   run_time=0.9)
         self.play(FadeIn(q4), run_time=0.5)
-        self.say("PS시 10 s → 60 km. PS시가 길수록 진원이 멀다\n(PS시가 2배면 거리도 2배)", wait=3.8)
+        self.say("PS시 10 s → 60 km. PS시가 길수록 진원이 멀다\n(PS시가 2배면 거리도 2배)", wait=5.0)
 
         # 6. 관측소 3곳 → 진앙
         self.clear_all(keep=(sky,))
@@ -368,9 +377,9 @@ class C9Seismic(CaseScene):
             self.play(GrowFromCenter(c), run_time=0.8)
         estar = Star(5, outer_radius=0.2, inner_radius=0.09, fill_color=RED_T, fill_opacity=1,
                      stroke_color=WHITE_T, stroke_width=1.2).move_to(E)
-        elab = T("진앙", 22, RED_T, bold=True).next_to(estar, DOWN + RIGHT * 0.3, buff=0.05)
+        elab = T("진앙", 22, RED_T, bold=True).next_to(estar, UP + RIGHT, buff=0.02)
         self.play(GrowFromCenter(estar), FadeIn(elab), Flash(E, color=RED_T), run_time=0.8)
-        self.say("그 거리를 반지름으로 지도에 원을 그리면\n세 원이 만나는 곳이 진앙이다 (진원이 얕다고 볼 때)", wait=3.2)
+        self.say("그 거리를 반지름으로 지도에 원을 그리면\n세 원이 만나는 곳이 진앙이다 (진원이 얕다고 볼 때)", wait=4.8)
 
         # 7. 지구 내부
         self.clear_all(keep=(sky,))
@@ -415,14 +424,17 @@ class C9Seismic(CaseScene):
         p_ray = Line(S0, C + DOWN * R, color=CYAN, stroke_width=3)
         self.play(LaggedStart(*[Create(a) for a in s_ok], lag_ratio=0.15), run_time=1.4)
         self.play(LaggedStart(*[Create(a) for a in s_stop], lag_ratio=0.15), run_time=1.0)
-        self.play(FadeIn(xs), Create(p_ray), run_time=0.7)
+        plab = T("P파", 22, CYAN, bold=True).next_to(C + DOWN * R * 0.78, RIGHT, buff=0.1)
+        slab2 = T("S파", 22, ORANGE, bold=True).move_to(C + np.array([-1.25, 1.35, 0]))
+        self.play(FadeIn(slab2), run_time=0.3)
+        self.play(FadeIn(xs), Create(p_ray), FadeIn(plab), run_time=0.7)
         shadow = Arc(radius=R + 0.08, start_angle=np.deg2rad(90 - 103),
                      angle=-np.deg2rad(360 - 206), arc_center=C, color=GRAY_T, stroke_width=6)
         c4 = callout(C + (R + 0.08) * np.array([np.cos(-0.87), np.sin(-0.87), 0]),
                      "S파가 오지 않는 지역", "외핵에 막혔기 때문 (약 103° 너머)", RIGHT + DOWN * 0.2, 0.9,
                      color=GRAY_T)
         self.play(Create(shadow), FadeIn(c4), run_time=0.8)
-        self.say("S파는 고체만 지나고 액체는 지나지 못한다\n→ 103° 너머에 S파가 오지 않으므로 외핵은 액체임을 알았다", wait=4.4)
+        self.say("S파는 고체만 지나고 액체는 지나지 못한다\n→ 103° 너머에 S파가 오지 않으므로 외핵은 액체임을 알았다", wait=5.5)
 
         # 8. 정리
         self.clear_all(keep=(sky,))
@@ -436,8 +448,10 @@ class C9Seismic(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.26)
         sp_ = panel(summ, buff=0.45, pos=UP * 0.75)
         fin = T("왕복이면 ÷2, 편도면 그대로", 38, GREEN, bold=True).next_to(sp_, DOWN, buff=0.4)
-        self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(4.5)
+        self.play(FadeIn(sp_[0]), FadeIn(summ[0]), run_time=0.7)
+        for ln in summ[1:]:                       # 한 줄씩 읽을 시간
+            self.play(FadeIn(ln, shift=RIGHT * 0.15), run_time=0.5)
+            self.wait(1.9)
         self.play(FadeIn(fin, shift=UP * 0.15), run_time=0.7)
-        self.wait(3)
+        self.wait(3.5)
         self.play(FadeOut(sp_), FadeOut(fin), run_time=0.6)

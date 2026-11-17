@@ -161,18 +161,19 @@ def wave_field(t, xs, bys, xw=2.3, gaps=(0.0, 0.24)):
 class Recorder(VGroup):
     """수진기 기록(지진 기록과 같은 꼴). rows: [(이름, 도착 시각들, 색)]"""
 
-    def __init__(self, tracker, rows, tmax=1.0, x0=-2.4, x1=1.6, top=3.55, row_h=0.55,
+    def __init__(self, tracker, rows, tmax=1.0, x0=-2.8, x1=0.8, top=3.45, row_h=0.55,
                  **kw):
         super().__init__(**kw)
         self.x0, self.x1, self.tmax = x0, x1, tmax
         n = len(rows)
         h = 0.42 + n * row_h + 0.42
-        box = RoundedRectangle(corner_radius=0.1, width=(x1 - x0) + 1.35, height=h,
+        bl, br = x0 - 0.7, x1 + 1.1          # 왼쪽: 행 이름, 오른쪽: '시간 (s)'
+        box = RoundedRectangle(corner_radius=0.1, width=br - bl, height=h,
                                stroke_color=PANEL_STROKE, stroke_width=1.5,
                                fill_color=PANEL_FILL, fill_opacity=0.92)
-        box.move_to([(x0 + x1) / 2 - 0.35, top - h / 2, 0])
-        title = T("수진기 기록", 18, GRAY_T, bold=True).move_to(box.get_corner(UL) +
-                                                         np.array([0.65, -0.2, 0]))
+        box.move_to([(bl + br) / 2, top - h / 2, 0])
+        title = T("수진기 기록", 19, GRAY_T, bold=True)
+        title.move_to(box.get_corner(UR) + np.array([-title.width / 2 - 0.15, -0.22, 0]))
         self.add(box, title)
         self.base_y = []
         for i, (name, arr, col, trk) in enumerate(rows):
@@ -180,20 +181,20 @@ class Recorder(VGroup):
             self.base_y.append(y)
             base = Line([x0, y, 0], [x1, y, 0], color=GRAY_T, stroke_width=1,
                         stroke_opacity=0.35)
-            lab = T(name, 17, BEIGE, bold=True).next_to([x0, y, 0], LEFT, buff=0.12)
+            lab = T(name, 20, BEIGE, bold=True).next_to([x0, y, 0], LEFT, buff=0.15)
             self.add(base, lab)
             trk = tracker if trk is None else trk
             tr = always_redraw(lambda y=y, arr=arr, col=col, trk=trk: self._trace(trk, y, arr, col))
             self.add(tr)
-        ay = top - h + 0.36
+        ay = top - h + 0.42
         self.axis_y = ay
         self.add(Line([x0, ay, 0], [x1, ay, 0], color=GRAY_T, stroke_width=1.5))
         for k in range(5):
             tv = k * 0.25
             x = self.x_of(tv)
             self.add(Line([x, ay - 0.05, 0], [x, ay + 0.05, 0], color=GRAY_T, stroke_width=1.5))
-            self.add(T(f"{tv:g}", 14, GRAY_T).move_to([x, ay - 0.2, 0]))
-        self.add(T("시간 (s)", 14, GRAY_T).next_to([x1, ay, 0], RIGHT, buff=0.1))
+            self.add(T(f"{tv:g}", 18, GRAY_T).move_to([x, ay - 0.23, 0]))
+        self.add(T("시간 (s)", 18, GRAY_T).next_to([x1, ay, 0], RIGHT, buff=0.1))
 
     def x_of(self, t):
         return self.x0 + (self.x1 - self.x0) * t / self.tmax
@@ -211,10 +212,14 @@ class Recorder(VGroup):
         return m
 
     def tag(self, row, t, text, color=GREEN, up=True):
+        """up=True: 스파이크 위, up=False: 스파이크 오른쪽."""
         x = self.x_of(t)
         y = self.base_y[row]
-        lab = T(text, 15, color, bold=True)
-        lab.next_to([x, y + 0.34, 0], UP, buff=0.04) if up else lab.next_to([x, y - 0.17, 0], DOWN, buff=0.03)
+        lab = T(text, 18, color, bold=True)
+        if up:
+            lab.next_to([x, y + 0.34, 0], UP, buff=0.04)
+        else:
+            lab.next_to([x + 0.1, y + 0.17, 0], RIGHT, buff=0.02)
         return lab
 
 
@@ -233,7 +238,7 @@ class C5Fault(CaseScene):
         # 1. 땅속 단면 + 장비
         gnd = ground(0.0)
         surf_line = Line([XL, SURF, 0], [XR, SURF, 0], color="#8E7A5E", stroke_width=2)
-        blabs = VGroup(*[T(f"경계 {i + 1}", 16, BEIGE, bold=True).move_to([-6.75, b + 0.17, 0])
+        blabs = VGroup(*[T(f"경계 {i + 1}", 19, BEIGE, bold=True).move_to([-6.65, b + 0.2, 0])
                          for i, b in enumerate(BYS)])
         self.play(LaggedStart(*[FadeIn(p, shift=UP * 0.15) for p in
                                 [VGroup(gnd[0][0][i], gnd[1][0][i]) for i in range(4)]],
@@ -263,7 +268,7 @@ class C5Fault(CaseScene):
         clock = Clock(tt, "s", "{:.2f}")
         sn = slow_note()
         echoes = [2 * d / 2000 for d in DEPTHS]           # 0.25, 0.50, 0.75 s
-        rec = Recorder(tt, [("", echoes, ORANGE, None)], row_h=0.9)
+        rec = Recorder(tt, [("", echoes, ORANGE, None)], row_h=1.15)
         self.play(FadeIn(sn), FadeIn(clock), FadeIn(rec), run_time=0.8)
         self.say("트럭이 땅을 흔드는 순간을 0 s로 놓는다", wait=1.4)
         self.add(waves)
@@ -273,7 +278,7 @@ class C5Fault(CaseScene):
         cb = callout(hit, "경계면", "일부는 반사(주황), 나머지는 통과(청록)", RIGHT + DOWN * 0.35,
                      0.9, color=WHITE_T)
         self.play(Create(cb), run_time=0.7)
-        self.say("지층 경계면을 만나면 일부는 반사되어 올라오고,\n나머지는 통과해서 더 깊이 내려간다", wait=3.4)
+        self.say("지층 경계면을 만나면 일부는 반사되어 올라오고,\n나머지는 통과해서 더 깊이 내려간다", wait=4.0)
         self.play(FadeOut(cb), run_time=0.4)
         self.say("경계면마다 메아리가 하나씩 생겨 차례로 수진기에 도착한다", wait=0.3)
         self.play(tt.animate.set_value(0.95), run_time=6.5, rate_func=linear)
@@ -295,7 +300,7 @@ class C5Fault(CaseScene):
         hl = SurroundingRectangle(tags[1], color=GREEN, buff=0.05, stroke_width=2)
         self.play(Create(hl), GrowArrow(go), FadeIn(lg), run_time=1)
         self.play(GrowArrow(back), FadeIn(lb), run_time=1)
-        self.say("경계 2의 메아리를 보자. 수진기가 트럭 바로 옆이라\n탄성파는 거의 수직으로 내려갔다가 올라온다", wait=3.6)
+        self.say("경계 2의 메아리를 보자. 수진기가 트럭 바로 옆이라\n탄성파는 거의 수직으로 내려갔다가 올라온다", wait=5.0)
         self.say("그러니 0.50 s 동안 움직인 길이는 '깊이의 2배'", wait=2.4)
 
         # 4. 공식
@@ -320,13 +325,13 @@ class C5Fault(CaseScene):
         self.play(FadeIn(unit), FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
         self.play(FadeOut(go), FadeOut(back), FadeOut(lg), FadeOut(lb), run_time=0.5)
         dl = dim_line([XS_L + 1.0, SURF, 0], [XS_L + 1.0, BYS[1], 0], "500 m",
-                      side=RIGHT * 0.55, size=22)
+                      side=RIGHT * 0.55 + UP * 0.3, size=22)
         self.play(Create(dl), run_time=0.9)
         self.say("경계 2는 땅속 500 m 깊이에 있다", wait=2.0)
-        dtags = VGroup(*[T(f"{d} m", 16, GREEN, bold=True).next_to(blabs[i], RIGHT, buff=0.15)
+        dtags = VGroup(*[T(f"{d} m", 19, GREEN, bold=True).next_to(blabs[i], RIGHT, buff=0.15)
                          for i, d in enumerate(DEPTHS)])
         self.play(FadeIn(dtags, lag_ratio=0.3), run_time=1)
-        self.say("시간 차가 2배(0.25 s → 0.50 s)면 깊이도 2배(250 m → 500 m)\n→ 0.75 s면 750 m", wait=3.6)
+        self.say("시간 차가 2배(0.25 s → 0.50 s)면 깊이도 2배(250 m → 500 m)\n→ 0.75 s면 750 m", wait=4.4)
 
         # 4-1. 진동수 메모
         self.play(FadeOut(pnl), FadeOut(r1), FadeOut(r2), FadeOut(unit), FadeOut(res),
@@ -358,7 +363,7 @@ class C5Fault(CaseScene):
         ech_l = echoes
         ech_r = [e + 0.10 for e in echoes]   # 0.35, 0.60, 0.85 s
         tA, tB = ValueTracker(0), ValueTracker(0)
-        rec2 = Recorder(tA, [("A", ech_l, ORANGE, tA), ("B", ech_r, ORANGE, tB)], row_h=0.62)
+        rec2 = Recorder(tA, [("A", ech_l, ORANGE, tA), ("B", ech_r, ORANGE, tB)], row_h=0.5)
         sn2 = slow_note()
         clock2 = Clock(tA, "s", "{:.2f}")
         mA = T("A", 26, WHITE_T, bold=True).move_to([XS_L, SURF + 1.0, 0])
@@ -380,7 +385,7 @@ class C5Fault(CaseScene):
         self.play(tB.animate.set_value(0.98), run_time=5.8, rate_func=linear)
         self.remove(wr)
 
-        ta = rec2.tag(0, 0.50, "0.50 s")
+        ta = rec2.tag(0, 0.50, "0.50 s", up=False)
         tb = rec2.tag(1, 0.60, "0.60 s", up=False)
         ya, yb = rec2.base_y
         guide = VGroup(*[DashedLine([rec2.x_of(e), ya + 0.05, 0], [rec2.x_of(e + 0.1), yb + 0.05, 0],
@@ -419,7 +424,8 @@ class C5Fault(CaseScene):
                     tip_length=0.18)
         adn = Arrow(pr - d * 0.55, pr + d * 0.55, buff=0, color=RED_T, stroke_width=5,
                     tip_length=0.18)
-        cf = callout([FX(-2.0), -2.0, 0], "단층", "지층이 끊어져 어긋난 면", LEFT + UP * 0.15, 0.7, color=RED_T)
+        cf = callout([FX(-1.6), -1.6, 0], "단층", "지층이 끊어져 어긋난 면", LEFT, 0.7, color=RED_T)
+        cf.add_to_back(BackgroundRectangle(cf[2], color="#050B14", fill_opacity=0.55, buff=0.08))
         self.play(GrowArrow(aup), GrowArrow(adn), Create(cf), run_time=1.0)
         ghost = DashedLine([FX(BYS[1]), BYS[1], 0], [6.2, BYS[1], 0], color=WHITE_T,
                            stroke_width=2, dash_length=0.1, stroke_opacity=0.8)
@@ -429,7 +435,7 @@ class C5Fault(CaseScene):
                            stroke_width=3, tip_length=0.12, max_tip_length_to_length_ratio=0.4)
         slab = T("100 m", 20, GREEN, bold=True).next_to(slip, RIGHT, buff=0.1)
         dA = dim_line([XS_L + 1.0, SURF, 0], [XS_L + 1.0, BYS[1], 0], "500 m",
-                      side=RIGHT * 0.55, size=20)
+                      side=RIGHT * 0.55 + UP * 0.3, size=20)
         dB = dim_line([XS_R - 0.75, SURF, 0], [XS_R - 0.75, BYS[1] - SLIP, 0], "600 m",
                       side=LEFT * 0.55, size=20)
         self.play(Create(ghost), FadeIn(glab), Create(dA), Create(dB), run_time=1.0)
@@ -449,6 +455,9 @@ class C5Fault(CaseScene):
             T("· 땅속 탐사에는 진동수가 낮은 탄성파를 쓴다", 24),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.26)
         sp_ = panel(summ, buff=0.5, pos=ORIGIN + UP * 0.3)
-        self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(5.5)
+        self.play(FadeIn(sp_[0]), FadeIn(summ[0]), run_time=0.7)
+        for ln in summ[1:]:                       # 한 줄씩 읽을 시간
+            self.play(FadeIn(ln, shift=RIGHT * 0.15), run_time=0.5)
+            self.wait(1.9)
+        self.wait(3.0)
         self.play(FadeOut(sp_), run_time=0.6)

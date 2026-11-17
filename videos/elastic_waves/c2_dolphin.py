@@ -269,7 +269,7 @@ class C2Dolphin(CaseScene):
         back = Arrow(tgt + DOWN * 0.38, src + DOWN * 0.38, buff=0, color=ORANGE,
                      stroke_width=4, tip_length=0.2)
         lg = T("갈 때", 22, CYAN, bold=True).next_to(go, UP, buff=0.08)
-        lb = T("올 때", 22, ORANGE, bold=True).next_to(back, DOWN, buff=0.08)
+        lb = T("올 때", 22, ORANGE, bold=True).next_to(back, UP, buff=0.06)
         self.play(GrowArrow(go), FadeIn(lg), run_time=1)
         self.play(GrowArrow(back), FadeIn(lb), run_time=1)
         self.say("이 40 ms 동안 초음파는 물고기까지 갔다가 다시 왔다\n→ 실제로 움직인 길이는 '거리의 2배'")
