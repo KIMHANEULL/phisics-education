@@ -194,7 +194,7 @@ class C7Fetal(CaseScene):
 
         # 1. 등장 요소
         cf = callout(HEAD_C + np.array([0.5, 0.45, 0]), "태아", "양수 속에 떠 있다",
-                     RIGHT + UP * 0.25, 1.1)
+                     RIGHT + UP * 0.25, 0.45)
         cp = callout(P + np.array([0.4, 0.5, 0]), "탐촉자", "압전 소자: 전기 ↔ 초음파",
                      UR, 0.7)
         self.play(Create(cf), Create(cp), run_time=0.9)
