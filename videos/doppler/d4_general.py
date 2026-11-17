@@ -240,7 +240,7 @@ class D4General(CaseScene):
         for i, cd in enumerate(cards):
             self.play(FadeIn(cd, shift=UP * 0.1), run_time=0.6)
             self.wait(2.2)
-        self.say("다가오면 1200 Hz보다 높게,\n멀어지면 낮게 — 네 경우 모두 맞는다", wait=2.6)
+        self.say("다가오면 1200 Hz보다 높게,\n멀어지면 낮게 — 네 경우 모두 맞는다", wait=3.0)
         hl1 = SurroundingRectangle(cards[0], color=F_C, buff=0.04, stroke_width=4)
         hl2 = SurroundingRectangle(cards[2], color=F_C, buff=0.04, stroke_width=4)
         self.play(Create(hl1), Create(hl2), run_time=0.7)

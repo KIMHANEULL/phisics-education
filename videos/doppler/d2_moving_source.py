@@ -74,6 +74,8 @@ class D2MovingSource(CaseScene):
         sn = slow_note()
         ex = T("※ 차이가 잘 보이게 음원 속력을 과장 (그림은 vₛ = v/2, 계산은 vₛ = 34 m/s)", 18, GRAY_T)
         ex.next_to(sn, DOWN, buff=0.08, aligned_edge=LEFT)
+        for _m in (sn, ex):  # 파면 원이 글자를 가로지르지 않게 배경
+            _m.add_background_rectangle(color="#0A1220", opacity=0.85, buff=0.05)
         pa = person(0.9).move_to(A_ + DOWN * 0.45, aligned_edge=DOWN)
         pb = person(0.9).move_to(B_ + DOWN * 0.45, aligned_edge=DOWN)
         la = T("A", 28, WHITE_T, bold=True).next_to(pa, UP, buff=0.1)
@@ -133,6 +135,8 @@ class D2MovingSource(CaseScene):
         sn = slow_note()
         ex = T("※ 차이가 잘 보이게 음원 속력을 과장 (그림은 vₛ = v/2, 계산은 vₛ = 34 m/s)", 18, GRAY_T)
         ex.next_to(sn, DOWN, buff=0.08, aligned_edge=LEFT)
+        for _m in (sn, ex):  # 파면 원이 글자를 가로지르지 않게 배경
+            _m.add_background_rectangle(color="#0A1220", opacity=0.85, buff=0.05)
         self.add(sc)
         self.play(FadeIn(warn), FadeIn(sn), FadeIn(ex), run_time=0.5)
         self.say("자주 하는 착각: 음원이 다가오면 소리가 더 빨리 온다?", wait=3.6)

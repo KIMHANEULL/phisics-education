@@ -37,7 +37,7 @@ class D1Source(CaseScene):
         amb = ambulance(2.3).move_to([-8.6, ROAD, 0], aligned_edge=DOWN)
         self.add(ground, road, dashes, man, me)
         self.add(amb)
-        self.say("구급차가 내 앞을 지나간다.\n사이렌 소리를 잘 들어 보자", wait=2.8)
+        self.say("구급차가 내 앞을 지나간다.\n사이렌 소리를 잘 들어 보자", wait=3.0)
 
         BADGE = [4.6, 2.6, 0]
         hi = sound_badge(1333, ORANGE, "다가올 때: 높은 소리").move_to(BADGE)
@@ -47,10 +47,10 @@ class D1Source(CaseScene):
             for _ in range(times):
                 amb.move_to([-8.6, ROAD, 0], aligned_edge=DOWN)
                 self.add(hi)
-                self.add_sound(tone(1333, 1.5, vol=0.3), time_offset=0.15)
+                self.add_sound(tone(1333, 1.75, vol=0.3), time_offset=0.15)
                 self.play(amb.animate.move_to([-1.15, ROAD, 0], aligned_edge=DOWN), run_time=1.9,
                           rate_func=linear)
-                self.add_sound(tone((1333, 1091), 0.2, vol=0.3))
+                self.add_sound(tone((1333, 1091), 0.45, vol=0.3))
                 self.play(amb.animate.move_to([1.15, ROAD, 0], aligned_edge=DOWN), run_time=0.45,
                           rate_func=linear)
                 self.remove(hi)
@@ -65,6 +65,7 @@ class D1Source(CaseScene):
         drive()
         self.add(lo)
         self.say("다가올 때는 높게,\n지나간 뒤에는 낮게 들린다", wait=2.8)
+        self.play(FadeOut(lo), run_time=0.4)
         self.say("사이렌은 늘 같은 소리를 내는데, 왜 다르게 들릴까?", wait=3.3)
         self.say("이 비밀(도플러 효과)을 풀려면\n먼저 '파원'이 무엇인지 알아야 한다", wait=3.6)
         self.clear_all()
@@ -348,7 +349,7 @@ class D1Source(CaseScene):
         cn = always_redraw(counter)
         self.play(FadeIn(ear), FadeIn(elab), run_time=0.6)
         self.add(g)
-        self.say("귀에 와 닿는 파면을 세어 보자", wait=0.1)
+        self.say("귀에 와 닿는 파면을 세어 보자", wait=0.5)
         self.play(tw.animate.set_value(T_START), run_time=(T_START - 5.0), rate_func=linear)
         self.add(cn)
         self.say("파면 하나가 닿을 때마다 고막이 한 번 떤다", wait=0.1)
@@ -448,6 +449,7 @@ class D1Source(CaseScene):
         play_beep(self, 1200, 1.2, bA, extra=0.2)
         self.play(FadeIn(bB), run_time=0.3)
         play_beep(self, 1200, 1.2, bB, extra=0.6)
+        self.play(FadeOut(bA), FadeOut(bB), run_time=0.4)
         self.say("그런데 파원이 움직이면 어떻게 될까? → ②편에서", wait=3.0)
         self.remove(tt)
         self.clear_all()

@@ -10,7 +10,7 @@ for n in "${ORDER[@]}"; do
   src="$IN/$n.mp4"; [ -f "$src" ] || { echo "없음: $src"; exit 1; }
   if ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "$src" | grep -q .; then
     ffmpeg -v error -y -i "$src" -vf "fps=30,format=yuv420p,setsar=1" -c:v libx264 -preset medium -crf 14 \
-      -af "aresample=44100" -ac 2 -c:a aac -b:a 160k "$OUT/norm/$n.mp4"
+      -af "aresample=44100,apad" -shortest -ac 2 -c:a aac -b:a 160k "$OUT/norm/$n.mp4"
   else  # 소리 없는 장면은 무음 트랙을 붙여 이어 붙일 수 있게
     ffmpeg -v error -y -i "$src" -f lavfi -i anullsrc=r=44100:cl=stereo -shortest \
       -vf "fps=30,format=yuv420p,setsar=1" -c:v libx264 -preset medium -crf 14 -c:a aac -b:a 160k "$OUT/norm/$n.mp4"

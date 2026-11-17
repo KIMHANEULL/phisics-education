@@ -66,6 +66,7 @@ class D3MovingObserver(CaseScene):
         badge = now_playing(1200, "음원이 내는 소리").to_corner(UR, buff=0.3)
         self.play(FadeIn(badge), run_time=0.5)
         play_tone(self, badge, 1200, extra=0)
+        self.play(badge.animate.set_opacity(0.3), run_time=0.4)
         self.say("음원은 제자리에서 1200 Hz 소리를 낸다.\n파면이 같은 간격으로 퍼져 나간다", wait=4.5)
 
         # 파장 표시 (잠깐 멈춤)
@@ -307,6 +308,7 @@ class D3MovingObserver(CaseScene):
         self.play(FadeIn(l3b), run_time=0.8)
         self.say("만나는 속력이 1.1배 → 1초에 만나는 파면도 1.1배\n→ 1200 Hz가 1320 Hz로 높아진다")
         bA = now_playing(1320, "A가 듣는 소리").next_to(pd, DOWN, buff=0.35).align_to(pd, LEFT)
+        self.unsay()
         self.play(FadeIn(bA), run_time=0.4)
         play_tone(self, bA, 1320)
 
@@ -329,6 +331,7 @@ class D3MovingObserver(CaseScene):
         self.play(FadeIn(m2), run_time=0.8)
         self.say("만나는 속력이 0.9배 → 1200 Hz가 1080 Hz로 낮아진다")
         bB = now_playing(1080, "B가 듣는 소리").next_to(pdB, DOWN, buff=0.35).align_to(pdB, LEFT)
+        self.unsay()
         self.play(FadeIn(bB), run_time=0.4)
         play_tone(self, bB, 1080)
         self.play(FadeOut(pdB), FadeOut(bB), run_time=0.5)
