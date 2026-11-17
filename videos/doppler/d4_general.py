@@ -137,6 +137,8 @@ class D4General(CaseScene):
         colA = VGroup(legs[0], legs[1], legs[2]).arrange(DOWN, aligned_edge=LEFT, buff=0.18)
         colB = VGroup(legs[3], legs[4]).arrange(DOWN, aligned_edge=LEFT, buff=0.18)
         lg = VGroup(colA, colB).arrange(RIGHT, buff=1.0, aligned_edge=UP)
+        lgn = T("※ 속력은 공기에 대한 값, 음원과 관찰자는 한 직선 위에서 움직인다 (vₒ, vₛ < v)", 18, GRAY_T)
+        lg = VGroup(lg, lgn).arrange(DOWN, buff=0.22)
         pl = panel(lg, buff=0.3).next_to(pf, DOWN, buff=0.35)
         self.play(FadeIn(pl), run_time=0.7)
         self.say("분자에는 관찰자의 속력, 분모에는 음원의 속력\n(③에서 관찰자는 분자, ②에서 음원은 분모에 있었다)")
@@ -144,8 +146,8 @@ class D4General(CaseScene):
 
         # ---------------------------------------------------------- 2. 부호
         self.play(pf.animate.move_to(UP * 2.4), run_time=0.6)
-        cw, ch = [2.6, 1.6, 1.6], 0.62
-        rows = [["", None, None], ["가까워질 때", "+", "−"], ["멀어질 때", "−", "+"]]
+        cw, ch = [3.7, 1.5, 1.5], 0.62
+        rows = [["", None, None], ["상대 쪽으로 움직일 때", "+", "−"], ["상대에게서 멀어질 때", "−", "+"]]
         heads = [None, mrow(vo(size=28), ("앞", WHITE_T), size=28),
                  mrow(vs_(size=28), ("앞", WHITE_T), size=28)]
         tbl = VGroup()
@@ -169,9 +171,9 @@ class D4General(CaseScene):
         tbl.move_to([-3.4, -0.4, 0])
         self.play(FadeIn(VGroup(*[cells[(0, j)] for j in range(3)])), run_time=0.5)
         self.play(FadeIn(VGroup(*[cells[(1, j)] for j in range(3)])), run_time=0.6)
-        self.say("가까워질 때: 분자 vₒ 앞은 +, 분모 vₛ 앞은 −")
+        self.say("관찰자가 음원 쪽으로 움직이면 vₒ 앞 +,\n음원이 관찰자 쪽으로 움직이면 vₛ 앞 −")
         self.play(FadeIn(VGroup(*[cells[(2, j)] for j in range(3)])), run_time=0.6)
-        self.say("멀어질 때: 분자 vₒ 앞은 −, 분모 vₛ 앞은 +")
+        self.say("상대에게서 멀어지는 쪽으로 움직이면\nvₒ 앞 −, vₛ 앞 +")
 
         tip = VGroup(
             T("외우는 법", 24, CYAN, bold=True),
@@ -242,7 +244,7 @@ class D4General(CaseScene):
         hl1 = SurroundingRectangle(cards[0], color=F_C, buff=0.04, stroke_width=4)
         hl2 = SurroundingRectangle(cards[2], color=F_C, buff=0.04, stroke_width=4)
         self.play(Create(hl1), Create(hl2), run_time=0.7)
-        self.say("같은 34 m/s로 다가가도 1333 Hz ≠ 1320 Hz\n누가 움직이느냐에 따라 다르다 (식이 대칭이 아니다)")
+        self.say("같은 34 m/s로 가까워져도 1333 Hz ≠ 1320 Hz\n소리는 공기에 대해 누가 움직이느냐에 따라 다르다")
         self.play(FadeOut(grid), FadeOut(hl1), FadeOut(hl2), run_time=0.5)
         self.unsay()
 
@@ -295,8 +297,8 @@ class D4General(CaseScene):
         # ---------------------------------------------------------- 6. 정리
         lines = [
             mrow(("· 일반식", WHITE_T), gen_formula(26), size=26),
-            mrow("· 가까워질 때", vo(size=26), "앞 +,", vs_(size=26), "앞 −   /   멀어질 때",
-                 vo(size=26), "앞 −,", vs_(size=26), "앞 +", size=26),
+            mrow("· 상대 쪽으로 움직이면", vo(size=26), "앞 +,", vs_(size=26), "앞 −   (멀어지면 반대)",
+                 size=26),
             T("· 음원이 움직이면 파장이, 관찰자가 움직이면 만나는 속력이 바뀐다", 26, bold=True),
             T("· 상대 속도가 0이면 진동수 변화 없음", 26, bold=True),
             T("· 이용: 혈류 초음파, 스피드건, 기상 레이더, 은하의 적색 편이", 26, bold=True),
@@ -354,13 +356,13 @@ class D4General(CaseScene):
         self.play(FadeIn(cp), run_time=0.4)
         self.say("초음파를 혈관에 쏘면, 움직이는 적혈구에 반사되어\n진동수가 바뀐 채 돌아온다")
         self.play(FadeOut(cp), flow.animate.set_fill(BLOOD_R, 0.45), run_time=0.6)
-        sc1 = tagbox("탐촉자 쪽으로 오는 피 → 빨강", BLOOD_R).move_to([3.6, 1.6, 0])
+        sc1 = tagbox("탐촉자 쪽으로 오는 피 → 빨강 (보통)", BLOOD_R).move_to([3.6, 1.6, 0])
         self.play(FadeIn(sc1), run_time=0.4)
-        self.say("다가오는 피: 진동수가 커진다 → 화면에 빨강", wait=3.0)
+        self.say("다가오는 피: 진동수가 커진다 → 화면에 (보통 빨강)", wait=3.0)
         st["v"] = 0.9
-        sc2 = tagbox("탐촉자에서 멀어지는 피 → 파랑", BLOOD_B).move_to(sc1)
+        sc2 = tagbox("탐촉자에서 멀어지는 피 → 파랑 (보통)", BLOOD_B).move_to(sc1)
         self.play(flow.animate.set_fill(BLOOD_B, 0.45), ReplacementTransform(sc1, sc2), run_time=0.8)
-        self.say("멀어지는 피: 진동수가 작아진다 → 화면에 파랑\n→ 피가 흐르는 속력과 방향을 알 수 있다")
+        self.say("멀어지는 피: 진동수가 작아진다 → 화면에 (보통 파랑)\n→ 피가 흐르는 속력과 방향을 알 수 있다")
         cells.clear_updaters()
         self.remove(out, back)
         self.play(*[FadeOut(m) for m in (sub, wall_t, wall_b, flow, cells, vlab, pr, sc2)],
@@ -376,12 +378,15 @@ class D4General(CaseScene):
         gun = speed_gun().scale(1.3).move_to([5.6, 0.0, 0])
         mouth = np.array([5.0, 0.15, 0])
 
+        # 파면 앞 x = 5.0 - 2.2 t, 차 앞 x = -4.95 + 0.7 t → 만나는 순간 t = 9.95 / 2.9
+        T_HIT = (mouth[0] - (-5.8 + 0.85)) / (2.2 + 0.7)
+
         def waves():
             t = tw.get_value() - t0
             cx = -5.8 + 0.7 * t + 0.85
             D = mouth[0] - cx
             g = stream(t, mouth, LEFT, 2.2, 0.32, max(D, 0.1), 0.35, CYAN, 3)
-            g.add(stream(max(t - 1.5, 0), [cx, 0.0, 0], RIGHT, 2.2, 0.24, max(D, 0.1) * 0.95,
+            g.add(stream(max(t - T_HIT, 0), [cx, 0.0, 0], RIGHT, 2.2, 0.24, max(D, 0.1) * 0.95,
                          0.35, ORANGE, 3))
             return g
 
@@ -455,13 +460,13 @@ class D4General(CaseScene):
         self.say("멀어지는 은하의 빛: 진동수가 작아져 붉은 쪽으로\n밀린다 → 적색 편이")
         ga2 = Arrow(gx.get_center() + UP * 0.8 + LEFT * 0.4, gx.get_center() + UP * 0.8 + RIGHT * 0.7,
                     buff=0, color="#6FA8FF", stroke_width=5, tip_length=0.2)
-        gl2 = T("다가오는 별", 22, "#6FA8FF", bold=True).next_to(ga2, UP, buff=0.06)
+        gl2 = T("다가오는 은하 (예: 안드로메다)", 22, "#6FA8FF", bold=True).next_to(ga2, UP, buff=0.06)
         self.play(ReplacementTransform(ga, ga2), ReplacementTransform(gl, gl2),
                   gx.animate.shift(RIGHT * 0.6), lines.animate.shift(LEFT * 1.6), run_time=1.5)
         self.say("다가오면 진동수가 커져 파란 쪽으로 → 청색 편이", wait=3.2)
         self.play(lines.animate.shift(RIGHT * 1.6 + RIGHT * 0.4), FadeOut(ga2), FadeOut(gl2),
                   run_time=1.0)
-        self.say("허블은 먼 은하들의 빛이 모두 적색 편이된 것을 보고\n은하들이 서로 멀어지고 있다는 것을 알아냈다")
+        self.say("허블은 멀리 있는 은하일수록 더 크게 적색 편이된 것을 보고\n은하들이 서로 멀어지고 있다(우주 팽창)는 것을 알아냈다")
         self.say("※ 빛의 도플러 식은 소리의 식과 다르다.\n'다가오면 진동수↑, 멀어지면 진동수↓'라는 생각만 같다",
                  color=GRAY_T)
         self.play(*[FadeOut(m) for m in (sub, gx, spec, lines, refs, rl, lb, lr, earth)], run_time=0.5)

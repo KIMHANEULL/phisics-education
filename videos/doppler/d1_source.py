@@ -93,8 +93,6 @@ class D1Source(CaseScene):
                            [sx, Y - 0.25, 0], stroke_color=WHITE_T, stroke_width=2, fill_color="#5B6B7E",
                            fill_opacity=1)
             g = VGroup(box, cone)
-            for k in range(6):
-                r = 0.75 * (t / 0.8 - k % 100)
             n = int(t / 0.8)
             for k in range(max(0, n - 4), n + 1):
                 r = 0.55 + 0.75 * (t - k * 0.8)
@@ -285,7 +283,7 @@ class D1Source(CaseScene):
         clock = Clock(tw, "ms", "{:.2f}", scale=1000 / 1200)
         self.play(FadeIn(sdot), FadeIn(slab), FadeIn(sn), FadeIn(clock), run_time=0.7)
         self.add(waves)
-        self.say("이번엔 위에서 내려다보자.\n파원이 떨 때마다 동그란 물결이 퍼진다", wait=0.1)
+        self.say("이번엔 위에서 내려다보자.\n파원이 떨 때마다 동그란 파면이 퍼진다", wait=0.1)
         self.play(tw.animate.set_value(3.5), run_time=3.5, rate_func=linear)
         self.wait(0.9)
 
@@ -293,7 +291,7 @@ class D1Source(CaseScene):
         hl.append(1)
         lbl = label_bg(T("파면", 26, ORANGE, bold=True)).move_to(S + np.array([1.35, 1.95, 0]))
         self.add(lbl)
-        self.say("파면: 같은 순간에 출발한 마루를 이은 선.\n동그라미 하나하나가 파면이다")
+        self.say("파면: 위상이 같은 점(예: 마루)을 이은 선.\n동그라미 하나하나가 마루를 이은 파면이다")
         hl.clear()
         self.remove(lbl)
 
@@ -411,7 +409,7 @@ class D1Source(CaseScene):
         self.play(FadeIn(bd), run_time=0.3)
         play_beep(self, 1200, 1.3, bd, extra=0.4)
         self.play(FadeOut(bd), run_time=0.3)
-        self.say("파장이 짧을수록(파면이 빽빽할수록)\n1초에 더 많이 도착 → 더 높은 소리", wait=4.0)
+        self.say("소리 속력이 같을 때, 파장이 짧을수록(파면이 빽빽할수록)\n1초에 더 많이 도착 → 더 높은 소리")
         self.clear_all()
 
     # ------------------------------------------------------------ 6. 정지한 파원: A, B 모두 같다
@@ -435,9 +433,8 @@ class D1Source(CaseScene):
         self.wait(nxt - tt.get_value())
         tt.clear_updaters()
         tt.set_value(nxt)
-        r_ = 2.0
-        dA = dim_line(S + RIGHT * 2.0 + DOWN * 1.15, S + RIGHT * 3.0 + DOWN * 1.15, "", color=WHITE_T)
-        dB = dim_line(S + LEFT * 3.0 + DOWN * 1.15, S + LEFT * 2.0 + DOWN * 1.15, "", color=WHITE_T)
+        dA = dim_line(S + RIGHT * 2.0, S + RIGHT * 3.0, "", color=WHITE_T)
+        dB = dim_line(S + LEFT * 3.0, S + LEFT * 2.0, "", color=WHITE_T)
         tA = label_bg(T("λ", 26, CYAN, bold=True)).next_to(dA, DOWN, buff=0.1)
         tB = label_bg(T("λ", 26, CYAN, bold=True)).next_to(dB, DOWN, buff=0.1)
         self.play(Create(dA), Create(dB), FadeIn(tA), FadeIn(tB), run_time=0.8)
@@ -459,7 +456,7 @@ class D1Source(CaseScene):
     def wrap(self):
         p = summary(self, "① 파원과 진동수 정리", [
             "· 파원: 파동을 만들어 내는 물체 (진동하는 물체)",
-            "· 파면: 같은 순간에 출발한 마루를 이은 선 — 한 번 진동에 하나",
+            "· 파면: 위상이 같은 점(마루)을 이은 선 — 한 번 진동에 하나씩 생김",
             "· 파면 사이 간격 = 파장 λ, 파면이 퍼지는 속력 = v",
             "· 들리는 진동수 = 1초 동안 귀에 도착하는 파면의 개수",
             "· f = v / λ = 340 / 0.283 ≈ 1200 Hz",

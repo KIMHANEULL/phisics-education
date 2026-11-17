@@ -72,7 +72,7 @@ class D2MovingSource(CaseScene):
             return g
 
         sn = slow_note()
-        ex = T("※ 차이가 잘 보이게 음원 속력을 과장 (계산은 v_s = 34 m/s)", 18, GRAY_T)
+        ex = T("※ 차이가 잘 보이게 음원 속력을 과장 (그림은 vₛ = v/2, 계산은 vₛ = 34 m/s)", 18, GRAY_T)
         ex.next_to(sn, DOWN, buff=0.08, aligned_edge=LEFT)
         pa = person(0.9).move_to(A_ + DOWN * 0.45, aligned_edge=DOWN)
         pb = person(0.9).move_to(B_ + DOWN * 0.45, aligned_edge=DOWN)
@@ -82,7 +82,7 @@ class D2MovingSource(CaseScene):
         mk = always_redraw(marks)
         self.add(waves, mk, sg)
         self.play(FadeIn(sn), FadeIn(ex), FadeIn(pa), FadeIn(pb), FadeIn(la), FadeIn(lb), run_time=0.7)
-        self.say("이제 음원이 오른쪽(A 쪽)으로\n속력 v_s로 움직이며 소리를 낸다", wait=3.4)
+        self.say("이제 음원(소리의 파원)이 오른쪽(A 쪽)으로\n속력 vₛ로 움직이며 소리를 낸다")
         self.say("0, T, 2T, 3T … 한 주기마다 파면을 하나씩 낸다", wait=0.1)
         self.play(tw.animate.set_value(4.0), run_time=4 * TS, rate_func=linear)
         self.wait(1.6)
@@ -129,16 +129,19 @@ class D2MovingSource(CaseScene):
             return g
 
         sc = always_redraw(scene_)
-        warn = tag("주의!", RED_T, 26).to_edge(UP, buff=0.35)
+        warn = tag("주의!", RED_T, 26).to_corner(UR, buff=0.4)
+        sn = slow_note()
+        ex = T("※ 차이가 잘 보이게 음원 속력을 과장 (그림은 vₛ = v/2, 계산은 vₛ = 34 m/s)", 18, GRAY_T)
+        ex.next_to(sn, DOWN, buff=0.08, aligned_edge=LEFT)
         self.add(sc)
-        self.play(FadeIn(warn), run_time=0.5)
+        self.play(FadeIn(warn), FadeIn(sn), FadeIn(ex), run_time=0.5)
         self.say("자주 하는 착각: 음원이 다가오면 소리가 더 빨리 온다?", wait=3.6)
         self.say("파면 하나만 따라가 보자", wait=0.1)
         self.play(tw.animate.set_value(3.0), run_time=3 * TS, rate_func=linear)
         lb = label_bg(T("파면을 낸 자리 (원의 중심)", 21, WHITE_T, bold=True)).next_to(P0, DOWN, buff=0.25)
         self.play(FadeIn(lb), run_time=0.4)
         self.say("한 번 나온 파면은 음원을 따라가지 않는다.\n원의 중심은 낸 자리에 그대로 남는다", wait=4.2)
-        self.say("앞으로도 뒤로도 똑같이 v = 340 m/s로 퍼진다.\n달라지는 것은 속력이 아니라 파면 사이 '간격'뿐이다", wait=5.0)
+        self.say("앞으로도 뒤로도 똑같이 (바람이 없을 때) v = 340 m/s로 퍼진다.\n달라지는 것은 속력이 아니라 파면 사이 '간격'뿐이다", wait=5.0)
         self.remove(sc)
         self.clear_all()
 
@@ -202,16 +205,16 @@ class D2MovingSource(CaseScene):
         t_s = label_bg(row(sym("v", "s", C_S, 24), ("T ≈ 2.8 cm", C_S), size=24))
         t_s.next_to(d_s, LEFT, buff=0.15)
         self.play(Create(d_s), FadeIn(t_s), run_time=0.6)
-        self.say("음원도 v_s T = 34 × 1/1200 m ≈ 2.8 cm\n앞으로 따라왔다", wait=3.8)
+        self.say("음원도 vₛT = 34 × 1/1200 m ≈ 2.8 cm\n앞으로 따라왔다", wait=3.8)
         # λ_A, λ_B
         d_a = dim_line(O + RIGHT * DS + UP * 0.3, O + RIGHT * LAM + UP * 0.3, "", color=GREEN)
         t_a = label_bg(row(sym("λ", "A", GREEN, 24), ("= 25.5 cm", GREEN), size=24)).next_to(d_a, UP, buff=0.06)
         self.play(Create(d_a), FadeIn(t_a), run_time=0.6)
-        self.say("다음 파면은 따라온 그 자리에서 출발하므로\n앞쪽 간격 λ_A = λ − v_s T = 25.5 cm (짧아짐)", wait=5.0)
+        self.say("다음 파면은 따라온 그 자리에서 출발하므로\n앞쪽 간격 λ_A = λ − vₛT = 25.5 cm (짧아짐)", wait=5.0)
         d_b = dim_line(O + LEFT * LAM + UP * 0.3, O + RIGHT * DS + UP * 0.3, "", color=GREEN)
         t_b = label_bg(row(sym("λ", "B", GREEN, 24), ("= 31.2 cm", GREEN), size=24)).next_to(d_b, UP, buff=0.06)
         self.play(Create(d_b), FadeIn(t_b), run_time=0.6)
-        self.say("뒤쪽은 음원이 멀어지며 내므로\n뒤쪽 간격 λ_B = λ + v_s T = 31.2 cm (길어짐)", wait=5.0)
+        self.say("뒤쪽은 음원이 vₛT만큼 멀어진 자리에서 다음 파면을 내므로\n뒤쪽 간격 λ_B = λ + vₛT = 31.2 cm (길어짐)")
         self.remove(sc)
         self.clear_all()
 
@@ -239,13 +242,13 @@ class D2MovingSource(CaseScene):
         body = VGroup(head, rows).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
         pnl = panel(body, buff=0.3).to_edge(UP, buff=0.3).to_edge(LEFT, buff=0.4)
         self.play(FadeIn(pnl[0]), FadeIn(head), FadeIn(r1), run_time=0.8)
-        self.say("A가 듣는 진동수를 구해 보자.\n앞쪽 파장 λ_A = λ − v_s T", wait=3.8)
+        self.say("A가 듣는 진동수를 구해 보자.\n앞쪽 파장 λ_A = λ − vₛT", wait=3.8)
         self.play(FadeIn(r2), run_time=0.8)
-        self.say("들리는 진동수 = v / 파장.\nT = 1/f 이므로 v_s T = v_s / f", wait=4.2)
+        self.say("A는 정지해 있으므로 들리는 진동수 = v / 파장.\nT = 1/f 이므로 vₛT = vₛ / f")
         self.play(FadeIn(r3), run_time=0.8)
-        self.say("분자와 분모에 f를 곱하면 λf = v 이므로\nf_A = v / (v − v_s) × f", wait=4.4)
+        self.say("분자와 분모에 f를 곱하면 λf = v 이므로\nf_A = v / (v − vₛ) × f", wait=4.4)
         self.play(FadeIn(r4[0]), FadeIn(r4[1]), FadeIn(r4[2]), FadeIn(r4[3]), run_time=0.8)
-        self.say("v에 (340), v_s에 (34), f에 (1200)을 넣으면", wait=3.4)
+        self.say("v에 (340), vₛ에 (34), f에 (1200)을 넣으면", wait=3.4)
         self.play(FadeIn(r4[4], shift=LEFT * 0.2), run_time=0.6)
         self.play(Create(hl_box(r4[4], GREEN)), run_time=0.5)
         self.say("약 1333 Hz. 340/306 ≈ 1.11배\n→ 원래보다 약 11 % 높은 소리로 들린다", wait=4.4)
@@ -271,9 +274,9 @@ class D2MovingSource(CaseScene):
         body = VGroup(head, rows).arrange(DOWN, aligned_edge=LEFT, buff=0.3)
         pnl = panel(body, buff=0.3).to_edge(UP, buff=0.3).to_edge(LEFT, buff=0.4)
         self.play(FadeIn(pnl[0]), FadeIn(head), FadeIn(r1), run_time=0.8)
-        self.say("B 쪽도 같은 방법이다. 뒤쪽 파장 λ_B = λ + v_s T", wait=3.6)
+        self.say("B 쪽도 같은 방법이다. 뒤쪽 파장 λ_B = λ + vₛT", wait=3.6)
         self.play(FadeIn(r2), run_time=0.8)
-        self.say("빼기가 더하기로 바뀔 뿐: f_B = v / (v + v_s) × f", wait=3.8)
+        self.say("빼기가 더하기로 바뀔 뿐: f_B = v / (v + vₛ) × f", wait=3.8)
         self.play(FadeIn(r3), run_time=0.8)
         self.play(Create(hl_box(r3[4], CYAN)), run_time=0.5)
         self.say("약 1091 Hz. 파장이 길어진 만큼\n1초에 도착하는 파면이 줄어 낮은 소리가 된다", wait=4.6)
@@ -355,9 +358,9 @@ class D2MovingSource(CaseScene):
         hi = Line([GX0, fy(1333), 0], [-1.7, fy(1333), 0], color=ORANGE, stroke_width=7, stroke_opacity=0.5)
         lo = Line([1.7, fy(1091), 0], [GX1, fy(1091), 0], color=CYAN, stroke_width=7, stroke_opacity=0.5)
         self.play(Create(hi), run_time=0.6)
-        self.say("다가오는 동안은 계속 1333 Hz로 일정하다.\n점점 높아지는 것이 아니다!", wait=4.2)
+        self.say("다가오는 동안은 거의 1333 Hz 그대로다.\n점점 높아지는 것이 아니다!", wait=4.2)
         self.play(Create(lo), run_time=0.6)
-        self.say("바로 옆을 지나는 순간 뚝 떨어지고,\n멀어지는 동안은 계속 1091 Hz", wait=4.0)
+        self.say("바로 옆을 지날 때 짧은 시간에 빠르게 낮아지고,\n멀어지는 동안은 거의 1091 Hz")
         self.say("가까워질 때 높고 멀어질 때 낮게 들리는 현상\n= 도플러 효과", wait=3.6)
         self.remove(bd)
         self.clear_all()
@@ -370,7 +373,7 @@ class D2MovingSource(CaseScene):
         c = 0.32
         XS = [-4.45, 0.0, 4.45]
         BY = 0.0
-        specs = [("음원 정지", "(v_s = 0)", 0.0), ("음속보다 느림", "(v_s < v)", 0.5), ("음속과 같음", "(v_s = v)", 1.0)]
+        specs = [("음원 정지", "(vₛ = 0)", 0.0), ("음속보다 느림", "(vₛ < v)", 0.5), ("음속과 같음", "(vₛ = v)", 1.0)]
         boxes = VGroup()
         draws = []
         for (t1, t2, r), x in zip(specs, XS):
@@ -423,7 +426,7 @@ class D2MovingSource(CaseScene):
         lab = label_bg(T("충격파", 28, ORANGE, bold=True)).next_to(S, RIGHT, buff=0.3).shift(UP * 0.35)
         self.play(Create(up), Create(dn), FadeIn(lab), run_time=0.9)
         self.say("파면들이 V자(원뿔) 모양으로 겹쳐 강한 충격파가 된다\n→ 전투기의 소닉 붐", wait=4.6)
-        self.say("물 위를 빠르게 달리는 보트 뒤의 V자 물결도\n같은 원리다", wait=3.8)
+        self.say("물 위를 빠르게 달리는 보트 뒤의 V자 물결도\n파면이 겹쳐 생기는 비슷한 모습이다")
         self.remove(waves, sd)
         self.clear_all()
 
@@ -431,9 +434,9 @@ class D2MovingSource(CaseScene):
     def wrap(self):
         p = summary(self, "② 음원이 움직일 때 정리", [
             "· 소리의 속력은 앞뒤 모두 v = 340 m/s 그대로 — 바뀌는 것은 파장",
-            "· 다가오는 쪽: λ_A = λ − v_sT,   f_A = v/(v − v_s) × f ≈ 1333 Hz (높게)",
-            "· 멀어지는 쪽: λ_B = λ + v_sT,   f_B = v/(v + v_s) × f ≈ 1091 Hz (낮게)",
-            "· 구급차: 다가오는 동안 계속 높고, 지나는 순간 뚝 떨어져 계속 낮다",
-            "· 음원 속력 ≥ 음속이면 파면이 겹쳐 충격파(소닉 붐)가 생긴다",
+            "· 다가오는 쪽: λ_A = λ − vₛT,   f_A = v/(v − vₛ) × f ≈ 1333 Hz (높게)",
+            "· 멀어지는 쪽: λ_B = λ + vₛT,   f_B = v/(v + vₛ) × f ≈ 1091 Hz (낮게)",
+            "· 구급차: 다가오는 동안 거의 일정하게 높고, 옆을 지날 때 빠르게 낮아져 계속 낮다",
+            "· 음원 속력 = 음속이면 압력의 벽, 음속보다 빠르면 원뿔 모양 충격파(소닉 붐)",
         ], hold=4.0)
         self.play(FadeOut(p), run_time=0.6)

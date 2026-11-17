@@ -204,14 +204,14 @@ class D3MovingObserver(CaseScene):
         a2 = do_run(4.4, -V_OBS, "② 이번엔 음원 쪽으로 걸어가면서 센다")
         add_tally("다가갈 때", 9, GREEN)
         self.play(FadeOut(a2), run_time=0.3)
-        self.say("9개! 파면을 마중 나가니 더 자주 만난다\n→ 진동수가 커진다 (높은 소리)")
+        self.say("9개! 파면을 마중 나가니 더 자주 만난다\n(화면은 속력을 과장 — 실제 34 m/s면 1.1배)")
         self.say("마주 오는 자동차 쪽으로 걸어가면\n차와 더 자주 마주치는 것과 같다")
 
         # 3) 멀어지며
         a3 = do_run(-1.6, V_OBS, "③ 이번엔 음원에서 멀어지면서 센다")
         add_tally("멀어질 때", 3, RED_T)
         self.play(FadeOut(a3), run_time=0.3)
-        self.say("3개! 파면에서 달아나니 덜 만난다\n→ 진동수가 작아진다 (낮은 소리)")
+        self.say("3개! 파면에서 달아나니 덜 만난다\n(화면은 속력을 과장 — 실제 34 m/s면 0.9배)")
         self.say("세 번 모두 파면 간격(λ)은 똑같았다.\n달라진 것은 파면을 만나는 속력!")
 
         # ---------------------------------------------------------- 상대 속력
@@ -395,12 +395,12 @@ class D3MovingObserver(CaseScene):
                                stroke_width=1, fill_opacity=0)
         g = VGroup()
         cx = box.get_center()
-        for i in range(4):
-            r = 0.25 + 0.27 * i
-            c = cx + LEFT * (0.0 - 0.22 * (3 - i)) + LEFT * 0.35  # 오래된 파면일수록 왼쪽 중심
-            g.add(Circle(radius=r, stroke_color=CYAN, stroke_width=3).move_to(c))
-        spk = speaker(0.35).move_to(cx + RIGHT * 0.32)
-        arr = Arrow(cx + RIGHT * 0.9, cx + RIGHT * 1.75, buff=0, color=SRC_C,
+        sx = cx + RIGHT * 0.4
+        for i in range(4):  # 오래된 파면일수록 중심이 뒤(왼쪽): 앞 간격 0.12, 뒤 간격 0.38
+            r = 0.32 + 0.25 * i
+            g.add(Circle(radius=r, stroke_color=CYAN, stroke_width=3).move_to(sx + LEFT * 0.13 * i))
+        spk = speaker(0.26).move_to(sx)
+        arr = Arrow(cx + RIGHT * 1.25, cx + RIGHT * 2.05, buff=0, color=SRC_C,
                     stroke_width=5, tip_length=0.18)
         grp = VGroup(box, g, spk, arr)
         return grp
@@ -410,9 +410,9 @@ class D3MovingObserver(CaseScene):
                                stroke_width=1, fill_opacity=0)
         cx = box.get_center()
         sc = cx + LEFT * 1.0
-        g = VGroup(*[Circle(radius=0.27 + 0.27 * i, stroke_color=CYAN, stroke_width=3).move_to(sc)
+        g = VGroup(*[Circle(radius=0.32 + 0.25 * i, stroke_color=CYAN, stroke_width=3).move_to(sc)
                      for i in range(4)])
-        spk = speaker(0.3).move_to(sc)
+        spk = speaker(0.26).move_to(sc)
         p = person(ORANGE, 0.55).move_to(cx + RIGHT * 1.45)
         arr = Arrow(p.get_top() + UP * 0.12 + RIGHT * 0.3, p.get_top() + UP * 0.12 + LEFT * 0.5,
                     buff=0, color=ORANGE, stroke_width=5, tip_length=0.16)
