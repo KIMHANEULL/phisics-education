@@ -288,21 +288,22 @@ class C6Cleaning(CaseScene):
         r3 = colored([("= 0.0002 s = 0.2 ms", GREEN)], 26)
         r4a = distance_formula(26)
         r4n = T("← 갔다가 되돌아왔으니 2로 나눈다", 17, GRAY_T)
-        r4 = VGroup(r4a, r4n).arrange(RIGHT, buff=0.2)
+        r4 = r4a
         r5 = eq_row(T("=", 26, WHITE_T, bold=True),
                     frac(colored([("(1500 m/s)", ORANGE), ("×", WHITE_T), ("(0.0002 s)", GREEN)], 26),
                          colored([("2", WHITE_T)], 26), 26),
                     T("= 0.15 m", 26, GREEN, bold=True))
-        fb2 = VGroup(r1, r2, r3, r4, r5).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+        fb2 = VGroup(r1, r2, r3, r4, r5, r4n).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
         r2.shift(RIGHT * 0.9)
         r3.shift(RIGHT * 0.9)
         r5.shift(RIGHT * 0.75)
-        pnl2 = panel(fb2, buff=0.3, pos=[3.35, 0.0, 0])
+        r4n.shift(RIGHT * 0.75)
+        pnl2 = panel(fb2, buff=0.3, pos=[3.5, -0.05, 0])
         self.play(FadeIn(pnl2[0]), FadeIn(r1), FadeIn(r2), run_time=0.9)
         self.say("왕복 길이(2 × 0.15 m)를 음속(1500 m/s)으로 나누면", wait=2.6)
         self.play(FadeIn(r3), run_time=0.6)
         self.say("시간 차 = 0.0002 s = 0.2 ms (시계와 같다)", wait=2.6)
-        self.play(FadeIn(r4), FadeIn(r5), run_time=0.9)
+        self.play(FadeIn(r4), FadeIn(r5), FadeIn(r4n), run_time=0.9)
         self.say("거꾸로 거리 공식에 넣으면 다시 0.15 m = 15 cm", wait=3)
         self.say("하지만 세척은 시간을 재지 않고\n초음파의 에너지(압력 변화)를 이용한다", color=GREEN,
                  wait=4)
