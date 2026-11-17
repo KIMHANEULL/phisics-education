@@ -215,7 +215,7 @@ class C9Seismic(CaseScene):
         self.say("지진이 나면 P파와 S파가 동시에 출발해 사방으로 퍼진다", wait=0.3)
         self.add(waves)
         self.add_foreground_mobjects(star)
-        self.play(tt.animate.set_value(5), run_time=3.5, rate_func=linear)
+        self.play(tt.animate.set_value(5), run_time=2.5, rate_func=linear)
         th = np.deg2rad(40)
         pp = HYP + VP * UPK * 5 * np.array([np.cos(th), np.sin(th), 0])
         th2 = np.deg2rad(-8)
@@ -229,7 +229,7 @@ class C9Seismic(CaseScene):
         self.say("P파는 빠르고(앞뒤로 밀고 당기는 종파),\nS파는 느리다(옆으로 흔드는 횡파)", wait=3.6)
         self.play(FadeOut(c_p), FadeOut(c_q), run_time=0.4)
         self.unsay()
-        self.play(tt.animate.set_value(TP), run_time=3.0, rate_func=linear)
+        self.play(tt.animate.set_value(TP), run_time=2.5, rate_func=linear)
         mp = sg.marker(TP, "P파 도착", CYAN)
         self.play(Flash(STA + UP * 0.25, color=CYAN, line_length=0.25), FadeIn(mp), run_time=0.7)
         self.say("P파가 먼저 도착한다 (10 s)", wait=1.8)
@@ -298,13 +298,13 @@ class C9Seismic(CaseScene):
         self.play(FadeIn(e1), run_time=0.6)
         self.say("P파: 6 km/s로 10 s 동안 가면 60 km", wait=2.2)
         self.play(FadeIn(e2), run_time=0.6)
-        self.say("S파는 2배 느리니 같은 60 km를 가는 데 2배(20 s) 걸린다", wait=2.8)
+        self.say("S파는 속력이 P파의 절반이니 같은 60 km를 가는 데 2배(20 s) 걸린다", wait=2.8)
         self.play(FadeIn(e3), run_time=0.6)
         self.say("그래서 PS시 = 10 s", wait=1.6)
 
         # 5. 거꾸로: PS시 → 거리
         self.play(FadeOut(exp_), run_time=0.5)
-        self.say("거꾸로, PS시만 재면 진원까지의 거리를 알 수 있다", wait=2.4)
+        self.say("거꾸로, PS시만 재면 (지진이 언제 났는지 몰라도)\n진원까지의 거리를 알 수 있다", wait=2.4)
         ticks = VGroup()
         nrm = np.array([-np.sin(ang), np.cos(ang), 0])
         for k in range(1, 11):
@@ -363,14 +363,14 @@ class C9Seismic(CaseScene):
             icons.add(VGroup(tri, lb))
             circs.add(Circle(radius=np.linalg.norm(E - p), color=col, stroke_width=3).move_to(p))
         self.play(FadeIn(icons, lag_ratio=0.3), run_time=0.8)
-        self.say("관측소 세 곳에서 각각 PS시를 재서 진앙까지의 거리를 구한다", wait=2.6)
+        self.say("관측소 세 곳에서 각각 PS시를 재서 진원까지의 거리를 구한다\n(진원이 얕으면 진앙까지의 거리와 거의 같다)", wait=3.6)
         for c in circs:
             self.play(GrowFromCenter(c), run_time=0.8)
         estar = Star(5, outer_radius=0.2, inner_radius=0.09, fill_color=RED_T, fill_opacity=1,
                      stroke_color=WHITE_T, stroke_width=1.2).move_to(E)
         elab = T("진앙", 22, RED_T, bold=True).next_to(estar, DOWN + RIGHT * 0.3, buff=0.05)
         self.play(GrowFromCenter(estar), FadeIn(elab), Flash(E, color=RED_T), run_time=0.8)
-        self.say("그 거리를 반지름으로 원을 그리면\n세 원이 만나는 곳이 진앙이다", wait=3.2)
+        self.say("그 거리를 반지름으로 지도에 원을 그리면\n세 원이 만나는 곳이 진앙이다 (진원이 얕다고 볼 때)", wait=3.2)
 
         # 7. 지구 내부
         self.clear_all(keep=(sky,))
@@ -398,7 +398,7 @@ class C9Seismic(CaseScene):
         s_ok = VGroup()
         for side in (1, -1):
             for dd in (45, 75, 100):
-                s_ok.add(ArcBetweenPoints(S0, surf_pt(dd, side), angle=-0.35 * side,
+                s_ok.add(ArcBetweenPoints(S0, surf_pt(dd, side), angle=0.35 * side,
                                           color=ORANGE, stroke_width=3))
         s_stop, xs = VGroup(), VGroup()
         Rc = 0.55 * R
@@ -419,17 +419,17 @@ class C9Seismic(CaseScene):
         shadow = Arc(radius=R + 0.08, start_angle=np.deg2rad(90 - 103),
                      angle=-np.deg2rad(360 - 206), arc_center=C, color=GRAY_T, stroke_width=6)
         c4 = callout(C + (R + 0.08) * np.array([np.cos(-0.87), np.sin(-0.87), 0]),
-                     "S파가 오지 않는 지역", "외핵에 막혔기 때문", RIGHT + DOWN * 0.2, 0.9,
+                     "S파가 오지 않는 지역", "외핵에 막혔기 때문 (약 103° 너머)", RIGHT + DOWN * 0.2, 0.9,
                      color=GRAY_T)
         self.play(Create(shadow), FadeIn(c4), run_time=0.8)
-        self.say("S파는 고체만 지나고 액체는 지나지 못한다\n→ S파가 외핵을 못 지나가므로 외핵은 액체임을 알았다", wait=4.4)
+        self.say("S파는 고체만 지나고 액체는 지나지 못한다\n→ 103° 너머에 S파가 오지 않으므로 외핵은 액체임을 알았다", wait=4.4)
 
         # 8. 정리
         self.clear_all(keep=(sky,))
         summ = VGroup(
             T("지진파 정리", 30, CYAN, bold=True),
             T("· P파(빠름, 종파)가 먼저, S파(느림, 횡파)가 나중에 도착", 24),
-            T("· 지진파는 편도: 거리 = 속력 × 시간  (60 km = 6 × 10 = 3 × 20)", 24),
+            T("· 지진파는 편도: 거리 = 속력 × 시간  (60 km = 6 km/s × 10 s = 3 km/s × 20 s)", 24),
             T("· PS시가 길수록 멀다: PS시 10 s → 60 km", 24),
             T("· 관측소 세 곳의 원이 만나는 곳 = 진앙", 24),
             T("· S파가 외핵을 못 지나감 → 외핵은 액체", 24),

@@ -107,7 +107,9 @@ def slow_note(text="※ 실제보다 아주 느리게 보여 줌"):
     return T(text, 18, GRAY_T).to_corner(UL, buff=0.35)
 
 
-def title_card(title, sub="탄성파의 활용 · 교과서 104쪽", case_no=None):
+def title_card(title, sub=None, case_no=None):
+    if sub is None:  # 사례 1~5: 104쪽 본문, 사례 6~9: 105쪽 탐구
+        sub = "탄성파의 활용 · 교과서 " + ("105쪽" if (case_no or 0) >= 6 else "104쪽")
     s = sub if case_no is None else f"{sub}  |  사례 {case_no}"
     st = T(s, 21, GRAY_T)
     tt = T(title, 50, WHITE_T, bold=True)

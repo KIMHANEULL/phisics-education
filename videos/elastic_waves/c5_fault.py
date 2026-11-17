@@ -314,7 +314,7 @@ class C5Fault(CaseScene):
         pnl = panel(body, buff=0.3, pos=[3.0, -0.8, 0])
         pnl.shift(RIGHT * (6.8 - pnl.get_right()[0]))
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
-        self.say("이 지층 속 탄성파 속력을 2000 m/s로 가정한다", wait=2.4)
+        self.say("모든 지층에서 탄성파 속력이 2000 m/s로 같다고 가정한다", wait=2.4)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
         self.say("속력과 시간 차 0.50 s를 대입한다 (단위: m/s × s = m)", wait=2.6)
         self.play(FadeIn(unit), FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
@@ -387,7 +387,7 @@ class C5Fault(CaseScene):
                                     color=GREEN, stroke_width=2, dash_length=0.06)
                          for e in ech_l])
         self.play(FadeIn(ta), FadeIn(tb), Create(guide), run_time=1.0)
-        self.say("두 기록의 무늬는 똑같은데, B가 모두 0.10 s씩 늦다\n→ 같은 지층들이 B 쪽에서 더 깊이 있다", wait=3.8)
+        self.say("두 기록의 무늬는 똑같은데, B가 모두 0.10 s씩 늦다\n→ 같은 지층들이 B 쪽에서 모두 100 m씩 더 깊다", wait=3.8)
 
         # 6. 계산
         rowA = colored([("A:  깊이 =", WHITE_T), ("(2000 m/s)", ORANGE), ("×", WHITE_T),
@@ -434,7 +434,7 @@ class C5Fault(CaseScene):
                       side=LEFT * 0.55, size=20)
         self.play(Create(ghost), FadeIn(glab), Create(dA), Create(dB), run_time=1.0)
         self.play(GrowFromCenter(slip), FadeIn(slab), run_time=0.7)
-        self.say("땅속 지층이 끊어져 한쪽이 미끄러져 내려갔다\n→ 단층이 있다!", wait=3.4,
+        self.say("땅속 지층이 끊어져 한쪽이 다른 쪽보다 100 m 내려가 있다\n→ 단층이 있다!", wait=3.4,
                  color=WHITE_T)
         self.wait(0.6)
 
@@ -445,7 +445,7 @@ class C5Fault(CaseScene):
             T("· 진동 트럭이 만든 탄성파가 지층 경계면마다 일부 반사된다", 24),
             T("· 깊은 경계면일수록 메아리가 늦게 온다", 24),
             T("· 깊이 = 속력 × 시간 차 ÷ 2  →  2000 × 0.50 ÷ 2 = 500 m", 24),
-            T("· 같은 지층의 깊이가 어긋나면(500 m ↔ 600 m) → 단층", 24),
+            T("· 같은 지층의 깊이가 어느 곳에서 갑자기 달라지면(500 m → 600 m) → 단층", 24),
             T("· 땅속 탐사에는 진동수가 낮은 탄성파를 쓴다", 24),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.26)
         sp_ = panel(summ, buff=0.5, pos=ORIGIN + UP * 0.3)
