@@ -112,7 +112,7 @@ class C4Seafloor(CaseScene):
         self.play(FadeIn(sn), FadeIn(clock), FadeIn(tl), run_time=0.8)
         m0 = tl.marker(0, "신호 발신 시각", ORANGE)
         self.play(FadeIn(m0), run_time=0.4)
-        self.say("이번에는 시간 단위가 '초(s)' — 바다가 아주 깊기 때문", wait=1.8)
+        self.say("이번에는 시간 단위가 '초(s)' — 바다가 아주 깊기 때문", wait=3.2)
         self.say("펄스를 쏘는 순간 시간을 0으로 놓는다", wait=0.3)
         self.add(waves)
         self.play(tw.animate.set_value(TRIP), run_time=4.4, rate_func=linear)
@@ -124,7 +124,7 @@ class C4Seafloor(CaseScene):
         self.play(tw.animate.set_value(2 * TRIP + 0.6), FadeIn(m1), FadeOut(refl),
                   run_time=1.32, rate_func=linear)
         self.remove(waves)
-        sp = tl.span(0, 2 * TRIP, "시간 차 = 4.0 s").shift(UP * 0.55)
+        sp = tl.span(0, 2 * TRIP, "시간 차 = 4.0 s").shift(UP * 0.75)
         self.play(FadeIn(sp), run_time=0.6)
         self.say("보낸 시각과 받은 시각의 차이 = 시간 차 4.0 s")
 
@@ -150,11 +150,11 @@ class C4Seafloor(CaseScene):
         r2 = eq_row("=", f2, mid, res)
         r2.next_to(r1, DOWN, buff=0.35, aligned_edge=LEFT).shift(RIGHT * 1.15)
         rt = T("왕복한 길이", 18, GRAY_T).next_to(mid[1], DOWN, buff=0.12)
-        pnl = panel(VGroup(r1, r2, rt).scale(0.86), buff=0.3, pos=[1.65, 2.8, 0])
+        pnl = panel(VGroup(r1, r2, rt).scale(0.86), buff=0.3, pos=[1.65, 2.8, 0]).to_edge(UP, buff=0.3)
         self.play(FadeOut(clock), FadeOut(sn), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.say("수심(바닥까지의 거리) = 음속 × 시간 차 ÷ 2", wait=2.2)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
-        self.say("바닷물 속 음속(1500 m/s)과 시간 차(4.0 s)를 대입한다\n(단위: m/s × s = m)", wait=3.4)
+        self.say("바닷물 속 음속(1500 m/s)과 시간 차(4.0 s)를 대입한다\n(단위: m/s × s = m)", wait=4.5)
         self.play(FadeIn(mid), FadeIn(rt), run_time=0.8)
         self.say("1500 × 4.0 = 6000 m … 내려갔다 올라온 왕복 길이", wait=2.6)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
@@ -180,25 +180,30 @@ class C4Seafloor(CaseScene):
         self.say("실제로 배에서는 바닥이 보이지 않는다.\n배를 옮기며 여러 곳에서 재어 보자")
 
         # 수심 눈금
-        AX = -6.25
+        AX = -5.8
         axis = Line([AX, SURF, 0], [AX, y_of(3300), 0], stroke_color=GRAY_T, stroke_width=2)
         ticks = VGroup()
         for d in (0, 1000, 2000, 3000):
             ticks.add(Line([AX - 0.06, y_of(d), 0], [AX + 0.06, y_of(d), 0], color=GRAY_T,
                            stroke_width=2))
-            ticks.add(T(f"{d} m", 16, GRAY_T).next_to([AX - 0.08, y_of(d), 0], LEFT, buff=0.06))
+            tl_ = T(f"{d} m", 17, GRAY_T).next_to([AX - 0.08, y_of(d), 0], LEFT, buff=0.06)
+            ticks.add(BackgroundRectangle(tl_, color="#06111D", fill_opacity=0.65, buff=0.04), tl_)
         axl = T("수심", 18, GRAY_T, bold=True).next_to(axis, DOWN, buff=0.1)
         self.play(FadeIn(axis), FadeIn(ticks), FadeIn(axl), run_time=0.6)
 
         dots = VGroup()
         labs = VGroup()
 
+        # 라벨 위치: 연결선이 지나가지 않는 쪽 (오르막 앞 = 아래/왼쪽 위, 내리막 뒤 = 오른쪽 위)
+        LAB_DIR = {-5: DOWN, -3: UL, -1: UP, 1: UR, 3: UR, 5: UR}
+
         def place(x, d, run=0.5):
             t = 2 * d / 1500
             dot = Dot([x, y_of(d), 0], radius=0.09, color=GREEN)
             lab = VGroup(T(f"{t:.1f} s", 19, GREEN, bold=True), T("→", 19, WHITE_T),
                          T(f"{d} m", 19, WHITE_T, bold=True)).arrange(RIGHT, buff=0.08)
-            lab.next_to(dot, UP, buff=0.18)
+            dr = LAB_DIR.get(x, UP)
+            lab.next_to(dot, dr, buff=0.18 if dr is UP or dr is DOWN else 0.04)
             bgk = BackgroundRectangle(lab, color="#06111D", fill_opacity=0.6, buff=0.05)
             lab = VGroup(bgk, lab)
             self.play(FadeIn(dot, scale=1.8), FadeIn(lab, shift=UP * 0.1), run_time=run)
@@ -235,7 +240,7 @@ class C4Seafloor(CaseScene):
         self.say("측정한 점들을 이으면…", wait=0.2)
         self.play(Create(prof), run_time=1.6)
         self.play(FadeOut(fog), FadeIn(floor[1]), run_time=1.2)
-        self.bring_to_front(prof, dots, labs)
+        self.bring_to_front(axis, ticks, axl, prof, dots, labs)
         self.say("바다 밑바닥의 모양(해저 지형)이 드러난다", wait=2.2)
         key = T("시간 차가 클수록 수심이 깊다", 30, GREEN, bold=True)
         kp = panel(key, buff=0.25, pos=[1.2, 3.0, 0])
@@ -300,12 +305,14 @@ class C4Seafloor(CaseScene):
         mlab = T("위에서 본 해저 지형도", 20, GRAY_T).next_to(frame, UP, buff=0.15)
         cb = VGroup(*[Square(0.22, stroke_width=0, fill_color=depth_color(1300 + 1900 * k / 11),
                              fill_opacity=1) for k in range(12)]).arrange(RIGHT, buff=0)
-        cb.next_to(frame, DOWN, buff=0.35)
         cbl = VGroup(T("얕다", 18, WHITE_T).next_to(cb, LEFT, buff=0.12),
                      T("깊다", 18, WHITE_T).next_to(cb, RIGHT, buff=0.12))
         arrow = Arrow([MX - 3.1, MY - 1.3, 0], [MX + 3.1, MY - 1.3, 0], buff=0, color=GRAY_T,
                       stroke_width=2, tip_length=0.15)
         alab = T("배가 지나간 길", 16, GRAY_T).next_to(arrow, DOWN, buff=0.06)
+        cb.next_to(alab, DOWN, buff=0.22)
+        cbl[0].next_to(cb, LEFT, buff=0.12)
+        cbl[1].next_to(cb, RIGHT, buff=0.12)
         self.play(FadeIn(frame), FadeIn(mlab), run_time=0.5)
         order = sorted(range(len(cells)), key=lambda k: k // rows_)
         self.play(LaggedStart(*[FadeIn(cells[k]) for k in order], lag_ratio=0.01),
@@ -324,6 +331,9 @@ class C4Seafloor(CaseScene):
             T("· 시간 차가 클수록 수심이 깊다 → 여러 곳을 재면 해저 지형이 보인다", 26),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=ORIGIN + UP * 0.3)
-        self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(5)
+        self.play(FadeIn(sp_[0], shift=UP * 0.2), FadeIn(summ[0], shift=UP * 0.2), run_time=0.8)
+        for line in summ[1:]:  # 한 줄씩 (줄마다 읽을 시간)
+            self.play(FadeIn(line, shift=RIGHT * 0.15), run_time=0.5)
+            self.wait(2.4)
+        self.wait(3.5)
         self.play(FadeOut(sp_), run_time=0.6)

@@ -265,7 +265,7 @@ def distance_formula(size=34):
 def panel(mob, buff=0.35, pos=None):
     box = RoundedRectangle(corner_radius=0.12, width=mob.width + 2 * buff,
                            height=mob.height + 2 * buff, stroke_color=PANEL_STROKE,
-                           stroke_width=1.5, fill_color=PANEL_FILL, fill_opacity=0.92)
+                           stroke_width=1.5, fill_color=PANEL_FILL, fill_opacity=0.97)
     box.move_to(mob)
     g = VGroup(box, mob)
     if pos is not None:

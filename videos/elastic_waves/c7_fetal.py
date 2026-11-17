@@ -187,10 +187,10 @@ class C7Fetal(CaseScene):
 
         # 0. 제목
         card = title_card("태아 초음파 검사", case_no=7)
-        self.play(FadeIn(body), FadeIn(fetus), FadeIn(probe, shift=DOWN * 0.2), run_time=1)
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.8)
         self.wait(2.2)
         self.play(FadeOut(card), run_time=0.6)
+        self.play(FadeIn(body), FadeIn(fetus), FadeIn(probe, shift=DOWN * 0.2), run_time=1)
 
         # 1. 등장 요소
         cf = callout(HEAD_C + np.array([0.9, 0.3, 0]), "태아", "양수 속에 떠 있다",
@@ -204,19 +204,19 @@ class C7Fetal(CaseScene):
 
         # 2. 젤을 바르는 이유
         sn0 = slow_note("※ 실제보다 아주 느리게, 공기층은 크게 과장해 그림")
-        self.play(lift.animate.set_value(0.32), FadeIn(sn0), run_time=0.8)
-        air = callout(P + LEFT * 0.5 + UP * 0.17, "공기층", "초음파를 거의 다 반사",
+        self.play(lift.animate.set_value(0.55), FadeIn(sn0), run_time=0.8)
+        air = callout(P + LEFT * 0.55 + UP * 0.3, "공기층", "초음파를 거의 다 반사",
                       UL, 0.6, color=RED_T)
         self.play(FadeIn(air), run_time=0.5)
         tw = ValueTracker(0)
-        src = P + UP * 0.4
-        bounce = always_redraw(lambda: echo_group(tw.get_value(), src, P + UP * 0.01, 0.1,
-                                                  3, 1.4, 1.4, width=4, fade=False))
+        src = P + UP * 0.61
+        bounce = always_redraw(lambda: echo_group(tw.get_value(), src, P + UP * 0.01, 0.15,
+                                                  3, 1.5, 1.5, width=6, fade=False))
         self.add(bounce)
         self.say("탐촉자와 피부 사이에 공기층이 있으면\n초음파가 거의 다 튕겨 나와 몸속으로 못 들어간다", wait=0.2)
         for _ in range(2):
             tw.set_value(0)
-            self.play(tw.animate.set_value(1.05), run_time=3, rate_func=linear)
+            self.play(tw.animate.set_value(1.55), run_time=3, rate_func=linear)
         self.remove(bounce)
         self.wait(1.5)
         gel_on[0] = True
@@ -242,8 +242,9 @@ class C7Fetal(CaseScene):
         for d in range(0, 13, 2):
             y = M0[1] - d * SC
             ruler.add(Line([rx, y, 0], [rx + 0.1, y, 0], stroke_width=1.5, color=GRAY_T))
-            ruler.add(T(str(d), 14, GRAY_T).next_to([rx, y, 0], LEFT, buff=0.08))
-        ruler.add(T("깊이 (cm)", 15, GRAY_T).move_to([rx + 0.15, M0[1] + 0.2, 0]))
+            ruler.add(T(str(d), 18, GRAY_T).next_to([rx, y, 0], LEFT, buff=0.1))
+        ruler.add(T("깊이 (cm)", 18, GRAY_T).next_to([rx - 0.2, M0[1] + 0.18, 0], UP, buff=0.0)
+                  .align_to([rx - 0.45, 0, 0], LEFT))
         aline = DashedLine(M0, M0 + DOWN * R, stroke_width=1.5, color=CYAN,
                            stroke_opacity=0.5)
         tt = ValueTracker(0)  # ms
@@ -267,7 +268,7 @@ class C7Fetal(CaseScene):
         waves = always_redraw(lambda: aline_waves(tt.get_value()))
         self.add(waves, adot)
         self.say("한 방향으로 펄스를 쏘면, 조직의 경계를 만날 때마다\n일부가 반사되어 되돌아온다 (나머지는 더 들어간다)",
-                 wait=0.3)
+                 wait=1.5)
         t_head = 2 * HEAD_TOP / V_CM_PER_MS          # 0.100 ms
         self.play(tt.animate.set_value(0.05), run_time=4, rate_func=linear)
         self.say("되돌아온 시각이 늦을수록 → 더 깊은 곳 (모니터에서 아래쪽)", wait=0.2)
@@ -291,11 +292,11 @@ class C7Fetal(CaseScene):
         r2[0].scale(27 / 34)
         r2.arrange(RIGHT, buff=0.22)
         r2.next_to(r1, DOWN, buff=0.25, aligned_edge=LEFT).shift(RIGHT * 0.6)
-        pnl = panel(VGroup(r1, r2), buff=0.28, pos=[2.3, 2.62, 0])
+        pnl = panel(VGroup(r1, r2), buff=0.28).scale(0.88).to_corner(UR, buff=0.12)
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
-        self.say("몸속 연한 조직에서 음속은 약 1540 m/s\n0.100 ms = 0.000100 s", wait=3)
+        self.say("몸속 연한 조직에서 음속은 약 1540 m/s\n0.100 ms = 0.000100 s", wait=3.7)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
-        self.say("음속(1540 m/s)과 시간 차(0.000100 s)를 대입\n(단위: m/s × s = m)", wait=3)
+        self.say("음속(1540 m/s)과 시간 차(0.000100 s)를 대입\n(단위: m/s × s = m)", wait=3.8)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
         dl = dim_line(P + RIGHT * 0.75, P + RIGHT * 0.75 + DOWN * HEAD_TOP * SC, "7.7 cm",
                       side=RIGHT * 0.5, size=22)
@@ -325,15 +326,15 @@ class C7Fetal(CaseScene):
                  stroke_opacity=0.7)))
         self.play(FadeOut(adot), FadeOut(beam), FadeOut(aline), FadeOut(ruler),
                   FadeIn(sbeam), run_time=0.6)
-        self.say("이제 방향을 조금씩 바꾸며 한 줄씩 쏘고, 점들을 모니터에 차례로 찍는다",
+        self.say("이제 방향을 조금씩 바꾸며 한 줄씩 쏘고,\n점들을 모니터에 차례로 찍는다",
                  wait=0.3)
         self.play(sw.animate.set_value(HALF), run_time=9, rate_func=linear)
         self.play(FadeOut(sbeam), run_time=0.4)
         bm = T("B-모드 영상", 18, GREEN, bold=True).next_to(mt, DOWN, buff=0.1).align_to(mt, RIGHT)
         self.play(FadeIn(bm), run_time=0.4)
-        self.say("줄들이 모여 태아의 모습이 나타난다.\n1초에 수십 장을 다시 그려서 움직이는 실시간 영상이 된다", wait=4.2)
+        self.say("줄들이 모여 태아의 모습이 나타난다.\n1초에 수십 장을 다시 그려서 움직이는 실시간 영상이 된다", wait=5.0)
         self.say("진동수가 높을수록 더 선명하지만, 깊이는 덜 들어간다\n(그래서 검사 부위 깊이에 맞춰 진동수를 고른다)",
-                 wait=4.2)
+                 wait=5.0)
 
         # 6. 장점
         ctrl.clear_updaters()
@@ -346,7 +347,7 @@ class C7Fetal(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         ap = panel(adv, buff=0.45, pos=UP * 0.45)
         self.play(FadeIn(ap, shift=UP * 0.2), run_time=0.8)
-        self.wait(5.5)
+        self.wait(8.5)
         self.play(FadeOut(ap), run_time=0.6)
 
         # 7. 정리
@@ -359,5 +360,5 @@ class C7Fetal(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=UP * 0.3)
         self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(6)
+        self.wait(9.5)
         self.play(FadeOut(sp_), run_time=0.6)

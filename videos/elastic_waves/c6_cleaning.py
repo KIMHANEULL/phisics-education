@@ -128,10 +128,10 @@ class C6Cleaning(CaseScene):
 
         # 0. 제목
         card = title_card("초음파 세척 (안경·금속 장식품)", case_no=6)
-        self.play(FadeIn(tk), FadeIn(txd), FadeIn(gl), run_time=1)
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.8)
         self.wait(2.2)
         self.play(FadeOut(card), run_time=0.6)
+        self.play(FadeIn(tk), FadeIn(txd), FadeIn(gl), run_time=1)
 
         # 1. 등장 요소
         c_tank = callout([TX1 - 0.3, WS - 0.3, 0], "세척조", "물이 담긴 통", UR, 0.9, color=CYAN)
@@ -153,7 +153,7 @@ class C6Cleaning(CaseScene):
         self.bring_to_front(gl)
         self.say("진동자가 1초에 약 4만 번(40 kHz) 떨며\n물을 밀었다 당겼다 한다 (한 번 떨리는 데 25 μs)", wait=0.2)
         self.play(ph.animate.set_value(2 * PI * 3), run_time=7, rate_func=linear)
-        self.say("물 알갱이가 파동이 나아가는 방향(위아래)으로 떨리며\n빽빽한 곳(압축)과 듬성한 곳(팽창)이 번갈아 위로 퍼진다 = 종파", wait=0.2)
+        self.say("물 알갱이가 파동이 나아가는 방향(위아래)으로 떨리며\n빽빽한 곳(압축)과 듬성한 곳(팽창)이 번갈아 위로 퍼진다 = 종파", wait=0.5)
         self.play(ph.animate.set_value(2 * PI * 5.5), run_time=5.5, rate_func=linear)
         # 멈춰서 이름 붙이기
         cs = comp_centers(ph.get_value())
@@ -168,7 +168,7 @@ class C6Cleaning(CaseScene):
 
         # 3. 파장 = 음속 / 진동수
         lx = TX0 + 0.35
-        dl = dim_line([lx, yc, 0], [lx, yc - LAM, 0], "λ", side=RIGHT * 0.32, size=26)
+        dl = dim_line([lx, yc, 0], [lx, yc - LAM, 0], "λ", side=LEFT * 0.6, size=26)
         self.play(FadeOut(c_c), FadeOut(c_r), Create(dl), run_time=0.8)
         f1 = eq_row(T("파장", 28, WHITE_T, bold=True), T("=", 28, WHITE_T, bold=True),
                     frac([("음속", ORANGE)], [("진동수", GREEN)], 28))
@@ -183,7 +183,7 @@ class C6Cleaning(CaseScene):
         self.play(FadeIn(pnl[0]), Write(f1), run_time=1)
         self.say("밀과 밀 사이 거리 = 파장 λ\n한 번 떨리는 동안 파동이 나아가는 거리", wait=3.6)
         self.play(FadeIn(f2), run_time=0.8)
-        self.say("물속 음속(약 1500 m/s)을 진동수(40000 Hz)로 나눈다\n40000 Hz = 1초에 40000번 진동", wait=4)
+        self.say("물속 음속(약 1500 m/s)을 진동수(40000 Hz)로 나눈다\n40000 Hz = 1초에 40000번 진동", wait=5.0)
         self.play(FadeIn(f3), FadeIn(nt), run_time=0.7)
         lab38 = T("λ ≈ 3.8 cm", 22, GREEN, bold=True).next_to([lx - 0.12, yc, 0], UP, buff=0.12, aligned_edge=LEFT)
         self.play(FadeIn(lab38), run_time=0.5)
@@ -198,14 +198,14 @@ class C6Cleaning(CaseScene):
         ring = Circle(radius=0.16, stroke_color=WHITE_T, stroke_width=2).move_to(lens_pt)
         z1 = DashedLine(ring.get_top(), box.get_corner(UL), stroke_width=1.5, color=GRAY_T)
         z2 = DashedLine(ring.get_bottom(), box.get_corner(DL), stroke_width=1.5, color=GRAY_T)
-        it = T("확대: 렌즈 표면", 18, GRAY_T, bold=True).move_to(box.get_corner(UL) + [1.0, -0.25, 0])
+        it = T("확대: 렌즈 표면", 21, GRAY_T, bold=True).move_to(box.get_corner(UL) + [1.15, -0.28, 0])
         SY = INSET_C[1] - 1.2
         surf = Rectangle(width=5.0, height=0.45, stroke_width=0, fill_color="#A9C3D6",
                          fill_opacity=0.55).move_to([INSET_C[0], SY - 0.22, 0])
-        sl = T("렌즈", 17, "#DDE8F0", bold=True).move_to([INSET_C[0] + 2.0, SY - 0.22, 0])
+        sl = T("렌즈", 21, "#DDE8F0", bold=True).move_to([INSET_C[0] + 2.0, SY - 0.22, 0])
         DP = np.array([INSET_C[0] - 0.4, SY, 0])
         dirt = dirt_blob(DP, 1.1)
-        dl_ = T("때", 18, "#E9CF9F", bold=True).next_to(dirt, LEFT, buff=0.12)
+        dl_ = T("때", 22, "#E9CF9F", bold=True).next_to(dirt, LEFT, buff=0.12)
         self.play(Create(ring), Create(z1), Create(z2), run_time=0.6)
         self.play(FadeIn(box), FadeIn(it), FadeIn(surf), FadeIn(sl), FadeIn(dirt), FadeIn(dl_),
                   run_time=0.7)
@@ -219,7 +219,7 @@ class C6Cleaning(CaseScene):
                      fill_opacity=0.08).move_to(BC)
         pl = plabel("압력 낮음 (팽창)", CYAN)
         self.play(FadeIn(pl), FadeIn(bub), run_time=0.5)
-        self.say("팽창(압력이 낮은) 순간, 물이 당겨져 아주 작은 거품(수증기·기체가 찬 작은 공간)이 생긴다", wait=0.2)
+        self.say("팽창(압력이 낮은) 순간, 물이 당겨져\n아주 작은 거품(수증기·기체가 찬 작은 공간)이 생긴다", wait=0.2)
         big = Circle(radius=0.55, stroke_color=WHITE_T, stroke_width=2, fill_color=WHITE_T,
                      fill_opacity=0.08).move_to(BC)
         self.play(Transform(bub, big), run_time=3, rate_func=smooth)
@@ -247,7 +247,7 @@ class C6Cleaning(CaseScene):
                   FadeOut(jet), FadeOut(dl_), run_time=1.4)
         jl = T("센 물줄기 + 충격파", 22, CYAN, bold=True).move_to(BC + UP * 0.2)
         self.play(FadeIn(jl), run_time=0.4)
-        self.say("공동 현상(캐비테이션): 거품이 터질 때 생기는 센 물줄기와 충격파가\n표면의 때를 떼어 낸다", wait=4.5)
+        self.say("공동 현상(캐비테이션): 거품이 터질 때 생기는 센 물줄기와 충격파가\n표면의 때를 떼어 낸다", wait=5.0)
         self.say("이런 일이 1초에 수만 번, 물속 곳곳에서 일어난다", wait=2.8)
         self.play(FadeOut(VGroup(box, it, surf, sl, pl2, jl, ring, z1, z2)), run_time=0.6)
 
@@ -276,7 +276,7 @@ class C6Cleaning(CaseScene):
         d15 = dim_line([TX1 - 0.35, WB, 0], [TX1 - 0.35, WS, 0], "15 cm", side=LEFT * 0.5 + DOWN * 1.1,
                        size=24)
         sn2 = slow_note("※ 실제보다 아주 느리게 보여 줌 (앞 장면보다는 빠르게)")
-        self.play(FadeOut(gl[0], shift=UP * 1.5), FadeTransform(sn, sn2), run_time=0.9)
+        self.play(FadeOut(gl[0], shift=UP * 1.5), FadeOut(sn), FadeIn(sn2), run_time=0.9)
         self.play(FadeIn(clock2), Create(d15), run_time=0.6)
         self.add(pw)
         self.say("거리 공식으로 확인해 보자: 안경을 꺼낸 통 바닥에서 짧은 펄스를 쏘면\n15 cm 위의 물 표면에서 반사되어 돌아온다", wait=0.2)
@@ -288,24 +288,26 @@ class C6Cleaning(CaseScene):
                       ("(1500 m/s)", ORANGE)], 26)
         r3 = colored([("= 0.0002 s = 0.2 ms", GREEN)], 26)
         r4a = distance_formula(26)
-        r4n = T("← 갔다가 되돌아왔으니 2로 나눈다", 17, GRAY_T)
-        r4 = r4a
+        r4n = T("← 갔다가 되돌아왔으니 2로 나눈다", 20, GRAY_T)
+        r4 = VGroup(r4a, r4n).arrange(RIGHT, buff=0.25)
         r5 = eq_row(T("=", 26, WHITE_T, bold=True),
                     frac(colored([("(1500 m/s)", ORANGE), ("×", WHITE_T), ("(0.0002 s)", GREEN)], 26),
                          colored([("2", WHITE_T)], 26), 26),
                     T("= 0.15 m", 26, GREEN, bold=True))
-        fb2 = VGroup(r1, r2, r3, r4, r5, r4n).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
+        fb2 = VGroup(r1, r2, r3, r4, r5).arrange(DOWN, aligned_edge=LEFT, buff=0.2)
         r2.shift(RIGHT * 0.9)
         r3.shift(RIGHT * 0.9)
         r5.shift(RIGHT * 0.4)
-        r4n.shift(RIGHT * 0.75)
-        pnl2 = panel(fb2, buff=0.3, pos=[3.4, -0.05, 0])
+        pnl2 = panel(fb2, buff=0.3)
+        if pnl2.width > 7.4:
+            pnl2.scale_to_fit_width(7.4)
+        pnl2.move_to([0, -0.05, 0]).to_edge(RIGHT, buff=0.15)
         self.play(FadeIn(pnl2[0]), FadeIn(r1), FadeIn(r2), run_time=0.9)
-        self.say("왕복 길이(2 × 0.15 m)를 음속(1500 m/s)으로 나누면", wait=2.6)
+        self.say("왕복 길이(2 × 0.15 m)를 음속(1500 m/s)으로 나누면", wait=3.5)
         self.play(FadeIn(r3), run_time=0.6)
         self.say("시간 차 = 0.0002 s = 0.2 ms (시계와 같다)", wait=2.6)
-        self.play(FadeIn(r4), FadeIn(r5), FadeIn(r4n), run_time=0.9)
-        self.say("거꾸로 거리 공식에 넣으면 다시 0.15 m = 15 cm", wait=3)
+        self.play(FadeIn(r4), FadeIn(r5), run_time=0.9)
+        self.say("거꾸로 거리 공식에 넣으면 다시 0.15 m = 15 cm", wait=3.3)
         self.say("하지만 세척은 시간을 재지 않고\n초음파의 에너지(압력 변화)를 이용한다", color=GREEN,
                  wait=4)
 
@@ -319,7 +321,7 @@ class C6Cleaning(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         ap = panel(adv, buff=0.45, pos=UP * 0.45)
         self.play(FadeIn(ap, shift=UP * 0.2), run_time=0.8)
-        self.wait(6)
+        self.wait(9.5)
         self.play(FadeOut(ap), run_time=0.6)
 
         # 7. 정리
@@ -332,5 +334,5 @@ class C6Cleaning(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=UP * 0.3)
         self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(6)
+        self.wait(10)
         self.play(FadeOut(sp_), run_time=0.6)

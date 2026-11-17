@@ -69,7 +69,7 @@ class C1Bat(CaseScene):
         tgt = MOTH + LEFT * 0.2
         D = np.linalg.norm(tgt - src)
         waves = always_redraw(lambda: echo_group(tw.get_value() / TRIP * D, src, tgt,
-                                                 0.32, 4, 1.15, 1.0))
+                                                 0.32, 4, 0.85, 0.8))
         clock = Clock(tt, "ms", "{:.2f}")
         tl = Timeline(25, 5, tt, "ms")
         sn = slow_note()
@@ -88,7 +88,7 @@ class C1Bat(CaseScene):
         m1 = tl.marker(2 * TRIP, "신호 수신 시각", GREEN)
         self.play(FadeIn(rcv), FadeIn(m1), FadeOut(refl), run_time=0.6)
         sp = tl.span(0, 2 * TRIP, "시간 차 = 20 ms")
-        sp.shift(UP * 0.55)
+        sp.shift(UP * 0.75)
         self.play(FadeIn(sp), run_time=0.6)
         self.say("보낸 시각과 받은 시각의 차이 = 시간 차 20 ms (= 0.020 s)")
         self.play(FadeOut(rcv), run_time=0.4)
@@ -114,9 +114,10 @@ class C1Bat(CaseScene):
         r2 = eq_row("=", f2, res)
         r2.next_to(r1, DOWN, buff=0.35, aligned_edge=LEFT).shift(RIGHT * 1.15)
         body = VGroup(r1, r2)
-        pnl = panel(body, pos=[0.95, 2.55, 0])
+        pnl = panel(body).scale(0.88)
+        pnl.move_to([1.4, 0, 0]).to_edge(UP, buff=0.3)
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
-        self.say("공기 속 음속은 약 340 m/s\n(박쥐와 나방은 멈춰 있다고 본다)", wait=1.6)
+        self.say("공기 속 음속은 약 340 m/s\n(박쥐와 나방은 멈춰 있다고 본다)", wait=2.6)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
         self.say("음속과 시간 차를 대입한다 (단위: m/s × s = m)", wait=1.6)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
@@ -136,16 +137,16 @@ class C1Bat(CaseScene):
         cap[0] = 10.0
         tw.set_value(0)
         waves2 = always_redraw(lambda: echo_group(tw.get_value() / 5.0 * D2, src, tgt2,
-                                                  0.32, 4, 1.15, 1.0))
+                                                  0.32, 4, 0.85, 0.8))
         self.add(waves2)
         self.say("먹이가 절반 거리(1.7 m)로 가까워지면?", wait=0.2)
         self.play(tw.animate.set_value(11.4), run_time=5.7, rate_func=linear)
         self.remove(waves2)
         m2 = tl.marker(10, "수신", GREEN)
-        sp2 = tl.span(0, 10, "시간 차 = 10 ms").shift(UP * 0.55)
+        sp2 = tl.span(0, 10, "시간 차 = 10 ms").shift(UP * 0.75)
         self.play(FadeIn(m2), FadeIn(sp2), run_time=0.6)
         self.say("거리가 절반이면 시간 차도 절반 (10 ms)\n→ 거리와 시간 차는 비례한다")
-        self.say("그래서 박쥐는 메아리가 빨리 올수록 먹이가 가깝다는 것을 안다.\n가까워지면 초음파를 더 자주 내서 위치를 계속 확인한다", wait=4.5)
+        self.say("그래서 박쥐는 메아리가 빨리 올수록 먹이가 가깝다는 것을 안다.\n가까워지면 초음파를 더 자주 내서 위치를 계속 확인한다", wait=6.0)
 
         # 6. 정리
         self.clear_all(keep=(bg,))
@@ -157,5 +158,5 @@ class C1Bat(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=ORIGIN + UP * 0.3)
         self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(5)
+        self.wait(10)
         self.play(FadeOut(sp_), run_time=0.6)

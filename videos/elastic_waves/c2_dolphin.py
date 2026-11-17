@@ -258,7 +258,7 @@ class C2Dolphin(CaseScene):
         self.play(tw.animate.set_value(2 * TRIP + 3.9), FadeIn(rcv), FadeIn(m1), FadeOut(refl),
                   run_time=0.82, rate_func=linear)
         self.remove(waves)
-        sp = tl.span(0, 2 * TRIP, "시간 차 = 40 ms").shift(UP * 0.55)
+        sp = tl.span(0, 2 * TRIP, "시간 차 = 40 ms").shift(UP * 0.75)
         self.play(FadeIn(sp), run_time=0.6)
         self.say("보낸 시각과 받은 시각의 차이 = 시간 차 40 ms (= 0.040 s)")
         self.play(FadeOut(rcv), run_time=0.4)
@@ -286,12 +286,12 @@ class C2Dolphin(CaseScene):
         r2.next_to(r1, DOWN, buff=0.35, aligned_edge=LEFT).shift(RIGHT * 1.15)
         rt = T("왕복한 길이", 18, GRAY_T).next_to(mid[1], DOWN, buff=0.12)
         body = VGroup(r1, r2, rt)
-        pnl = panel(body, buff=0.28, pos=[0.9, 2.55, 0])
+        pnl = panel(body, buff=0.28, pos=[0.9, 2.55, 0]).to_edge(UP, buff=0.3)
         self.play(FadeOut(sn), FadeOut(clock), FadeOut(go), FadeOut(lg), FadeOut(back),
                   FadeOut(lb), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.wait(1.4)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
-        self.say("물속 음속(1500 m/s)과 시간 차(0.040 s)를 대입한다\n(단위: m/s × s = m)", wait=3.4)
+        self.say("물속 음속(1500 m/s)과 시간 차(0.040 s)를 대입한다\n(단위: m/s × s = m)", wait=4.4)
         self.play(FadeIn(mid), FadeIn(rt), run_time=0.8)
         self.say("1500 × 0.040 = 60 m … 이것은 갔다 온 왕복 길이", wait=2.6)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
@@ -324,7 +324,7 @@ class C2Dolphin(CaseScene):
         ax = Line([X0, axis_y, 0], [X1 + 0.2, axis_y, 0], color=GRAY_T, stroke_width=2)
         tks = VGroup(*[VGroup(Line([xo(t), axis_y - 0.06, 0], [xo(t), axis_y + 0.06, 0],
                                    color=GRAY_T, stroke_width=2),
-                              T(f"{t}", 17, GRAY_T).move_to([xo(t), axis_y - 0.27, 0]))
+                              T(f"{t}", 21, GRAY_T).move_to([xo(t), axis_y - 0.3, 0]))
                        for t in range(0, 201, 40)])
         axl = T("시간 (ms)", 18, GRAY_T).next_to(ax, RIGHT, buff=0.12)
         yw, ya = 0.2, -0.45
@@ -345,7 +345,7 @@ class C2Dolphin(CaseScene):
         self.play(FadeIn(fw), run_time=0.8)
         self.say("시간 차 = 2 × 거리 ÷ 음속 → 물속: 0.040 s (40 ms)", wait=2.6)
         self.play(FadeIn(fa), run_time=0.8)
-        self.say("공기: 2 × 30 ÷ 340 ≈ 0.176 s (176 ms)", wait=2.4)
+        self.say("공기: 2 × 30 ÷ 340 ≈ 0.176 s (176 ms)", wait=2.8)
         self.play(FadeIn(ax), FadeIn(tks), FadeIn(axl), FadeIn(nw), FadeIn(na), run_time=0.6)
         self.add(bars)
         self.say("두 메아리가 돌아오는 시각을 나란히 비교하면", wait=0.2)
@@ -366,6 +366,9 @@ class C2Dolphin(CaseScene):
             T("· 같은 30 m 라도 공기 속이면 약 176 ms — 물속 메아리가 더 빨리 온다", 26),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=ORIGIN + UP * 0.3)
-        self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(5)
+        self.play(FadeIn(sp_[0], shift=UP * 0.2), FadeIn(summ[0], shift=UP * 0.2), run_time=0.8)
+        for line in summ[1:]:  # 한 줄씩 (줄마다 읽을 시간)
+            self.play(FadeIn(line, shift=RIGHT * 0.15), run_time=0.5)
+            self.wait(2.4)
+        self.wait(3.5)
         self.play(FadeOut(sp_), run_time=0.6)

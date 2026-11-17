@@ -36,9 +36,9 @@ class C0Intro(CaseScene):
         nt = T("← 갔다가 되돌아왔으니 2로 나눈다", 20, GRAY_T)
         pf = panel(VGroup(f, nt).arrange(RIGHT, buff=0.35))
         pf.move_to(DOWN * 0.15)
-        self.play(chips.animate.set_opacity(0.15), FadeIn(pf, scale=0.95), run_time=0.9)
-        self.say("핵심 공식은 하나 — 반사되어 돌아온 시간으로 거리를 구한다", wait=3.2)
-        self.say("사례마다 이 공식이 어떻게 쓰이는지 확인하자", wait=3.2)
+        self.play(chips.animate.set_opacity(0.0), FadeIn(pf, scale=0.95), run_time=0.9)
+        self.say("핵심 공식 — 반사되어 돌아온 시간으로 거리를 구한다", wait=3.2)
+        self.say("사례마다 이 공식이 어떻게 쓰이는지\n(또는 왜 다르게 쓰이는지) 확인하자", wait=3.2)
         self.clear_all()
         self.wait(0.3)
 
@@ -59,7 +59,7 @@ ROWS = [
 
 class C10Outro(CaseScene):
     def construct(self):
-        bg = studio_bg(horizon=0.9, grid=False)
+        bg = studio_bg(horizon=4.2, grid=False)
         self.add(bg)
         head = T("한눈에 정리", 36, CYAN, bold=True).to_edge(UP, buff=0.45)
         self.play(FadeIn(head), run_time=0.6)
@@ -76,13 +76,13 @@ class C10Outro(CaseScene):
                 cs[5] = CYAN
             if r[5] == "에너지 이용":
                 cs[5] = GRAY_T
-            row = VGroup(*[T(s, 22, c, bold=(j in (0, 4))).move_to([x, y, 0])
+            row = VGroup(*[T(s, 24, c, bold=(j in (0, 4))).move_to([x, y, 0])
                            for j, (s, c, x) in enumerate(zip(r, cs, xs))])
             row[0].align_to([-6.3, 0, 0], LEFT)
             rows.add(row)
         self.play(LaggedStart(*[FadeIn(r, shift=RIGHT * 0.15) for r in rows], lag_ratio=0.25),
                   run_time=3.5)
-        star = T("* 계산을 쉽게 하려고 가정한 값", 17, GRAY_T).next_to(rows, DOWN, buff=0.22)
+        star = T("* 계산을 쉽게 하려고 가정한 값", 19, GRAY_T).next_to(rows, DOWN, buff=0.22)
         star.align_to([-6.3, 0, 0], LEFT)
         self.play(FadeIn(star), run_time=0.4)
         self.wait(4)

@@ -2,7 +2,7 @@
 from common import *
 
 # ------------------------------------------------------------ 배치 (화면 단위)
-TOP, BOT = 0.85, -1.95           # 강철판 윗면 / 바닥면  → 두께 3 cm
+TOP, BOT = 0.55, -2.25           # 강철판 윗면 / 바닥면  → 두께 3 cm
 CM = (TOP - BOT) / 3.0           # 1 cm 의 화면 길이
 PX0, PX1 = -7.6, 0.95            # 강철판 가로 범위 (왼쪽은 화면 밖으로 이어짐)
 CRACK_X = (-2.25, -0.0)          # 균열 가로 범위 (2.25 단위 ≈ 2.4 cm)
@@ -96,7 +96,7 @@ def echoes_at(x):
 class AScan(VGroup):
     """오실로스코프 모양 A-스캔 화면. 가로 = 시간(μs), 세로 = 되돌아온 신호 세기."""
 
-    def __init__(self, t_tracker, x_tracker, x0=2.85, x1=6.35, yb=-1.5, h=2.0,
+    def __init__(self, t_tracker, x_tracker, x0=2.85, x1=6.35, yb=-1.8, h=2.0,
                  tmax=12, **kw):
         super().__init__(**kw)
         self.x0, self.x1, self.yb, self.h, self.tmax = x0, x1, yb, h, tmax
@@ -104,7 +104,7 @@ class AScan(VGroup):
                                height=h + 1.25, stroke_color=PANEL_STROKE,
                                stroke_width=1.5, fill_color="#06120E", fill_opacity=0.95)
         box.move_to([(x0 + x1) / 2 - 0.05, yb + h / 2 + 0.05, 0])
-        ttl = T("A-스캔 화면 (초음파 탐상기)", 18, GRAY_T, bold=True)
+        ttl = T("A-스캔 화면 (초음파 탐상기)", 20, GRAY_T, bold=True)
         ttl.move_to(box.get_top() + DOWN * 0.22)
         grid = VGroup()
         for i in range(0, tmax + 1, 2):
@@ -112,9 +112,9 @@ class AScan(VGroup):
             grid.add(Line([x, yb, 0], [x, yb + h, 0], stroke_width=1, color=GREEN,
                           stroke_opacity=0.15))
         axis = Line([x0, yb, 0], [x1, yb, 0], stroke_width=2, color=GRAY_T)
-        nums = VGroup(*[T(str(i), 15, GRAY_T).move_to([self.x_of(i), yb - 0.2, 0])
+        nums = VGroup(*[T(str(i), 18, GRAY_T).move_to([self.x_of(i), yb - 0.22, 0])
                         for i in range(0, tmax + 1, 2)])
-        ul = T("시간 (μs)", 15, GRAY_T).next_to(nums, DOWN, buff=0.06).align_to(axis, RIGHT)
+        ul = T("시간 (μs)", 18, GRAY_T).next_to(nums, DOWN, buff=0.06).align_to(axis, RIGHT)
         self.box = box
         self.add(box, ttl, grid, axis, nums, ul)
 
@@ -164,10 +164,10 @@ class C8NDT(CaseScene):
 
         # 0. 제목
         card = title_card("비파괴 검사 (초음파 탐상)", case_no=8)
-        self.play(FadeIn(plate), FadeIn(crack), FadeIn(probe, shift=DOWN * 0.2), run_time=1)
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.8)
         self.wait(2.2)
         self.play(FadeOut(card), run_time=0.6)
+        self.play(FadeIn(plate), FadeIn(crack), FadeIn(probe, shift=DOWN * 0.2), run_time=1)
 
         # 1. 등장 요소
         thick = dim_line([PX1 + 0.25, TOP, 0], [PX1 + 0.25, BOT, 0], "3 cm",
@@ -177,7 +177,7 @@ class C8NDT(CaseScene):
                         "틈의 공기층을 없애 초음파가 잘 들어가게", RIGHT + UP * 0.45, 1.1,
                         color=CYAN)
         self.play(Create(thick), Create(c_probe), run_time=0.8)
-        self.say("두께 3 cm 강철판 단면. 탐촉자는 전기 신호를 초음파로 바꿔 보내고,\n되돌아온 초음파를 다시 전기 신호로 바꾼다", wait=4.2)
+        self.say("두께 3 cm 강철판 단면. 탐촉자는 전기 신호를 초음파로 바꿔 보내고,\n되돌아온 초음파를 다시 전기 신호로 바꾼다", wait=5.2)
         self.play(FadeOut(c_probe), Create(c_gel), run_time=0.8)
         self.say("탐촉자와 강철 사이에 기름·젤을 발라 공기층을 없앤다\n(공기층이 있으면 초음파가 거의 다 반사되어 못 들어간다)",
                  wait=4.5)
@@ -196,8 +196,8 @@ class C8NDT(CaseScene):
         self.play(FadeIn(sn), FadeIn(clock), FadeIn(scope), run_time=0.8)
         waves = always_redraw(lambda: plate_waves(tt.get_value(), px.get_value()))
         self.add(waves)
-        self.say("탐촉자가 아주 짧은 초음파 펄스를 아래로 보낸다 (강철 속 음속 약 5900 m/s)",
-                 wait=0.3)
+        self.say("탐촉자가 아주 짧은 초음파 펄스를 아래로 보낸다\n(강철 속 음속 약 5900 m/s)",
+                 wait=0.5)
         self.play(tt.animate.set_value(US_ONEWAY), run_time=4.5, rate_func=linear)
         c_back = callout([px.get_value() + 0.15, BOT, 0], "바닥면에서 반사", None,
                          RIGHT + DOWN * 0.25, 0.55)
@@ -205,11 +205,11 @@ class C8NDT(CaseScene):
         self.say("균열이 없는 곳에서는 바닥면까지 가서 반사된다", wait=0.3)
         self.play(tt.animate.set_value(2 * US_ONEWAY), run_time=4.5, rate_func=linear)
         self.remove(waves)
-        tg0 = scope.tag(0, 1.0, "송신 펄스", GRAY_T)
+        tg0 = scope.tag(0, 1.0, "송신 펄스", GRAY_T).shift(RIGHT * 0.5 + DOWN * 0.08)
         tgb = scope.tag(10, 0.78, "바닥면 에코", ORANGE)
         self.play(FadeOut(c_back), FadeIn(tg0), FadeIn(tgb), run_time=0.6)
         self.play(tt.animate.set_value(12), run_time=1.2, rate_func=linear)
-        self.say("화면에서 10.0 μs 뒤에 바닥면 에코가 뾰족하게 나타난다\nμs(마이크로초) = 백만분의 1초 → 10.0 μs = 0.0000100 s", wait=4.5)
+        self.say("화면에서 10.0 μs 뒤에 바닥면 에코가 뾰족하게 나타난다\nμs(마이크로초) = 백만분의 1초 → 10.0 μs = 0.0000100 s", wait=5.4)
 
         # 3. 공식 → 두께
         f1 = distance_formula(27)
@@ -222,17 +222,18 @@ class C8NDT(CaseScene):
         r2.arrange(RIGHT, buff=0.22)
         r2.next_to(r1, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 1.0)
         body = VGroup(r1, r2)
-        pnl = panel(body, buff=0.3, pos=[-0.6, 2.95, 0])
+        pnl = panel(body, buff=0.3).scale(0.9).move_to([-0.6, 2.88, 0])
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
-        self.say("음속(5900 m/s)과 시간 차(0.0000100 s)를 대입\n(단위: m/s × s = m)", wait=3.2)
+        self.say("음속(5900 m/s)과 시간 차(0.0000100 s)를 대입\n(단위: m/s × s = m)", wait=3.7)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
         self.play(Indicate(thick[3], color=GREEN, scale_factor=1.3), run_time=1)
         self.say("계산한 약 3.0 cm ≈ 실제 판 두께 3 cm\n→ 바닥면까지의 거리를 맞게 잰 것", wait=3.5)
-        self.play(FadeOut(pnl), FadeOut(tg0), FadeOut(tgb), run_time=0.6)
+        self.play(FadeOut(pnl), FadeOut(tg0), FadeOut(tgb), FadeOut(scope.trace), run_time=0.6)
 
         # 4. 균열 위로 이동 → 균열 에코가 먼저 온다
         tt.set_value(0)
+        self.add(scope.trace)
         self.say("탐촉자를 균열 위로 옮겨 다시 쏘아 보자", wait=0.3)
         self.play(px.animate.set_value(-1.1), run_time=1.8)
         clock2 = Clock(tt, "μs", "{:.1f}")
@@ -241,7 +242,7 @@ class C8NDT(CaseScene):
         waves = always_redraw(lambda: plate_waves(tt.get_value(), px.get_value()))
         self.add(waves)
         self.play(tt.animate.set_value(2.0), run_time=1.8, rate_func=linear)
-        self.say("균열을 만나면 일부가 그곳에서 먼저 반사된다", wait=0.2)
+        self.say("균열을 만나면 일부가 그곳에서 먼저 반사된다", wait=0.6)
         self.play(tt.animate.set_value(4.0), run_time=1.8, rate_func=linear)
         tgc = scope.tag(4, 0.9, "균열 에코", ORANGE)
         self.play(FadeIn(tgc), run_time=0.4)
@@ -262,7 +263,7 @@ class C8NDT(CaseScene):
         q2.arrange(RIGHT, buff=0.22)
         q1 = VGroup(g1, T("4.0 μs = 0.0000040 s", 19, GRAY_T)).arrange(RIGHT, buff=0.35)
         q2.next_to(q1, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 1.0)
-        pnl2 = panel(VGroup(q1, q2), buff=0.3, pos=[-0.6, 2.95, 0])
+        pnl2 = panel(VGroup(q1, q2), buff=0.3).scale(0.9).move_to([-0.6, 2.88, 0])
         self.play(FadeOut(sn2), FadeOut(clock2), FadeIn(pnl2[0]), Write(q1), run_time=1)
         self.play(FadeIn(q2[0]), FadeIn(g2), run_time=1)
         self.say("같은 공식에 균열 에코의 시간 차(0.0000040 s)를 대입", wait=2.5)
@@ -270,7 +271,7 @@ class C8NDT(CaseScene):
         dd = dim_line([-0.45, TOP, 0], [-0.45, CRACK_Y, 0], "1.2 cm", side=RIGHT * 0.55,
                       size=22)
         self.play(crack.animate.set_stroke(opacity=1), Create(dd), run_time=1)
-        self.say("균열은 겉면에서 1.2 cm 아래에 있다\n시간이 바닥면의 0.4배(4.0 ÷ 10.0) → 깊이도 두께의 0.4배", wait=4.5)
+        self.say("균열은 겉면에서 1.2 cm 아래에 있다\n시간이 바닥면의 0.4배(4.0 ÷ 10.0) → 깊이도 두께의 0.4배", wait=5.4)
         self.play(FadeOut(pnl2), FadeOut(dd), FadeOut(tgc), FadeOut(tgb2), run_time=0.6)
 
         # 6. 탐촉자를 옮기며 훑기 → 균열 위치·크기
@@ -280,13 +281,15 @@ class C8NDT(CaseScene):
         self.play(px.animate.set_value(xs_on + 0.05), run_time=1.6, rate_func=linear)
         mk1 = Line([xs_on, TOP + 0.02, 0], [xs_on, TOP + 1.15, 0], color=GREEN,
                    stroke_width=3)
-        self.add(mk1)
+        self.play(Create(mk1), run_time=0.4)
+        self.bring_to_front(probe)
         self.say("균열 에코가 나타나기 시작 → 이 근처가 균열의 시작", wait=2.0)
         self.play(px.animate.set_value(xs_off - 0.05), run_time=2.6, rate_func=linear)
         self.play(px.animate.set_value(xs_off + 0.4), run_time=1.0, rate_func=linear)
         mk2 = Line([xs_off, TOP + 0.02, 0], [xs_off, TOP + 1.15, 0], color=GREEN,
                    stroke_width=3)
-        self.add(mk2)
+        self.play(Create(mk2), run_time=0.4)
+        self.bring_to_front(probe)
         self.say("균열 에코가 사라짐 → 이 근처가 균열의 끝", wait=2.0)
         self.play(px.animate.set_value(0.4), run_time=0.8)
         ln = dim_line([xs_on, TOP + 0.95, 0], [xs_off, TOP + 0.95, 0], "균열 길이 약 2.4 cm",
@@ -306,8 +309,9 @@ class C8NDT(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         up = panel(uses, buff=0.45, pos=UP * 0.45)
         self.play(FadeIn(up, shift=UP * 0.2), run_time=0.8)
-        self.say("미리 찾아 고치면 사고를 막을 수 있다", wait=4.5)
+        self.say("미리 찾아 고치면 사고를 막을 수 있다", wait=9)
         self.unsay()
+        self.wait(1)
         self.play(FadeOut(up), run_time=0.6)
 
         # 8. 정리
@@ -320,5 +324,5 @@ class C8NDT(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=UP * 0.3)
         self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(6)
+        self.wait(11)
         self.play(FadeOut(sp_), run_time=0.6)
