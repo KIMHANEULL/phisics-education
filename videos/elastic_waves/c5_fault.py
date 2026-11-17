@@ -161,7 +161,7 @@ def wave_field(t, xs, bys, xw=2.3, gaps=(0.0, 0.24)):
 class Recorder(VGroup):
     """수진기 기록(지진 기록과 같은 꼴). rows: [(이름, 도착 시각들, 색)]"""
 
-    def __init__(self, tracker, rows, tmax=1.0, x0=-3.0, x1=0.6, top=3.45, row_h=0.55,
+    def __init__(self, tracker, rows, tmax=1.0, x0=-2.6, x1=1.0, top=3.45, row_h=0.55,
                  pad_b=0.42, **kw):
         super().__init__(**kw)
         self.x0, self.x1, self.tmax = x0, x1, tmax
@@ -275,7 +275,7 @@ class C5Fault(CaseScene):
         self.play(Wiggle(trk, scale_value=1.0, rotation_angle=0.02 * TAU, n_wiggles=5),
                   tt.animate.set_value(0.165), run_time=2.2, rate_func=linear)
         hit = np.array([XS_L + 0.9, BYS[0], 0])
-        cb = callout(hit, "경계면", "일부는 반사(주황), 나머지는 통과(청록)", RIGHT + DOWN * 0.35,
+        cb = callout(hit, "경계면", "일부는 반사(주황), 나머지는 통과(청록)", RIGHT + DOWN * 0.6,
                      0.9, color=WHITE_T)
         self.play(Create(cb), run_time=0.7)
         self.say("지층 경계면을 만나면 일부는 반사되어 올라오고,\n나머지는 통과해서 더 깊이 내려간다", wait=4.0)
@@ -295,8 +295,8 @@ class C5Fault(CaseScene):
                    tip_length=0.2)
         back = Arrow(bot, [rx, SURF - 0.12, 0], buff=0, color=ORANGE, stroke_width=5,
                      tip_length=0.2)
-        lg = T("갈 때", 20, CYAN, bold=True).next_to(go, LEFT, buff=0.1)
-        lb = T("올 때", 20, ORANGE, bold=True).next_to(back, RIGHT, buff=0.1)
+        lg = T("갈 때", 20, CYAN, bold=True).next_to(go, LEFT, buff=0.1).shift(DOWN * 0.35)
+        lb = T("올 때", 20, ORANGE, bold=True).next_to(back, RIGHT, buff=0.1).shift(DOWN * 0.35)
         hl = SurroundingRectangle(tags[1], color=GREEN, buff=0.05, stroke_width=2)
         self.play(Create(hl), GrowArrow(go), FadeIn(lg), run_time=1)
         self.play(GrowArrow(back), FadeIn(lb), run_time=1)

@@ -193,7 +193,7 @@ class C7Fetal(CaseScene):
         self.play(FadeIn(body), FadeIn(fetus), FadeIn(probe, shift=DOWN * 0.2), run_time=1)
 
         # 1. 등장 요소
-        cf = callout(HEAD_C + np.array([0.9, 0.3, 0]), "태아", "양수 속에 떠 있다",
+        cf = callout(HEAD_C + np.array([0.5, 0.45, 0]), "태아", "양수 속에 떠 있다",
                      RIGHT + UP * 0.25, 1.1)
         cp = callout(P + np.array([0.4, 0.5, 0]), "탐촉자", "압전 소자: 전기 ↔ 초음파",
                      UR, 0.7)
@@ -347,7 +347,7 @@ class C7Fetal(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         ap = panel(adv, buff=0.45, pos=UP * 0.45)
         self.play(FadeIn(ap, shift=UP * 0.2), run_time=0.8)
-        self.wait(8.5)
+        self.wait(9.0)
         self.play(FadeOut(ap), run_time=0.6)
 
         # 7. 정리
@@ -360,5 +360,5 @@ class C7Fetal(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=UP * 0.3)
         self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(9.5)
+        self.wait(12.5)
         self.play(FadeOut(sp_), run_time=0.6)

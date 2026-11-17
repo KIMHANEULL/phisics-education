@@ -254,7 +254,7 @@ class C6Cleaning(CaseScene):
         # 좁은 틈
         cp = callout(gp([-0.22, -0.15, 0]), "코받침 틈", None, DOWN + RIGHT * 0.25,
                      0.85, color=CYAN)
-        ch = callout(gp([1.1, 0.18, 0]), "경첩 틈", None, UR, 0.6, color=CYAN)
+        ch = callout(gp([1.1, 0.18, 0]), "경첩 틈", None, UR, 1.0, color=CYAN)
         self.play(Create(cp), Create(ch), run_time=0.7)
         self.say("솔이 닿지 않는 코받침·경첩의 좁은 틈도\n물이 들어가는 곳이면 깨끗해진다", wait=1.5)
         self.play(FadeOut(gl[1]), run_time=1.5)

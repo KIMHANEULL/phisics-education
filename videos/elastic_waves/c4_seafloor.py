@@ -180,7 +180,7 @@ class C4Seafloor(CaseScene):
         self.say("실제로 배에서는 바닥이 보이지 않는다.\n배를 옮기며 여러 곳에서 재어 보자")
 
         # 수심 눈금
-        AX = -5.8
+        AX = -6.0
         axis = Line([AX, SURF, 0], [AX, y_of(3300), 0], stroke_color=GRAY_T, stroke_width=2)
         ticks = VGroup()
         for d in (0, 1000, 2000, 3000):
@@ -188,7 +188,7 @@ class C4Seafloor(CaseScene):
                            stroke_width=2))
             tl_ = T(f"{d} m", 17, GRAY_T).next_to([AX - 0.08, y_of(d), 0], LEFT, buff=0.06)
             ticks.add(BackgroundRectangle(tl_, color="#06111D", fill_opacity=0.65, buff=0.04), tl_)
-        axl = T("수심", 18, GRAY_T, bold=True).next_to(axis, UP, buff=0.12)
+        axl = T("수심", 18, GRAY_T, bold=True).next_to(axis, UP, buff=0.12).shift(LEFT * 0.55)
         self.play(FadeIn(axis), FadeIn(ticks), FadeIn(axl), run_time=0.6)
 
         dots = VGroup()

@@ -38,7 +38,7 @@ class C0Intro(CaseScene):
         pf.move_to(DOWN * 0.15)
         self.play(chips.animate.set_opacity(0.0), FadeIn(pf, scale=0.95), run_time=0.9)
         self.say("핵심 공식 — 반사되어 돌아온 시간으로 거리를 구한다", wait=3.2)
-        self.say("사례마다 이 공식이 어떻게 쓰이는지\n(또는 왜 다르게 쓰이는지) 확인하자", wait=3.2)
+        self.say("사례마다 이 공식이 어떻게 쓰이는지\n(또는 왜 다르게 쓰이는지) 확인하자", wait=4.2)
         self.clear_all()
         self.wait(0.3)
 

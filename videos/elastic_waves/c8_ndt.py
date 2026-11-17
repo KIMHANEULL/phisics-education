@@ -101,9 +101,9 @@ class AScan(VGroup):
         super().__init__(**kw)
         self.x0, self.x1, self.yb, self.h, self.tmax = x0, x1, yb, h, tmax
         box = RoundedRectangle(corner_radius=0.12, width=x1 - x0 + 0.85,
-                               height=h + 1.25, stroke_color=PANEL_STROKE,
+                               height=h + 1.4, stroke_color=PANEL_STROKE,
                                stroke_width=1.5, fill_color="#06120E", fill_opacity=0.95)
-        box.move_to([(x0 + x1) / 2 - 0.05, yb + h / 2 + 0.05, 0])
+        box.move_to([(x0 + x1) / 2 - 0.05, yb + h / 2 - 0.025, 0])
         ttl = T("A-스캔 화면 (초음파 탐상기)", 20, GRAY_T, bold=True)
         ttl.move_to(box.get_top() + DOWN * 0.22)
         grid = VGroup()
@@ -244,12 +244,12 @@ class C8NDT(CaseScene):
         self.play(tt.animate.set_value(2.0), run_time=1.8, rate_func=linear)
         self.say("균열을 만나면 일부가 그곳에서 먼저 반사된다", wait=0.6)
         self.play(tt.animate.set_value(4.0), run_time=1.8, rate_func=linear)
-        tgc = scope.tag(4, 0.9, "균열 에코", ORANGE)
+        tgc = scope.tag(4, 0.9, "균열 에코", ORANGE).shift(RIGHT * 0.55 + DOWN * 0.08)
         self.play(FadeIn(tgc), run_time=0.4)
         self.say("균열 에코: 4.0 μs 만에 돌아왔다 (바닥면보다 빨리)", wait=1.5)
         self.play(tt.animate.set_value(2 * US_ONEWAY), run_time=5.4, rate_func=linear)
         self.remove(waves)
-        tgb2 = scope.tag(10, 0.78 * 0.4 + 0.05, "바닥면 에코 (약해짐)", ORANGE)
+        tgb2 = scope.tag(10, 0.78 * 0.4 + 0.05, "바닥면 에코 (약해짐)", ORANGE).shift(LEFT * 0.35)
         self.play(FadeIn(tgb2), run_time=0.4)
         self.play(tt.animate.set_value(12), run_time=1.0, rate_func=linear)
         self.say("균열에 가려 바닥면 에코는 약해진다", wait=2.2)
@@ -309,7 +309,7 @@ class C8NDT(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         up = panel(uses, buff=0.45, pos=UP * 0.45)
         self.play(FadeIn(up, shift=UP * 0.2), run_time=0.8)
-        self.say("미리 찾아 고치면 사고를 막을 수 있다", wait=9)
+        self.say("미리 찾아 고치면 사고를 막을 수 있다", wait=11.5)
         self.unsay()
         self.wait(1)
         self.play(FadeOut(up), run_time=0.6)
@@ -324,5 +324,5 @@ class C8NDT(CaseScene):
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         sp_ = panel(summ, buff=0.5, pos=UP * 0.3)
         self.play(FadeIn(sp_, shift=UP * 0.2), run_time=0.8)
-        self.wait(11)
+        self.wait(15)
         self.play(FadeOut(sp_), run_time=0.6)
