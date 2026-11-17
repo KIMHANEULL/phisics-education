@@ -228,7 +228,7 @@ class C8NDT(CaseScene):
         self.say("음속(5900 m/s)과 시간 차(0.0000100 s)를 대입\n(단위: m/s × s = m)", wait=3.2)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
         self.play(Indicate(thick[3], color=GREEN, scale_factor=1.3), run_time=1)
-        self.say("계산한 3.0 cm = 실제 판 두께와 같다\n→ 바닥면까지의 거리를 맞게 잰 것", wait=3.5)
+        self.say("계산한 약 3.0 cm ≈ 실제 판 두께 3 cm\n→ 바닥면까지의 거리를 맞게 잰 것", wait=3.5)
         self.play(FadeOut(pnl), FadeOut(tg0), FadeOut(tgb), run_time=0.6)
 
         # 4. 균열 위로 이동 → 균열 에코가 먼저 온다
@@ -281,13 +281,13 @@ class C8NDT(CaseScene):
         mk1 = Line([xs_on, TOP + 0.02, 0], [xs_on, TOP + 1.15, 0], color=GREEN,
                    stroke_width=3)
         self.add(mk1)
-        self.say("균열 에코가 나타나기 시작 → 균열의 시작", wait=1.4)
+        self.say("균열 에코가 나타나기 시작 → 이 근처가 균열의 시작", wait=2.0)
         self.play(px.animate.set_value(xs_off - 0.05), run_time=2.6, rate_func=linear)
         self.play(px.animate.set_value(xs_off + 0.4), run_time=1.0, rate_func=linear)
         mk2 = Line([xs_off, TOP + 0.02, 0], [xs_off, TOP + 1.15, 0], color=GREEN,
                    stroke_width=3)
         self.add(mk2)
-        self.say("균열 에코가 사라짐 → 균열의 끝", wait=1.4)
+        self.say("균열 에코가 사라짐 → 이 근처가 균열의 끝", wait=2.0)
         self.play(px.animate.set_value(0.4), run_time=0.8)
         ln = dim_line([xs_on, TOP + 0.95, 0], [xs_off, TOP + 0.95, 0], "균열 길이 약 2.4 cm",
                       offset=UP * 0.3, size=22)
@@ -301,7 +301,8 @@ class C8NDT(CaseScene):
             T("· 비행기 날개·동체,  기차 바퀴·레일", 26),
             T("· 다리(교량),  가스·석유 배관,  원자력 설비", 26),
             T("· 겉은 멀쩡해도 속의 균열이 커지면 큰 사고가 된다", 26),
-            T("· 관련 직업: 비파괴검사 기술자 (국가기술자격)", 26, GREEN),
+            T("· 관련 직업: 비파괴검사 기술자", 26, GREEN),
+            T("   (국가기술자격: 초음파비파괴검사 기능사·산업기사·기사)", 22, GREEN),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         up = panel(uses, buff=0.45, pos=UP * 0.45)
         self.play(FadeIn(up, shift=UP * 0.2), run_time=0.8)

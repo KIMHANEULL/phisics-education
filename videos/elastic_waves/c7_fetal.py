@@ -203,7 +203,8 @@ class C7Fetal(CaseScene):
         self.play(FadeOut(cf), FadeOut(cp), run_time=0.5)
 
         # 2. 젤을 바르는 이유
-        self.play(lift.animate.set_value(0.32), run_time=0.8)
+        sn0 = slow_note("※ 실제보다 아주 느리게, 공기층은 크게 과장해 그림")
+        self.play(lift.animate.set_value(0.32), FadeIn(sn0), run_time=0.8)
         air = callout(P + LEFT * 0.5 + UP * 0.17, "공기층", "초음파를 거의 다 반사",
                       UL, 0.6, color=RED_T)
         self.play(FadeIn(air), run_time=0.5)
@@ -215,11 +216,11 @@ class C7Fetal(CaseScene):
         self.say("탐촉자와 피부 사이에 공기층이 있으면\n초음파가 거의 다 튕겨 나와 몸속으로 못 들어간다", wait=0.2)
         for _ in range(2):
             tw.set_value(0)
-            self.play(tw.animate.set_value(1.05), run_time=1.6, rate_func=linear)
+            self.play(tw.animate.set_value(1.05), run_time=3, rate_func=linear)
         self.remove(bounce)
         self.wait(1.5)
         gel_on[0] = True
-        self.play(FadeOut(air), lift.animate.set_value(0), run_time=0.8)
+        self.play(FadeOut(air), FadeOut(sn0), lift.animate.set_value(0), run_time=0.8)
         cg = callout(P + RIGHT * 0.6 + UP * 0.03, "젤", "공기층을 없앤다", RIGHT + UP * 0.6,
                      0.7, color=CYAN)
         self.play(FadeIn(cg), run_time=0.5)
@@ -284,7 +285,7 @@ class C7Fetal(CaseScene):
         f1 = distance_formula(27)
         nt = T("← 갔다가 되돌아왔으니 2로 나눈다", 19, GRAY_T)
         r1 = VGroup(f1, nt).arrange(RIGHT, buff=0.35)
-        f2 = frac_row([("(1540 m/s)", ORANGE), ("×", WHITE_T), ("(0.00010 s)", GREEN)])
+        f2 = frac_row([("(1540 m/s)", ORANGE), ("×", WHITE_T), ("(0.000100 s)", GREEN)])
         res = T("= 0.077 m = 7.7 cm", 27, GREEN, bold=True)
         r2 = eq_row("=", f2, res)
         r2[0].scale(27 / 34)
@@ -292,14 +293,14 @@ class C7Fetal(CaseScene):
         r2.next_to(r1, DOWN, buff=0.25, aligned_edge=LEFT).shift(RIGHT * 0.6)
         pnl = panel(VGroup(r1, r2), buff=0.28, pos=[2.3, 2.62, 0])
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
-        self.say("몸속 연한 조직에서 음속은 약 1540 m/s\n0.100 ms = 0.00010 s", wait=3)
+        self.say("몸속 연한 조직에서 음속은 약 1540 m/s\n0.100 ms = 0.000100 s", wait=3)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
-        self.say("음속(1540 m/s)과 시간 차(0.00010 s)를 대입\n(단위: m/s × s = m)", wait=3)
+        self.say("음속(1540 m/s)과 시간 차(0.000100 s)를 대입\n(단위: m/s × s = m)", wait=3)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
         dl = dim_line(P + RIGHT * 0.75, P + RIGHT * 0.75 + DOWN * HEAD_TOP * SC, "7.7 cm",
                       side=RIGHT * 0.5, size=22)
         self.play(Create(dl), run_time=0.8)
-        self.say("태아 머리는 피부에서 7.7 cm 깊이에 있다\n→ 기계는 이 계산을 매 점마다 자동으로 한다", wait=3.8)
+        self.say("태아 머리 윗면은 피부에서 7.7 cm 깊이에 있다\n→ 기계는 이 계산을 매 점마다 자동으로 한다", wait=3.8)
         self.play(FadeOut(pnl), FadeOut(dl), FadeOut(hl), run_time=0.6)
 
         # 5. 방향을 바꾸며 한 줄씩 → 부채꼴 영상(B-모드)
@@ -339,7 +340,7 @@ class C7Fetal(CaseScene):
         self.clear_all(keep=(bg,))
         adv = VGroup(
             T("왜 초음파로 검사할까?", 30, CYAN, bold=True),
-            T("· 방사선(X선)을 쓰지 않아 태아와 엄마에게 안전하다", 26),
+            T("· X선 같은 방사선을 쓰지 않아 태아와 엄마에게 비교적 안전하다", 26),
             T("· 움직이는 모습을 실시간으로 볼 수 있다 (심장 박동도)", 26),
             T("· 아프지 않고, 자르거나 주사할 필요가 없다", 26),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
@@ -352,7 +353,7 @@ class C7Fetal(CaseScene):
         summ = VGroup(
             T("태아 초음파 검사 정리", 30, CYAN, bold=True),
             T("· 연한 조직 속 음속:  약 1540 m/s,  젤로 공기층을 없앤다", 26),
-            T("· 시간 차 0.100 ms → 1540 × 0.00010 ÷ 2 = 0.077 m = 7.7 cm", 26),
+            T("· 시간 차 0.100 ms → 1540 × 0.000100 ÷ 2 = 0.077 m = 7.7 cm", 26),
             T("· 되돌아온 시각 → 깊이,  반사 세기 → 밝기", 26),
             T("· 방향을 바꾸며 한 줄씩 모으면 영상이 된다", 26),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)

@@ -33,7 +33,7 @@ def tank():
 
 def transducers(ph=0.0):
     g = VGroup()
-    dy = 0.035 * np.sin(ph)
+    dy = -0.035 * np.sin(ph)   # 바닥 물 알갱이와 같은 위상으로 민다
     for x in (-4.9, -3.4, -1.9):
         top = Rectangle(width=0.9, height=0.07, stroke_width=0, fill_color=ORANGE,
                         fill_opacity=0.95).move_to([x, WB - 0.13 + dy, 0])
@@ -153,7 +153,7 @@ class C6Cleaning(CaseScene):
         self.bring_to_front(gl)
         self.say("진동자가 1초에 약 4만 번(40 kHz) 떨며\n물을 밀었다 당겼다 한다 (한 번 떨리는 데 25 μs)", wait=0.2)
         self.play(ph.animate.set_value(2 * PI * 3), run_time=7, rate_func=linear)
-        self.say("물이 빽빽한 곳(압축)과 듬성한 곳(팽창)이 번갈아 생겨\n위로 퍼져 나간다 = 종파", wait=0.2)
+        self.say("물 알갱이가 파동이 나아가는 방향(위아래)으로 떨리며\n빽빽한 곳(압축)과 듬성한 곳(팽창)이 번갈아 위로 퍼진다 = 종파", wait=0.2)
         self.play(ph.animate.set_value(2 * PI * 5.5), run_time=5.5, rate_func=linear)
         # 멈춰서 이름 붙이기
         cs = comp_centers(ph.get_value())
@@ -183,7 +183,7 @@ class C6Cleaning(CaseScene):
         self.play(FadeIn(pnl[0]), Write(f1), run_time=1)
         self.say("밀과 밀 사이 거리 = 파장 λ\n한 번 떨리는 동안 파동이 나아가는 거리", wait=3.6)
         self.play(FadeIn(f2), run_time=0.8)
-        self.say("물속 음속(1500 m/s)을 진동수(40000 Hz)로 나눈다\n40000 Hz = 1초에 40000번 진동", wait=4)
+        self.say("물속 음속(약 1500 m/s)을 진동수(40000 Hz)로 나눈다\n40000 Hz = 1초에 40000번 진동", wait=4)
         self.play(FadeIn(f3), FadeIn(nt), run_time=0.7)
         lab38 = T("λ ≈ 3.8 cm", 22, GREEN, bold=True).next_to([lx - 0.12, yc, 0], UP, buff=0.12, aligned_edge=LEFT)
         self.play(FadeIn(lab38), run_time=0.5)
@@ -219,7 +219,7 @@ class C6Cleaning(CaseScene):
                      fill_opacity=0.08).move_to(BC)
         pl = plabel("압력 낮음 (팽창)", CYAN)
         self.play(FadeIn(pl), FadeIn(bub), run_time=0.5)
-        self.say("팽창(압력이 낮은) 순간, 물이 당겨져 아주 작은 거품(빈 공간)이 생긴다", wait=0.2)
+        self.say("팽창(압력이 낮은) 순간, 물이 당겨져 아주 작은 거품(수증기·기체가 찬 작은 공간)이 생긴다", wait=0.2)
         big = Circle(radius=0.55, stroke_color=WHITE_T, stroke_width=2, fill_color=WHITE_T,
                      fill_opacity=0.08).move_to(BC)
         self.play(Transform(bub, big), run_time=3, rate_func=smooth)
@@ -248,7 +248,7 @@ class C6Cleaning(CaseScene):
         jl = T("센 물줄기 + 충격파", 22, CYAN, bold=True).move_to(BC + UP * 0.2)
         self.play(FadeIn(jl), run_time=0.4)
         self.say("공동 현상(캐비테이션): 거품이 터질 때 생기는 센 물줄기와 충격파가\n표면의 때를 떼어 낸다", wait=4.5)
-        self.say("이런 일이 1초에 수만 번, 물이 닿는 모든 곳에서 일어난다", wait=2.8)
+        self.say("이런 일이 1초에 수만 번, 물속 곳곳에서 일어난다", wait=2.8)
         self.play(FadeOut(VGroup(box, it, surf, sl, pl2, jl, ring, z1, z2)), run_time=0.6)
 
         # 좁은 틈
@@ -275,11 +275,12 @@ class C6Cleaning(CaseScene):
                                               1.0, 1.0, width=5))
         d15 = dim_line([TX1 - 0.35, WB, 0], [TX1 - 0.35, WS, 0], "15 cm", side=LEFT * 0.5 + DOWN * 1.1,
                        size=24)
+        sn2 = slow_note("※ 실제보다 아주 느리게 보여 줌 (앞 장면보다는 빠르게)")
+        self.play(FadeOut(gl[0], shift=UP * 1.5), FadeTransform(sn, sn2), run_time=0.9)
         self.play(FadeIn(clock2), Create(d15), run_time=0.6)
         self.add(pw)
-        self.bring_to_front(gl[0])
-        self.say("거리 공식으로 확인해 보자: 바닥에서 짧은 펄스를 쏘면\n15 cm 위의 물 표면에서 반사되어 돌아온다", wait=0.2)
-        self.play(tt.animate.set_value(2 * TRIP), run_time=6, rate_func=linear)
+        self.say("거리 공식으로 확인해 보자: 안경을 꺼낸 통 바닥에서 짧은 펄스를 쏘면\n15 cm 위의 물 표면에서 반사되어 돌아온다", wait=0.2)
+        self.play(tt.animate.set_value(2 * TRIP), run_time=8, rate_func=linear)
         self.remove(pw)
 
         r1 = colored([("시간 차", GREEN), ("=", WHITE_T), ("2 × 거리 ÷ 음속", WHITE_T)], 26)
@@ -313,7 +314,7 @@ class C6Cleaning(CaseScene):
         adv = VGroup(
             T("환경에 좋은 점", 30, CYAN, bold=True),
             T("· 물(또는 순한 세제 조금)만으로 씻는다 → 독한 세제·화학 폐수가 줄어든다", 25),
-            T("· 솔로 문지르지 않는다 → 렌즈·장식품에 흠집이 덜 난다", 25),
+            T("· 솔로 문지르지 않아 흠집 걱정이 적다 (단, 코팅이 약한 렌즈·진주 등은 주의)", 25),
             T("· 좁은 틈까지 한 번에 → 물과 시간을 아낀다", 25),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
         ap = panel(adv, buff=0.45, pos=UP * 0.45)
@@ -325,7 +326,7 @@ class C6Cleaning(CaseScene):
         summ = VGroup(
             T("초음파 세척 정리", 30, CYAN, bold=True),
             T("· 진동자 약 40 kHz → 물속에 밀(압축)·소(팽창)가 번갈아 퍼지는 종파", 25),
-            T("· 파장 = 1500 m/s ÷ 40000 Hz ≈ 0.0375 m ≈ 3.8 cm", 25),
+            T("· 파장 = 1500 m/s ÷ 40000 Hz = 0.0375 m ≈ 3.8 cm", 25),
             T("· 팽창 때 거품 생성 → 압축 때 터짐(공동 현상) → 때가 떨어진다", 25),
             T("· 거리 재기가 아니라 압력 변화의 에너지를 쓴다", 25),
         ).arrange(DOWN, aligned_edge=LEFT, buff=0.28)
