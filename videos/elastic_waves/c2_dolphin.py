@@ -94,14 +94,14 @@ class C2Dolphin(CaseScene):
         bg = VGroup(sea_bg(SEA_SURF), sea_decor())
         self.add(bg)
 
-        S0, P0 = 0.95, np.array([-4.75, 0.55, 0])      # 기본 크기·위치
+        S0, P0 = 0.95, np.array([-4.75, 0.25, 0])      # 기본 크기·위치
         S1, P1 = 2.4, np.array([-1.65, 0.15, 0])       # 확대
 
         def W(local, S=S0, P=P0):
             return P + S * np.array([local[0], local[1], 0])
 
         dol = dolphin_shape().scale(S0, about_point=ORIGIN).shift(P0)
-        FISH = np.array([3.6, 0.55, 0])
+        FISH = np.array([3.6, 0.25, 0])
         school = fish_school(FISH)
 
         # 0. 제목
@@ -227,7 +227,7 @@ class C2Dolphin(CaseScene):
         self.play(Restore(rows[1][1]), FadeIn(rows[1][2]), run_time=1.2)
         self.wait(1.0)
         self.play(FadeIn(times, shift=UP * 0.1), run_time=0.6)
-        self.say("물속에서는 소리가 공기보다 약 4.4배 빠르다\n(물이 훨씬 촘촘하고 단단해서 진동이 잘 전해진다)")
+        self.say("물속에서는 소리가 공기보다 약 4.4배 빠르다\n(물은 공기보다 훨씬 잘 눌리지 않아서 진동이 빨리 전해진다)")
         self.play(FadeOut(sp_pnl), FadeOut(head), FadeOut(rows), FadeOut(times), run_time=0.6)
 
         # 4. 송신 → 반사 → 수신 (시간 측정)
@@ -253,7 +253,7 @@ class C2Dolphin(CaseScene):
         self.say("물고기 떼에 부딪힌 초음파가 반사되어 되돌아온다", wait=0.2)
         self.play(tw.animate.set_value(2 * TRIP), run_time=4.2, rate_func=linear)
         # 남은 고리가 빠져나가는 동안 시계는 40.0 에서 멈춰 있다
-        rcv = callout(W((1.2, -0.13)), "아래턱으로 수신", None, DOWN + RIGHT * 0.5, 0.75)
+        rcv = callout(W((1.2, -0.13)), "아래턱으로 수신", None, DOWN * 0.45 + RIGHT, 0.6)
         m1 = tl.marker(2 * TRIP, "신호 수신 시각", GREEN)
         self.play(tw.animate.set_value(2 * TRIP + 1.6), FadeIn(rcv), FadeIn(m1), FadeOut(refl),
                   run_time=0.8, rate_func=linear)
@@ -286,7 +286,7 @@ class C2Dolphin(CaseScene):
         r2.next_to(r1, DOWN, buff=0.35, aligned_edge=LEFT).shift(RIGHT * 1.15)
         rt = T("왕복한 길이", 18, GRAY_T).next_to(mid[1], DOWN, buff=0.12)
         body = VGroup(r1, r2, rt)
-        pnl = panel(body, pos=[0.9, 2.5, 0])
+        pnl = panel(body, buff=0.28, pos=[0.9, 2.55, 0])
         self.play(FadeOut(sn), FadeOut(clock), FadeOut(go), FadeOut(lg), FadeOut(back),
                   FadeOut(lb), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.wait(1.4)
@@ -295,7 +295,7 @@ class C2Dolphin(CaseScene):
         self.play(FadeIn(mid), FadeIn(rt), run_time=0.8)
         self.say("1500 × 0.040 = 60 m … 이것은 갔다 온 왕복 길이", wait=2.6)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
-        dl = dim_line(src + DOWN * 0.6, tgt + DOWN * 0.6, "30 m", offset=DOWN * 0.32)
+        dl = dim_line(src + DOWN * 0.55, tgt + DOWN * 0.55, "30 m", offset=UP * 0.3)
         self.play(Create(dl), run_time=1)
         self.say("2로 나누면 물고기 떼까지의 거리는 30 m")
         self.say("물고기가 2배 멀면(60 m) 메아리도 2배 늦게(80 ms) 온다\n→ 거리와 시간 차는 비례한다")
@@ -341,7 +341,7 @@ class C2Dolphin(CaseScene):
         top.move_to([0.2, 2.35, 0])
         cmp_pnl = panel(VGroup(top, ax, tks, axl, nw, na), buff=0.4)
         self.play(FadeIn(cmp_pnl[0]), FadeIn(head), run_time=0.8)
-        self.say("같은 30 m 라면, 공기 속에서는 시간 차가 얼마일까?", wait=1.8)
+        self.wait(1.2)
         self.play(FadeIn(fw), run_time=0.8)
         self.say("시간 차 = 2 × 거리 ÷ 음속 → 물속: 0.040 s (40 ms)", wait=2.6)
         self.play(FadeIn(fa), run_time=0.8)

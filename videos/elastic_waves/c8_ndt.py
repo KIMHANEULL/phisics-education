@@ -24,7 +24,7 @@ def steel_plate():
         y = BOT + D_BACK * i / 6
         tex.add(Line([PX0, y, 0], [PX1, y, 0], stroke_width=1, color="#7D8B99",
                      stroke_opacity=0.18))
-    lab = T("강철판", 22, "#D5DDE5", bold=True).move_to([-6.25, BOT + 0.3, 0])
+    lab = T("강철판", 22, "#D5DDE5", bold=True).move_to([-6.25, TOP - 0.3, 0])
     return VGroup(body, tex, lab)
 
 
@@ -148,7 +148,7 @@ class AScan(VGroup):
         return lab
 
 
-def frac_row(num_parts, size=30):
+def frac_row(num_parts, size=27):
     return frac(colored(num_parts, size), colored([("2", WHITE_T)], size), size)
 
 
@@ -174,16 +174,16 @@ class C8NDT(CaseScene):
                          side=RIGHT * 0.5, size=24)
         c_probe = callout([-4.05, TOP + 0.55, 0], "탐촉자", "전기 신호 ↔ 초음파 진동", UR, 0.75)
         c_gel = callout([-3.9, TOP + 0.035, 0], "접촉 매질 (기름·젤)",
-                        "틈의 공기층을 없애 초음파가 잘 들어가게", RIGHT + UP * 0.12, 1.1,
+                        "틈의 공기층을 없애 초음파가 잘 들어가게", RIGHT + UP * 0.45, 1.1,
                         color=CYAN)
         self.play(Create(thick), Create(c_probe), run_time=0.8)
         self.say("두께 3 cm 강철판 단면. 탐촉자는 전기 신호를 초음파로 바꿔 보내고,\n되돌아온 초음파를 다시 전기 신호로 바꾼다", wait=4.2)
-        self.play(Create(c_gel), run_time=0.8)
+        self.play(FadeOut(c_probe), Create(c_gel), run_time=0.8)
         self.say("탐촉자와 강철 사이에 기름·젤을 발라 공기층을 없앤다\n(공기층이 있으면 초음파가 거의 다 반사되어 못 들어간다)",
                  wait=4.5)
-        self.play(FadeOut(c_probe), FadeOut(c_gel), run_time=0.5)
+        self.play(FadeOut(c_gel), run_time=0.5)
         c_crack = callout([(CRACK_X[0] + CRACK_X[1]) / 2, CRACK_Y, 0], "속에 숨은 균열",
-                          "겉에서는 보이지 않는다", UP + RIGHT * 0.35, 1.25, color=RED_T)
+                          "겉에서는 보이지 않는다", UP + RIGHT * 0.35, 1.75, color=RED_T)
         self.play(Create(c_crack), run_time=0.8)
         self.say("강철 속에 금(균열)이 숨어 있을 수 있다.\n자르지 않고 어떻게 찾을까?")
         self.play(FadeOut(c_crack), run_time=0.5)
@@ -212,17 +212,17 @@ class C8NDT(CaseScene):
         self.say("화면에서 10.0 μs 뒤에 바닥면 에코가 뾰족하게 나타난다\nμs(마이크로초) = 백만분의 1초 → 10.0 μs = 0.0000100 s", wait=4.5)
 
         # 3. 공식 → 두께
-        f1 = distance_formula(30)
+        f1 = distance_formula(27)
         nt = T("← 갔다가 되돌아왔으니 2로 나눈다", 19, GRAY_T)
         r1 = VGroup(f1, nt).arrange(RIGHT, buff=0.35)
         f2 = frac_row([("(5900 m/s)", ORANGE), ("×", WHITE_T), ("(0.0000100 s)", GREEN)])
-        res = T("= 0.0295 m  ≈  3.0 cm", 30, GREEN, bold=True)
+        res = T("= 0.0295 m  ≈  3.0 cm", 27, GREEN, bold=True)
         r2 = eq_row("=", f2, res)
-        r2[0].scale(30 / 34)
+        r2[0].scale(27 / 34)
         r2.arrange(RIGHT, buff=0.22)
         r2.next_to(r1, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 1.0)
         body = VGroup(r1, r2)
-        pnl = panel(body, buff=0.3, pos=[-0.9, 2.7, 0])
+        pnl = panel(body, buff=0.3, pos=[-0.6, 2.95, 0])
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
         self.say("음속(5900 m/s)과 시간 차(0.0000100 s)를 대입\n(단위: m/s × s = m)", wait=3.2)
@@ -254,15 +254,15 @@ class C8NDT(CaseScene):
         self.say("균열에 가려 바닥면 에코는 약해진다", wait=2.2)
 
         # 5. 균열 깊이 계산
-        g1 = distance_formula(30)
+        g1 = distance_formula(27)
         g2 = frac_row([("(5900 m/s)", ORANGE), ("×", WHITE_T), ("(0.0000040 s)", GREEN)])
-        gres = T("= 0.0118 m  ≈  1.2 cm", 30, GREEN, bold=True)
+        gres = T("= 0.0118 m  ≈  1.2 cm", 27, GREEN, bold=True)
         q2 = eq_row("=", g2, gres)
-        q2[0].scale(30 / 34)
+        q2[0].scale(27 / 34)
         q2.arrange(RIGHT, buff=0.22)
         q1 = VGroup(g1, T("4.0 μs = 0.0000040 s", 19, GRAY_T)).arrange(RIGHT, buff=0.35)
         q2.next_to(q1, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 1.0)
-        pnl2 = panel(VGroup(q1, q2), buff=0.3, pos=[-0.9, 2.7, 0])
+        pnl2 = panel(VGroup(q1, q2), buff=0.3, pos=[-0.6, 2.95, 0])
         self.play(FadeOut(sn2), FadeOut(clock2), FadeIn(pnl2[0]), Write(q1), run_time=1)
         self.play(FadeIn(q2[0]), FadeIn(g2), run_time=1)
         self.say("같은 공식에 균열 에코의 시간 차(0.0000040 s)를 대입", wait=2.5)
