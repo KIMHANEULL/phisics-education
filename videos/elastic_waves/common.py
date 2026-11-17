@@ -126,6 +126,8 @@ def caption(text, color=WHITE_T, size=27):
     """하단 자막. 여러 줄이면 \n 사용."""
     lines = [T(s, size, color, bold=True) for s in text.split("\n")]
     grp = VGroup(*lines).arrange(DOWN, buff=0.12)
+    if grp.width > 10.6:  # 워터마크(Orbit Otter)·화면 끝을 덮지 않게
+        grp.scale_to_fit_width(10.6)
     grp.to_edge(DOWN, buff=0.42)
     shade = BackgroundRectangle(grp, color="#050B14", fill_opacity=0.55, buff=0.16,
                                 stroke_width=0)
@@ -232,8 +234,8 @@ def colored(parts, size=34):
     """[(문자열, 색), ...] → 한 줄 VGroup."""
     g = VGroup(*[T(s, size, c, bold=True) for s, c in parts])
     g.arrange(RIGHT, buff=0.12)
-    for m in g:
-        m.align_to(g, DOWN)
+    for m in g:  # 기호(=, ×, ÷)가 아래로 처지지 않게 세로 가운데 정렬
+        m.set_y(g.get_y())
     return g
 
 
@@ -248,16 +250,16 @@ def frac(num, den, size=34, color=WHITE_T):
     return VGroup(n, bar, d)
 
 
-def eq_row(*items, buff=0.22):
+def eq_row(*items, buff=0.22, size=34):
     """항목들을 가로로 배치. 문자열은 흰색 Text 로."""
-    ms = [T(i, 34, WHITE_T, bold=True) if isinstance(i, str) else i for i in items]
+    ms = [T(i, size, WHITE_T, bold=True) if isinstance(i, str) else i for i in items]
     return VGroup(*ms).arrange(RIGHT, buff=buff)
 
 
 def distance_formula(size=34):
     """거리 = 음속 × 시간 차 / 2  (자동차 영상과 같은 색)"""
     f = frac([("음속", ORANGE), ("×", WHITE_T), ("시간 차", GREEN)], [("2", WHITE_T)], size)
-    return eq_row("거리", "=", f)
+    return eq_row("거리", "=", f, size=size)
 
 
 def panel(mob, buff=0.35, pos=None):
