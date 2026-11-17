@@ -193,7 +193,7 @@ class C9Seismic(CaseScene):
 
         sta = station_icon(STA)
         self.play(FadeIn(sta, shift=DOWN * 0.2), run_time=0.6)
-        c_s = callout(STA + np.array([0.15, 0.4, 0]), "관측소", "지진계가 땅의 흔들림을 기록", UR, 0.5,
+        c_s = callout(STA + np.array([0.15, 0.4, 0]), "관측소", "지진계가 땅의 흔들림을 기록", UL, 0.5,
                       color=GREEN)
         self.play(Create(c_s), run_time=0.7)
         dline = DashedLine(HYP, STA, color=GRAY_T, stroke_width=2, dash_length=0.12)
