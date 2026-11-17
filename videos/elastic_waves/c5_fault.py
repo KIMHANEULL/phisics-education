@@ -161,7 +161,7 @@ def wave_field(t, xs, bys, xw=2.3, gaps=(0.0, 0.24)):
 class Recorder(VGroup):
     """수진기 기록(지진 기록과 같은 꼴). rows: [(이름, 도착 시각들, 색)]"""
 
-    def __init__(self, tracker, rows, tmax=1.0, x0=-2.6, x1=1.0, top=3.45, row_h=0.55,
+    def __init__(self, tracker, rows, tmax=1.0, x0=-3.0, x1=0.6, top=3.3, row_h=0.55,
                  pad_b=0.42, **kw):
         super().__init__(**kw)
         self.x0, self.x1, self.tmax = x0, x1, tmax
