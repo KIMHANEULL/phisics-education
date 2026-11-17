@@ -10,6 +10,12 @@ K = 2 * PI / LAM
 AMP = 0.07                        # 물 알갱이 변위 (보이게 과장)
 G_C = np.array([-3.4, -0.55, 0])  # 안경 중심
 INSET_C = np.array([3.6, -0.15, 0])
+GS = 1.25                         # 안경 크기 배율
+
+
+def gp(v):
+    """안경 중심 기준 상대 위치 → 화면 위치."""
+    return G_C + GS * np.array(v, dtype=float)
 
 DIRT = "#8A6A3A"
 
@@ -63,7 +69,7 @@ def glasses(dirty=1.0):
              c + LEFT * 1.1 + UP * 0.25, c + RIGHT * 1.12 + UP * 0.12]
     for p in spots:
         dirt.add(Dot(p, radius=rng.uniform(0.04, 0.065), color=DIRT).set_opacity(dirty))
-    return VGroup(g, dirt)
+    return VGroup(g, dirt).scale(GS, about_point=c)
 
 
 def particles(ph):
@@ -129,7 +135,7 @@ class C6Cleaning(CaseScene):
 
         # 1. 등장 요소
         c_tank = callout([TX1 - 0.3, WS - 0.3, 0], "세척조", "물이 담긴 통", UR, 0.9, color=CYAN)
-        c_gl = callout(G_C + RIGHT * 1.3 + UP * 0.25, "안경", "물속에 담가 둔다", RIGHT, 1.0)
+        c_gl = callout(gp([1.3, 0.25, 0]), "안경", "물속에 담가 둔다", RIGHT, 1.0)
         c_tx = callout([TX1 - 0.5, WB - 0.3, 0], "초음파 진동자", "통 바닥에 붙어 떨린다",
                        RIGHT + DOWN * 0.1, 0.9)
         self.play(Create(c_tank), Create(c_gl), run_time=0.9)
@@ -153,9 +159,9 @@ class C6Cleaning(CaseScene):
         cs = comp_centers(ph.get_value())
         yc = [y for y in cs if 0.0 < y < 0.9][0]
         yr = yc - LAM / 2
-        c_c = callout([TX1 - 0.15, yc, 0], "압축 (밀)", "압력이 높다", RIGHT + UP * 0.35, 0.6,
+        c_c = callout([TX1 - 0.15, yc, 0], "압축 (밀)", "압력이 높다", RIGHT + UP * 0.9, 0.6,
                       color=CYAN)
-        c_r = callout([TX1 - 0.15, yr, 0], "팽창 (소)", "압력이 낮다", RIGHT + DOWN * 0.35, 0.6,
+        c_r = callout([TX1 - 0.15, yr, 0], "팽창 (소)", "압력이 낮다", RIGHT + DOWN * 0.9, 0.6,
                       color=GRAY_T)
         self.play(FadeIn(c_c), FadeIn(c_r), run_time=0.6)
         self.say("밀(압축) = 압력이 높은 곳,  소(팽창) = 압력이 낮은 곳", wait=3)
@@ -179,13 +185,13 @@ class C6Cleaning(CaseScene):
         self.play(FadeIn(f2), run_time=0.8)
         self.say("물속 음속(1500 m/s)을 진동수(40000 Hz)로 나눈다\n40000 Hz = 1초에 40000번 진동", wait=4)
         self.play(FadeIn(f3), FadeIn(nt), run_time=0.7)
-        lab38 = T("≈ 3.8 cm", 22, GREEN, bold=True).next_to(dl[3], RIGHT, buff=0.1)
+        lab38 = T("λ ≈ 3.8 cm", 22, GREEN, bold=True).next_to([lx - 0.12, yc, 0], UP, buff=0.12, aligned_edge=LEFT)
         self.play(FadeIn(lab38), run_time=0.5)
         self.say("그래서 밀·소 줄무늬가 약 3.8 cm 간격으로 생긴다", wait=3)
         self.play(FadeOut(pnl), FadeOut(dl), FadeOut(lab38), run_time=0.6)
 
         # 4. 확대: 팽창 → 거품 생성, 압축 → 거품이 터지며 물줄기
-        lens_pt = G_C + LEFT * 0.62 + np.array([0.15, -0.2, 0])
+        lens_pt = gp([-0.47, -0.2, 0])
         box = RoundedRectangle(corner_radius=0.15, width=5.4, height=3.9,
                                stroke_color=PANEL_STROKE, stroke_width=2,
                                fill_color="#081C2E", fill_opacity=0.97).move_to(INSET_C)
@@ -246,9 +252,9 @@ class C6Cleaning(CaseScene):
         self.play(FadeOut(VGroup(box, it, surf, sl, pl2, jl, ring, z1, z2)), run_time=0.6)
 
         # 좁은 틈
-        cp = callout(G_C + LEFT * 0.22 + DOWN * 0.15, "코받침 틈", None, DOWN + RIGHT * 0.25,
+        cp = callout(gp([-0.22, -0.15, 0]), "코받침 틈", None, DOWN + RIGHT * 0.25,
                      0.85, color=CYAN)
-        ch = callout(G_C + RIGHT * 1.1 + UP * 0.18, "경첩 틈", None, UR, 0.6, color=CYAN)
+        ch = callout(gp([1.1, 0.18, 0]), "경첩 틈", None, UR, 0.6, color=CYAN)
         self.play(Create(cp), Create(ch), run_time=0.7)
         self.say("솔이 닿지 않는 코받침·경첩의 좁은 틈도\n물이 들어가는 곳이면 깨끗해진다", wait=1.5)
         self.play(FadeOut(gl[1]), run_time=1.5)
@@ -267,7 +273,7 @@ class C6Cleaning(CaseScene):
         TRIP = 0.1  # 한 방향 0.1 ms
         pw = always_redraw(lambda: echo_group(tt.get_value() / TRIP * D, src, tgt, 0.25, 3,
                                               1.0, 1.0, width=5))
-        d15 = dim_line([TX1 - 0.35, WB, 0], [TX1 - 0.35, WS, 0], "15 cm", side=LEFT * 0.55,
+        d15 = dim_line([TX1 - 0.35, WB, 0], [TX1 - 0.35, WS, 0], "15 cm", side=LEFT * 0.5 + DOWN * 1.1,
                        size=24)
         self.play(FadeIn(clock2), Create(d15), run_time=0.6)
         self.add(pw)

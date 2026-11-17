@@ -108,7 +108,7 @@ class C4Seafloor(CaseScene):
                                                  0.7, 0.8, back_dir=UP))
         clock = Clock(tclk, "s", "{:.2f}")
         tl = Timeline(5, 1, tclk, "s", y=-2.4, x0=-4.0, x1=4.4)
-        sn = slow_note()
+        sn = slow_note("※ 실제보다 느리게 보여 줌")
         self.play(FadeIn(sn), FadeIn(clock), FadeIn(tl), run_time=0.8)
         m0 = tl.marker(0, "신호 발신 시각", ORANGE)
         self.play(FadeIn(m0), run_time=0.4)
@@ -122,7 +122,7 @@ class C4Seafloor(CaseScene):
         self.play(tw.animate.set_value(2 * TRIP), run_time=4.4, rate_func=linear)
         m1 = tl.marker(2 * TRIP, "신호 수신 시각", GREEN)
         self.play(tw.animate.set_value(2 * TRIP + 0.6), FadeIn(m1), FadeOut(refl),
-                  run_time=0.8, rate_func=linear)
+                  run_time=1.32, rate_func=linear)
         self.remove(waves)
         sp = tl.span(0, 2 * TRIP, "시간 차 = 4.0 s").shift(UP * 0.55)
         self.play(FadeIn(sp), run_time=0.6)
@@ -154,7 +154,7 @@ class C4Seafloor(CaseScene):
         self.play(FadeOut(clock), FadeOut(sn), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.say("수심(바닥까지의 거리) = 음속 × 시간 차 ÷ 2", wait=2.2)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)
-        self.say("바닷물 속 음속 (1500 m/s)와 시간 차 (4.0 s)를 대입한다\n(단위: m/s × s = m)", wait=3.4)
+        self.say("바닷물 속 음속(1500 m/s)과 시간 차(4.0 s)를 대입한다\n(단위: m/s × s = m)", wait=3.4)
         self.play(FadeIn(mid), FadeIn(rt), run_time=0.8)
         self.say("1500 × 4.0 = 6000 m … 내려갔다 올라온 왕복 길이", wait=2.6)
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.7)
@@ -242,7 +242,7 @@ class C4Seafloor(CaseScene):
         self.play(FadeIn(kp, shift=DOWN * 0.1), run_time=0.7)
         self.play(Indicate(labs[2], color=ORANGE, scale_factor=1.15),
                   Indicate(labs[0], color=ORANGE, scale_factor=1.15), run_time=1.2)
-        self.say("2.0 s 는 1500 m(얕다), 4.0 s 는 3000 m(깊다)\n→ 시간 차가 2배면 수심도 2배 (비례)")
+        self.say("2.0 s 는 1500 m(얕다), 4.0 s 는 3000 m(깊다)\n→ 음속이 같으면 시간 차가 2배일 때 수심도 2배 (비례)")
         self.wait(0.4)
 
         # 6. 다중빔 (한 박자)
@@ -311,7 +311,7 @@ class C4Seafloor(CaseScene):
         self.play(LaggedStart(*[FadeIn(cells[k]) for k in order], lag_ratio=0.01),
                   GrowArrow(arrow), FadeIn(alab), run_time=2.2)
         self.play(FadeIn(cb), FadeIn(cbl), run_time=0.5)
-        self.say("배가 지나가는 동안 넓은 띠 모양의 지형도가\n수심에 따라 색으로 한 번에 그려진다")
+        self.say("배가 지나가는 동안 넓은 띠 모양으로 수심을 재어\n수심에 따라 색을 칠한 지형도를 만든다")
         self.wait(0.3)
 
         # 7. 정리

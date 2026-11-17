@@ -171,7 +171,7 @@ def build_slices(nslice=48):
     return slices, centers
 
 
-def frac_row(num_parts, size=30):
+def frac_row(num_parts, size=27):
     return frac(colored(num_parts, size), colored([("2", WHITE_T)], size), size)
 
 
@@ -281,16 +281,16 @@ class C7Fetal(CaseScene):
         self.say("양수는 반사가 거의 없어 검게 보인다", wait=2.2)
 
         # 4. 공식: 시간 → 깊이
-        f1 = distance_formula(30)
+        f1 = distance_formula(27)
         nt = T("← 갔다가 되돌아왔으니 2로 나눈다", 19, GRAY_T)
         r1 = VGroup(f1, nt).arrange(RIGHT, buff=0.35)
         f2 = frac_row([("(1540 m/s)", ORANGE), ("×", WHITE_T), ("(0.00010 s)", GREEN)])
-        res = T("= 0.077 m = 7.7 cm", 30, GREEN, bold=True)
+        res = T("= 0.077 m = 7.7 cm", 27, GREEN, bold=True)
         r2 = eq_row("=", f2, res)
-        r2[0].scale(30 / 34)
+        r2[0].scale(27 / 34)
         r2.arrange(RIGHT, buff=0.22)
-        r2.next_to(r1, DOWN, buff=0.3, aligned_edge=LEFT).shift(RIGHT * 1.0)
-        pnl = panel(VGroup(r1, r2), buff=0.3, pos=[2.0, 2.85, 0])
+        r2.next_to(r1, DOWN, buff=0.25, aligned_edge=LEFT).shift(RIGHT * 0.6)
+        pnl = panel(VGroup(r1, r2), buff=0.28, pos=[2.3, 2.62, 0])
         self.play(FadeOut(sn), FadeOut(clock), FadeIn(pnl[0]), Write(r1), run_time=1.2)
         self.say("몸속 연한 조직에서 음속은 약 1540 m/s\n0.100 ms = 0.00010 s", wait=3)
         self.play(FadeIn(r2[0]), FadeIn(f2), run_time=1)

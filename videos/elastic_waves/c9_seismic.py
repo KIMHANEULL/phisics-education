@@ -216,11 +216,11 @@ class C9Seismic(CaseScene):
         self.add(waves)
         self.add_foreground_mobjects(star)
         self.play(tt.animate.set_value(5), run_time=3.5, rate_func=linear)
-        th = np.deg2rad(25)
+        th = np.deg2rad(40)
         pp = HYP + VP * UPK * 5 * np.array([np.cos(th), np.sin(th), 0])
         th2 = np.deg2rad(-8)
         ps = HYP + VS * UPK * 5 * np.array([np.cos(th2), np.sin(th2), 0])
-        c_p = callout(pp, "P파", "빠르다 · 진행 방향으로 앞뒤 진동 (종파)", RIGHT + DOWN * 0.5, 0.6,
+        c_p = callout(pp, "P파", "빠르다 · 진행 방향으로 앞뒤 진동 (종파)", RIGHT + UP * 0.25, 0.6,
                       color=CYAN)
         c_q = callout(ps, "S파", "느리다 · 진행 방향에 수직으로 진동 (횡파)", RIGHT + DOWN * 0.15, 0.5,
                       color=ORANGE)
@@ -335,6 +335,11 @@ class C9Seismic(CaseScene):
 
         # 6. 관측소 3곳 → 진앙
         self.clear_all(keep=(sky,))
+        full = Rectangle(width=16, height=9, stroke_width=0)
+        full.set_fill(color=[BG_TOP, "#0F1C2E"], opacity=1).set_sheen_direction(DOWN)
+        self.play(FadeIn(full), run_time=0.4)
+        self.remove(sky)
+        sky = full
         mapbg = RoundedRectangle(corner_radius=0.15, width=8.6, height=5.7, stroke_color=PANEL_STROKE,
                                  stroke_width=1.5, fill_color="#14202E", fill_opacity=1)
         mapbg.move_to([0.25, 0.65, 0])
@@ -376,9 +381,9 @@ class C9Seismic(CaseScene):
         outer = Circle(radius=0.55 * R, fill_color="#B07431", fill_opacity=1, stroke_width=0).move_to(C)
         inner = Circle(radius=0.19 * R, fill_color="#E3C57E", fill_opacity=1, stroke_width=0).move_to(C)
         self.play(FadeIn(mantle), FadeIn(outer), FadeIn(inner), run_time=0.8)
-        c1 = callout(C + np.array([1.3, 1.5, 0]), "맨틀", "고체", RIGHT, 1.4, color=WHITE_T)
-        c2 = callout(C + np.array([0.95, 0.3, 0]), "외핵", "액체", RIGHT, 2.0, color=WHITE_T)
-        c3 = callout(C + np.array([0.2, -0.2, 0]), "내핵", "고체", RIGHT + DOWN * 0.6, 2.9,
+        c1 = callout(C + np.array([1.2, 1.75, 0]), "맨틀", "고체", RIGHT, 1.5, color=WHITE_T)
+        c2 = callout(C + np.array([0.95, 0.8, 0]), "외핵", "액체", RIGHT, 1.75, color=WHITE_T)
+        c3 = callout(C + np.array([0.2, -0.3, 0]), "내핵", "고체", RIGHT, 2.5,
                      color=WHITE_T)
         self.play(FadeIn(c1), FadeIn(c2), FadeIn(c3), run_time=0.8)
         S0 = C + UP * R
@@ -413,7 +418,7 @@ class C9Seismic(CaseScene):
         self.play(FadeIn(xs), Create(p_ray), run_time=0.7)
         shadow = Arc(radius=R + 0.08, start_angle=np.deg2rad(90 - 103),
                      angle=-np.deg2rad(360 - 206), arc_center=C, color=GRAY_T, stroke_width=6)
-        c4 = callout(C + (R + 0.08) * np.array([np.cos(-0.6), np.sin(-0.6), 0]),
+        c4 = callout(C + (R + 0.08) * np.array([np.cos(-0.87), np.sin(-0.87), 0]),
                      "S파가 오지 않는 지역", "외핵에 막혔기 때문", RIGHT + DOWN * 0.2, 0.9,
                      color=GRAY_T)
         self.play(Create(shadow), FadeIn(c4), run_time=0.8)
