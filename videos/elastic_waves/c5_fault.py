@@ -161,12 +161,12 @@ def wave_field(t, xs, bys, xw=2.3, gaps=(0.0, 0.24)):
 class Recorder(VGroup):
     """수진기 기록(지진 기록과 같은 꼴). rows: [(이름, 도착 시각들, 색)]"""
 
-    def __init__(self, tracker, rows, tmax=1.0, x0=-2.8, x1=0.8, top=3.45, row_h=0.55,
-                 **kw):
+    def __init__(self, tracker, rows, tmax=1.0, x0=-3.0, x1=0.6, top=3.45, row_h=0.55,
+                 pad_b=0.42, **kw):
         super().__init__(**kw)
         self.x0, self.x1, self.tmax = x0, x1, tmax
         n = len(rows)
-        h = 0.42 + n * row_h + 0.42
+        h = 0.42 + n * row_h + pad_b
         bl, br = x0 - 0.7, x1 + 1.1          # 왼쪽: 행 이름, 오른쪽: '시간 (s)'
         box = RoundedRectangle(corner_radius=0.1, width=br - bl, height=h,
                                stroke_color=PANEL_STROKE, stroke_width=1.5,
@@ -212,14 +212,14 @@ class Recorder(VGroup):
         return m
 
     def tag(self, row, t, text, color=GREEN, up=True):
-        """up=True: 스파이크 위, up=False: 스파이크 오른쪽."""
+        """up=True: 스파이크 위, up=False: 스파이크 아래."""
         x = self.x_of(t)
         y = self.base_y[row]
         lab = T(text, 18, color, bold=True)
         if up:
             lab.next_to([x, y + 0.34, 0], UP, buff=0.04)
         else:
-            lab.next_to([x + 0.1, y + 0.17, 0], RIGHT, buff=0.02)
+            lab.next_to([x, y - 0.17, 0], DOWN, buff=0.04)
         return lab
 
 
@@ -363,7 +363,8 @@ class C5Fault(CaseScene):
         ech_l = echoes
         ech_r = [e + 0.10 for e in echoes]   # 0.35, 0.60, 0.85 s
         tA, tB = ValueTracker(0), ValueTracker(0)
-        rec2 = Recorder(tA, [("A", ech_l, ORANGE, tA), ("B", ech_r, ORANGE, tB)], row_h=0.5)
+        rec2 = Recorder(tA, [("A", ech_l, ORANGE, tA), ("B", ech_r, ORANGE, tB)], row_h=0.5,
+                        pad_b=0.72)
         sn2 = slow_note()
         clock2 = Clock(tA, "s", "{:.2f}")
         mA = T("A", 26, WHITE_T, bold=True).move_to([XS_L, SURF + 1.0, 0])
@@ -385,7 +386,7 @@ class C5Fault(CaseScene):
         self.play(tB.animate.set_value(0.98), run_time=5.8, rate_func=linear)
         self.remove(wr)
 
-        ta = rec2.tag(0, 0.50, "0.50 s", up=False)
+        ta = rec2.tag(0, 0.50, "0.50 s")
         tb = rec2.tag(1, 0.60, "0.60 s", up=False)
         ya, yb = rec2.base_y
         guide = VGroup(*[DashedLine([rec2.x_of(e), ya + 0.05, 0], [rec2.x_of(e + 0.1), yb + 0.05, 0],
