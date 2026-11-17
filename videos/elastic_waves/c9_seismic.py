@@ -220,7 +220,7 @@ class C9Seismic(CaseScene):
         pp = HYP + VP * UPK * 5 * np.array([np.cos(th), np.sin(th), 0])
         th2 = np.deg2rad(-8)
         ps = HYP + VS * UPK * 5 * np.array([np.cos(th2), np.sin(th2), 0])
-        c_p = callout(pp, "P파", "빠르다 · 진행 방향으로 앞뒤 진동 (종파)", RIGHT + UP * 0.55, 0.55,
+        c_p = callout(pp, "P파", "빠르다 · 진행 방향으로 앞뒤 진동 (종파)", RIGHT + UP * 0.2, 0.6,
                       color=CYAN)
         c_q = callout(ps, "S파", "느리다 · 진행 방향에 수직으로 진동 (횡파)", RIGHT + DOWN * 0.15, 0.5,
                       color=ORANGE)
