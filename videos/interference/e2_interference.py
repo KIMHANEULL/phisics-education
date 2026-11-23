@@ -186,7 +186,7 @@ class E2Interference(CaseScene):
         self.play(sx.animate.set_value(WALK[1]), wiggle_icon(b, dur), run_time=dur, rate_func=linear)
         self.remove(b)
         self.say("크게 → 작게 → 크게 …\n자리마다 소리 크기가 다르다!")
-        self.say("왜 그럴까? 위에서 내려다보자", wait=1.8)
+        self.say("왜 그럴까? 위에서 내려다보자", wait=2.2)
         tt.clear_updaters()
         self.clear_all()
 

@@ -160,7 +160,7 @@ class E4Lithotripsy(CaseScene):
         self.wait(1.4)
 
         # 길이가 같다
-        f1l = label_bg(T("F₁ (초점)", 20, GRAY_T, bold=True)).next_to(F1, DOWN, buff=0.22)
+        f1l = label_bg(T("F₁ (초점)", 20, GRAY_T, bold=True)).next_to(F1, UP + RIGHT, buff=0.15)
         f2l = label_bg(T("F₂ (초점)", 20, GRAY_T, bold=True)).next_to(F2, DOWN, buff=0.42)
         two = VGroup(rays[1].copy().set_stroke(GREEN, 4, 1), rays[6].copy().set_stroke(GREEN, 4, 1))
         tn = panel(T("F₁ → 반사판 → F₂ : 가는 길이가 모두 같아(= 2a) 동시에 도착", 20, GREEN), buff=0.16)

@@ -228,7 +228,7 @@ class E1Shock(CaseScene):
         a_lab = label_bg(T("vₛt", 24, C_S, bold=True)).move_to((S0 + S) / 2 + DOWN * 0.42)
         ang = Arc(radius=0.75, start_angle=PI - th, angle=th, arc_center=S, stroke_color=WHITE_T,
                   stroke_width=3)
-        th_lab = label_bg(T("θ", 22, WHITE_T, bold=True)).move_to(S + 1.0 * np.array([-np.cos(th / 2), np.sin(th / 2), 0]))
+        th_lab = label_bg(T("θ", 22, WHITE_T, bold=True)).move_to(S + 1.25 * np.array([-np.cos(th / 2), np.sin(th / 2), 0]))
         ra = RightAngle(Line(tp, S0), Line(tp, S), length=0.18, quadrant=(1, 1), color=WHITE_T,
                         stroke_width=2)
         self.play(FadeOut(labs[1:]), FadeOut(dots[1:]), FadeOut(clab), run_time=0.4)
@@ -304,7 +304,7 @@ class E1Shock(CaseScene):
         top = T("위에서 본 모습", 20, GRAY_T).to_corner(UL, buff=0.3)
         self.play(FadeIn(water), FadeIn(top), run_time=0.5)
         Y = 0.4
-        X0 = -4.8
+        X0 = -4.5
         TP = 0.3             # 물결 하나 내는 간격 (초)
         cw = U * TP          # 물결파 속력
         vb = 2.2 * cw        # 배 속력 (물결파의 2.2배)
