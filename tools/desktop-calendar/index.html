@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>연구소 달력</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 바탕화면 오른쪽에 카드 3장(오늘 / 할 일 / 월간). 왼쪽은 바탕화면 아이콘 자리로 비워 둔다. */
+:root{
+  --fg:#f4eff5; --muted:#d2cbd4; --faint:#9f97a3; --accent:#ffc9b3; --sat:#b8ccff; --sun:#ffb4a8;
+  --card:rgba(30,28,36,.55); --tonal:rgba(255,255,255,.12); --line:rgba(255,255,255,.16);
+  --font:"Noto Sans KR","Malgun Gothic",sans-serif;
+}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:var(--font);color:var(--fg);
+  background:linear-gradient(160deg,#9a9aa3 0%,#c9a99a 55%,#5d5e72 100%) center/cover no-repeat}
+body.has-bg{background-image:url("bg.jpg")}
+.panel{position:absolute;top:5vh;right:3vw;width:min(660px,38vw);max-height:88vh;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);backdrop-filter:blur(18px) saturate(1.1);-webkit-backdrop-filter:blur(18px);border-radius:26px;padding:20px 24px}
+.label{font-size:13px;font-weight:700;color:var(--muted);margin:0 0 8px}
+.label.accent{color:var(--accent)}
+/* 오늘 */
+.today-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.big{font-size:52px;font-weight:700;line-height:1;letter-spacing:-2px}
+.dow{font-size:20px;font-weight:700}
+.mon{font-size:14px;color:var(--muted)}
+.events{background:var(--tonal);border-radius:16px;padding:8px 14px;display:grid;gap:2px}
+.ev{display:flex;gap:14px;align-items:baseline;padding:4px 0}
+.ev .t{width:64px;flex-shrink:0;font-size:14px;font-weight:700;color:var(--accent)}
+.ev .x{font-size:18px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.none{font-size:15px;color:var(--faint)}
+/* 할 일 */
+.todos{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.todos>div+div{border-left:1px solid var(--line);padding-left:20px}
+.todo{display:flex;gap:10px;align-items:center;font-size:15px;padding:3px 0;min-width:0}
+.todo i{width:14px;height:14px;border-radius:50%;border:2px solid #e8e2ea;flex-shrink:0}
+.todo.urgent i{border-color:var(--accent)}
+.todo span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* 월간 */
+.month-head{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.month-head b{font-size:22px}
+.month-head span{font-size:14px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.wd{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding-bottom:4px}
+.wd.sun{color:var(--sun)} .wd.sat{color:var(--sat)}
+.cell{min-height:62px;border-radius:10px;padding:4px 5px;box-sizing:border-box;overflow:hidden}
+.cell .n{font-size:13px;font-weight:700;color:var(--muted)}
+.cell.sun .n{color:var(--sun)} .cell.sat .n{color:var(--sat)}
+.cell.out{opacity:.35} .cell.past{opacity:.55}
+.cell.today{background:var(--tonal)} .cell.today .n{color:var(--accent)}
+.cell .e{font-size:11px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell .more{font-size:10px;color:var(--muted)}
+.foot{font-size:11px;color:var(--faint);text-align:right;padding-right:6px}
+</style>
+</head>
+<body>
+<img src="bg.jpg" alt="" style="display:none" onload="document.body.classList.add('has-bg')">
+<div class="panel">
+  <section class="card">
+    <div class="today-head"><div class="big" id="d"></div><div><div class="dow" id="dow"></div><div class="mon" id="mon"></div></div></div>
+    <p class="label accent">오늘 일정</p>
+    <div id="today"></div>
+  </section>
+  <section class="card" id="todoCard" hidden>
+    <div class="todos">
+      <div><p class="label">업무 할 일</p><div id="work"></div></div>
+      <div><p class="label">개인 할 일</p><div id="personal"></div></div>
+    </div>
+  </section>
+  <section class="card">
+    <div class="month-head"><b id="mt"></b><span id="my"></span></div>
+    <div class="grid" id="grid"></div>
+  </section>
+  <div class="foot" id="foot"></div>
+</div>
+<script>
+const WD = ['일','월','화','수','목','금','토'];
+const TIME = /^(\d{1,2}교시|\d{1,2}시(?:\s*\d{1,2}분)?|점심시간|방과후|아침|조회|종례\s*전)\s*/;
+const key = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- iCal 읽기 ----------
+function parseDate(v, params) {
+  const m = v.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
+  if (!m) return null;
+  const [_, y, mo, d, h, mi, s, z] = m;
+  if (!h || /VALUE=DATE/.test(params)) return { date: new Date(+y, mo - 1, +d), allDay: true };
+  const dt = z ? new Date(Date.UTC(+y, mo - 1, +d, +h, +mi, +s)) : new Date(+y, mo - 1, +d, +h, +mi, +s);
+  return { date: dt, allDay: false };
+}
+function parseICS(text) {
+  const lines = text.replace(/\r\n[ \t]/g, '').replace(/\n[ \t]/g, '').split(/\r?\n/);
+  const out = []; let ev = null;
+  for (const line of lines) {
+    if (line === 'BEGIN:VEVENT') { ev = { ex: [] }; continue; }
+    if (line === 'END:VEVENT') { if (ev && ev.start && ev.status !== 'CANCELLED') out.push(ev); ev = null; continue; }
+    if (!ev) continue;
+    const i = line.indexOf(':'); if (i < 0) continue;
+    const head = line.slice(0, i), val = line.slice(i + 1);
+    const [name, ...ps] = head.split(';'); const params = ps.join(';');
+    if (name === 'SUMMARY') ev.title = val.replace(/\\n/g, ' ').replace(/\\([,;\\])/g, '$1').trim();
+    else if (name === 'DTSTART') ev.start = parseDate(val, params);
+    else if (name === 'DTEND') ev.end = parseDate(val, params);
+    else if (name === 'RRULE') ev.rrule = Object.fromEntries(val.split(';').map(p => p.split('=')));
+    else if (name === 'EXDATE') val.split(',').forEach(v => { const p = parseDate(v, params); if (p) ev.ex.push(key(p.date)); });
+    else if (name === 'STATUS') ev.status = val;
+  }
+  return out;
+}
+const BYDAY = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+/** from~to(미포함) 사이의 날짜별 일정 {key: [{time, text}]} */
+function expand(events, from, to) {
+  const map = {};
+  const put = (d, e) => {
+    if (d < from || d >= to || e.ex.includes(key(d))) return;
+    const title = e.title || '(제목 없음)';
+    let time = null, text = title;
+    if (!e.start.allDay) time = e.start.date.getHours() + ':' + String(e.start.date.getMinutes()).padStart(2, '0');
+    else { const m = title.match(TIME); if (m && title.slice(m[0].length)) { time = m[1]; text = title.slice(m[0].length); } }
+    (map[key(d)] ||= []).push({ time, text, allDay: e.start.allDay, sort: e.start.allDay ? -1 : e.start.date.getHours() * 60 + e.start.date.getMinutes() });
+  };
+  const days = e => {   // 이 일정이 차지하는 날짜 수 (종일 여러 날 일정)
+    if (!e.start.allDay || !e.end) return 1;
+    return Math.max(1, Math.round((e.end.date - e.start.date) / 864e5));
+  };
+  for (const e of events) {
+    const s0 = new Date(e.start.date.getFullYear(), e.start.date.getMonth(), e.start.date.getDate());
+    const span = days(e);
+    const occ = s => { for (let k = 0; k < span; k++) put(addDays(s, k), e); };
+    const r = e.rrule;
+    if (!r) { occ(s0); continue; }
+    const iv = +(r.INTERVAL || 1), count = r.COUNT ? +r.COUNT : Infinity;
+    const until = r.UNTIL ? (parseDate(r.UNTIL, '') || {}).date : null;
+    let n = 0;
+    for (let i = 0; i < 800 && n < count; i++) {
+      let list = [];
+      if (r.FREQ === 'DAILY') list = [addDays(s0, i * iv)];
+      else if (r.FREQ === 'WEEKLY') {
+        const wk = addDays(s0, i * 7 * iv - s0.getDay());
+        const bd = r.BYDAY ? r.BYDAY.split(',').map(x => BYDAY[x.slice(-2)]) : [s0.getDay()];
+        list = bd.sort().map(x => addDays(wk, x)).filter(d => d >= s0);
+      } else if (r.FREQ === 'MONTHLY') list = [new Date(s0.getFullYear(), s0.getMonth() + i * iv, s0.getDate())];
+      else if (r.FREQ === 'YEARLY') list = [new Date(s0.getFullYear() + i * iv, s0.getMonth(), s0.getDate())];
+      else break;
+      let stop = false;
+      for (const d of list) {
+        if (n >= count || (until && d > until) || d >= to) { stop = true; break; }
+        occ(d); n++;
+      }
+      if (stop) break;
+    }
+  }
+  for (const k in map) map[k].sort((a, b) => a.sort - b.sort);
+  return map;
+}
+
+// ---------- 그리기 ----------
+function render() {
+  const L = window.LAB || {};
+  const now = new Date(), today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const first = new Date(today.getFullYear(), today.getMonth(), 1);
+  const start = addDays(first, -first.getDay());
+  const weeks = Math.ceil((first.getDay() + new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()) / 7);
+  const end = addDays(start, weeks * 7);
+  const map = L.ics ? expand(parseICS(L.ics), start, end) : {};
+
+  document.getElementById('d').textContent = today.getDate();
+  document.getElementById('dow').textContent = WD[today.getDay()] + '요일';
+  document.getElementById('mon').textContent = (today.getMonth() + 1) + '월';
+
+  const te = map[key(today)] || [];
+  document.getElementById('today').innerHTML = te.length
+    ? '<div class="events">' + te.map(e => `<div class="ev"><span class="t">${e.time ? esc(e.time) : ''}</span><span class="x">${esc(e.text)}</span></div>`).join('') + '</div>'
+    : '<div class="none">일정 없음</div>';
+
+  const todos = L.todos || null;
+  document.getElementById('todoCard').hidden = !todos;
+  if (todos) {
+    const li = list => list.length ? list.slice(0, 6).map(t => `<div class="todo${t.urgent ? ' urgent' : ''}"><i></i><span>${esc(t.t)}</span></div>`).join('') : '<div class="none">없음</div>';
+    document.getElementById('work').innerHTML = li(todos.filter(t => !t.personal));
+    document.getElementById('personal').innerHTML = li(todos.filter(t => t.personal));
+  }
+
+  document.getElementById('mt').textContent = (today.getMonth() + 1) + '월';
+  document.getElementById('my').textContent = today.getFullYear();
+  let g = WD.map((w, i) => `<div class="wd${i === 0 ? ' sun' : i === 6 ? ' sat' : ''}">${w}</div>`).join('');
+  for (let i = 0; i < weeks * 7; i++) {
+    const d = addDays(start, i), ev = map[key(d)] || [];
+    const cls = ['cell', d.getDay() === 0 ? 'sun' : d.getDay() === 6 ? 'sat' : '',
+      d.getMonth() !== today.getMonth() ? 'out' : d < today ? 'past' : '', +d === +today ? 'today' : ''].join(' ');
+    g += `<div class="${cls}"><div class="n">${d.getDate()}</div>` +
+      ev.slice(0, 2).map(e => `<div class="e">${esc(e.text)}</div>`).join('') +
+      (ev.length > 2 ? `<div class="more">+${ev.length - 2}</div>` : '') + '</div>';
+  }
+  document.getElementById('grid').innerHTML = g;
+  document.getElementById('foot').textContent = L.synced ? `갱신 ${L.synced}${L.error ? ' · ' + L.error : ''}` : '아직 일정을 받지 않았어요 (install.ps1 실행)';
+}
+
+// events.js 를 다시 읽어 와서 그린다 (sync.ps1 이 1시간마다 새로 씀)
+function reload() {
+  const s = document.createElement('script');
+  s.src = 'events.js?t=' + Date.now();
+  s.onload = s.onerror = () => { render(); s.remove(); };
+  document.head.appendChild(s);
+}
+reload();
+setInterval(reload, 10 * 60 * 1000);          // 파일만 다시 읽음 (인터넷 안 씀)
+let lastDay = new Date().getDate();
+setInterval(() => { if (new Date().getDate() !== lastDay) { lastDay = new Date().getDate(); render(); } }, 60 * 1000);
+</script>
+</body>
+</html>

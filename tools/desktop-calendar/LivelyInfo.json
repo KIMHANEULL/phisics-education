@@ -1,0 +1,12 @@
+{
+  "AppVersion": "1.0.0.0",
+  "Title": "연구소 달력",
+  "Desc": "구글 캘린더 일정과 할 일을 보여 주는 바탕화면",
+  "Author": "lab",
+  "License": "",
+  "Contact": "",
+  "Type": 1,
+  "FileName": "index.html",
+  "Arguments": null,
+  "IsAbsolutePath": false
+}
