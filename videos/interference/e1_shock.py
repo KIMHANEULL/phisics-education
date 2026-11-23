@@ -3,7 +3,7 @@
 세 칸(정지 / 음속보다 느림 / 음속과 같음) 파면이 실시간으로 퍼짐 → 압력의 벽 →
 음속보다 빠름(vₛ = 1.6v): 지난 자리 S₀~S₃ 의 원, 접선 → 원뿔 모양 충격파면, sinθ = v/vₛ →
 전투기 소닉 붐 → 보트 V자 물결 → 한 줄 정리.
-화면 속 소리 속력은 모든 장면에서 0.5 (화면 단위/초)로 같다.
+화면 속 소리 속력은 소닉 붐 장면을 제외한 모든 장면에서 0.5 (화면 단위/초)로 같다.
 """
 from common import *
 import os
@@ -215,7 +215,7 @@ class E1Shock(CaseScene):
         clab = label_bg(T("충격파면", 26, ORANGE, bold=True)).move_to(S + np.array([-1.3, 1.75, 0]))
         self.play(Create(cn), run_time=1.0)
         self.play(FadeIn(clab), run_time=0.4)
-        self.say("파면들이 겹치는 선 → 원뿔 모양의 충격파면", wait=3.2)
+        self.say("파면들에 공통으로 접하는 선 → 원뿔 모양의 충격파면", wait=3.2)
 
         # vt, vₛt, sinθ
         S0 = cen(0)
@@ -337,8 +337,8 @@ class E1Shock(CaseScene):
 
     # ------------------------------------------------------------ 5. 한 줄 정리
     def ending(self):
-        line = VGroup(T("음원 속력 ≥ 소리 속력", 32, C_S, bold=True), T("→", 32, WHITE_T, bold=True),
-                      T("파면이 겹쳐 충격파", 32, ORANGE, bold=True)).arrange(RIGHT, buff=0.25)
+        line = VGroup(T("음원 속력 > 소리 속력", 32, C_S, bold=True), T("→", 32, WHITE_T, bold=True),
+                      T("파면이 겹쳐 원뿔 모양 충격파", 32, ORANGE, bold=True)).arrange(RIGHT, buff=0.25)
         p = panel(line, buff=0.45, pos=UP * 0.3)
         self.play(FadeIn(p, shift=UP * 0.15), run_time=0.8)
         self.wait(3.2)

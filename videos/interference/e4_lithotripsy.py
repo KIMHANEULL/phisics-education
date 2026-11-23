@@ -7,7 +7,7 @@ F₁ → 반사판 → F₂ 의 길이는 어느 길이든 2a 로 같다 → 모
 from common import *
 
 # 타원 (반사판): 중심, 긴반지름 a, 짧은반지름 b
-CX, CY = -1.2, 0.35
+CX, CY = -0.9, 0.35
 A_, B_ = 3.0, 1.95
 CF = np.sqrt(A_ ** 2 - B_ ** 2)
 F1 = np.array([CX - CF, CY, 0])
@@ -105,10 +105,10 @@ class E4Lithotripsy(CaseScene):
     def main(self):
         note = T("※ 실제보다 아주 느리게 보여 줌", 18, GRAY_T).to_corner(UL, buff=0.3)
         # 몸 (누운 환자의 단면) 과 콩팥
-        body = RoundedRectangle(corner_radius=1.1, width=6.3, height=3.5, stroke_color=SKIN,
-                                stroke_width=2.5, fill_color="#3A2A2A", fill_opacity=0.55)
-        body.move_to([2.3, CY, 0])
-        body_lab = label_bg(T("몸", 22, SKIN, bold=True)).move_to([4.7, CY + 1.25, 0])
+        body = RoundedRectangle(corner_radius=1.1, width=6.3, height=2 * B_, stroke_color=SKIN,
+                                stroke_width=2.5, fill_color="#241B20", fill_opacity=1)
+        body.move_to([CX + 3.15, CY, 0])   # 몸의 왼쪽 면이 반사판 테두리에 맞닿음
+        body_lab = label_bg(T("몸", 22, SKIN, bold=True)).move_to([CX + 5.6, CY + 1.45, 0])
         kid = Ellipse(width=1.55, height=0.95, stroke_color="#C9706B", stroke_width=3,
                       fill_color="#6B2E33", fill_opacity=0.9).rotate(0.35).move_to(F2 + np.array([0.12, 0.05, 0]))
         stone = stone_shape(0.28).move_to(F2)
@@ -118,19 +118,23 @@ class E4Lithotripsy(CaseScene):
         water = VMobject(stroke_width=0, fill_color=WATER_TOP, fill_opacity=0.55)
         water.set_points_as_corners([np.array([CX + A_ * np.cos(t), CY + B_ * np.sin(t), 0])
                                      for t in np.linspace(PI / 2, 3 * PI / 2, 60)] + [[CX, CY + B_, 0]])
+        pad = Rectangle(width=1.15, height=2 * B_, stroke_width=0, fill_color=WATER_TOP,
+                        fill_opacity=0.55).move_to([CX + 0.575, CY, 0])   # 몸 모서리 틈을 채우는 물(젤)
+        water = VGroup(pad, water)
+        w_lab = label_bg(T("물(젤)로 맞닿게", 18, GRAY_T)).move_to([CX - 0.95, CY - 1.35, 0])
         gen = VGroup(Circle(radius=0.2, stroke_width=0, fill_color=CYAN, fill_opacity=0.25),
                      Circle(radius=0.11, stroke_color=WHITE_T, stroke_width=2, fill_color=CYAN,
                             fill_opacity=1)).move_to(F1)
-        c_gen = callout(F1, "충격파 발생 장치", None, direction=DL, length=1.05, color=CYAN)
+        c_gen = callout(F1, "초음파 발생 장치", "충격파를 만든다", direction=DL, length=1.05, color=CYAN)
         c_ref = callout([CX + A_ * np.cos(2.2), CY + B_ * np.sin(2.2), 0], "반사판", "타원의 반쪽",
                         direction=UL, length=0.7, color=GRAY_T)
         c_st = callout(F2 + np.array([0.15, 0.2, 0]), "결석", "콩팥 속", direction=UR, length=0.85,
                        color=STONE)
 
         self.add(note)
-        self.play(FadeIn(body), FadeIn(body_lab), FadeIn(kid), FadeIn(stone), run_time=0.8)
+        self.play(FadeIn(water[0]), FadeIn(body), FadeIn(body_lab), FadeIn(kid), FadeIn(stone), run_time=0.8)
         self.play(FadeIn(c_st), run_time=0.4)
-        self.play(FadeIn(water), Create(refl), FadeIn(gen), run_time=1.0)
+        self.play(FadeIn(water[1]), FadeIn(w_lab), Create(refl), FadeIn(gen), run_time=1.0)
         self.play(FadeIn(c_gen), FadeIn(c_ref), run_time=0.5)
         self.say("몸 밖의 장치로 몸속 결석을 겨눈다", wait=2.6)
 
@@ -141,7 +145,7 @@ class E4Lithotripsy(CaseScene):
             d, P = hit(p)
             rays.add(VMobject(stroke_color=GRAY_T, stroke_width=1.6, stroke_opacity=0.45)
                      .set_points_as_corners([F1, P, F2]))
-        self.play(FadeOut(c_gen), FadeOut(c_ref), Create(rays), run_time=1.0)
+        self.play(FadeOut(c_gen), FadeOut(c_ref), FadeOut(w_lab), Create(rays), run_time=1.0)
 
         # 1번째 충격파
         self.say("여러 방향의 충격파가\n결석 한 점에 동시에 모인다", wait=0.1)
@@ -156,10 +160,10 @@ class E4Lithotripsy(CaseScene):
         self.wait(1.4)
 
         # 길이가 같다
-        f1l = label_bg(T("F₁", 20, GRAY_T, bold=True)).next_to(F1, DOWN, buff=0.22)
-        f2l = label_bg(T("F₂", 20, GRAY_T, bold=True)).next_to(F2, DOWN, buff=0.42)
+        f1l = label_bg(T("F₁ (초점)", 20, GRAY_T, bold=True)).next_to(F1, DOWN, buff=0.22)
+        f2l = label_bg(T("F₂ (초점)", 20, GRAY_T, bold=True)).next_to(F2, DOWN, buff=0.42)
         two = VGroup(rays[1].copy().set_stroke(GREEN, 4, 1), rays[6].copy().set_stroke(GREEN, 4, 1))
-        tn = panel(T("F₁ → 반사판 → F₂ : 가는 길이가 모두 같아 동시에 도착", 20, GREEN), buff=0.16)
+        tn = panel(T("F₁ → 반사판 → F₂ : 가는 길이가 모두 같아(= 2a) 동시에 도착", 20, GREEN), buff=0.16)
         tn.to_edge(UP, buff=0.3)
         self.play(FadeIn(f1l), FadeIn(f2l), Create(two), FadeIn(tn), run_time=0.8)
         self.wait(3.4)
@@ -198,14 +202,14 @@ class E4Lithotripsy(CaseScene):
                   FadeIn(cr2), run_time=0.65, rate_func=linear)
         self.remove(fr)
         self.wait(1.6)
-        tissue = callout([2.5, CY - 1.05, 0], "주변 조직", "약한 파동만 지나감", direction=RIGHT,
+        tissue = callout([CX + 3.7, CY - 1.05, 0], "주변 조직", "약한 파동만 지나감", direction=RIGHT,
                          length=0.35, color=CYAN)
         self.play(FadeIn(tissue), run_time=0.5)
         self.say("다른 곳은 약한 파동만 지나가 손상이 적다", wait=2.8)
         self.play(FadeOut(tissue), FadeOut(b1), FadeOut(b2), run_time=0.4)
 
         # 3번째: 결석이 부서짐
-        self.say("되풀이하면 결석이 잘게 부서진다", wait=0.1)
+        self.say("여러 번(실제로는 수천 번) 되풀이하면\n결석이 잘게 부서진다", wait=0.1)
         s, fr = self.pulse()
         self.play(Flash(F2, color=YELLOW, line_length=0.45, num_lines=14, flash_radius=0.5),
                   s.animate.set_value(2 * A_ + 1.3), run_time=0.65, rate_func=linear)
@@ -226,7 +230,7 @@ class E4Lithotripsy(CaseScene):
         self.clear_all()
 
         line = VGroup(T("여러 충격파를 한 점에 모음", 30, ORANGE, bold=True), T("→", 30, WHITE_T, bold=True),
-                      T("보강 간섭으로 결석만 부순다", 30, WHITE_T, bold=True)).arrange(RIGHT, buff=0.22)
+                      T("보강 간섭으로 결석을 부순다", 30, WHITE_T, bold=True)).arrange(RIGHT, buff=0.22)
         p = panel(line, buff=0.45, pos=UP * 0.3)
         self.play(FadeIn(p, shift=UP * 0.15), run_time=0.8)
         self.wait(3.2)

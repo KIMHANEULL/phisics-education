@@ -113,11 +113,12 @@ class E3NoiseCancel(CaseScene):
         step2 = tag("② 진폭·파장은 같고, 위상은 반대인 소리", C_ANTI, 24).to_edge(UP, buff=0.3)
         self.play(FadeOut(step), FadeIn(step2), FadeIn(ax[1]), FadeIn(wa), FadeIn(la), run_time=0.7)
         self.say("② 소음과 진폭·파장은 같고\n위상은 반대인 음파를 만든다")
-        guide = DashedLine([1.0, Y1 + 0.7, 0], [1.0, Y2 - 0.7, 0], color=WHITE_T, stroke_width=2,
-                           dash_length=0.08)
         self.say("소음의 마루 ↔ 반대 소리의 골", wait=0)
         tt.rate = 0.0       # 잠깐 멈춰서 마루·골 비교
-        x_c = 1.0
+        xs = np.linspace(0.3, 0.3 + LN, 400)
+        x_c = xs[int(np.argmax([nf(x) for x in xs]))]   # 소음의 마루 자리
+        guide = DashedLine([x_c, Y1 + 0.7, 0], [x_c, Y2 - 0.7, 0], color=WHITE_T, stroke_width=2,
+                           dash_length=0.08)
         self.play(Create(guide), run_time=0.5)
         self.wait(2.4)
         self.play(FadeOut(guide), run_time=0.3)
