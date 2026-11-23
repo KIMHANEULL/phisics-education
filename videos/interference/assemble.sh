@@ -2,7 +2,7 @@
 # 충격파·소리의 간섭 4장면 합치기 (소리 포함)
 # usage: assemble.sh <장면 mp4 폴더> <출력 폴더>
 set -euo pipefail
-IN=$1; OUT=$2
+IN=$(realpath "$1"); mkdir -p "$2"; OUT=$(realpath "$2")
 mkdir -p "$OUT/norm"
 ORDER=(E1Shock E2Interference E3NoiseCancel E4Lithotripsy)
 LIST="$OUT/norm/list.txt"; : > "$LIST"
