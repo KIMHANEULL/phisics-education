@@ -4,7 +4,7 @@ from common import *
 C_LOUD = RED_T        # 보강
 C_SOFT = "#4D8BFF"    # 상쇄
 C_NOISE = "#4D8BFF"   # 소음(파랑)
-C_ANTI = RED_T        # 반대 위상(빨강)
+C_ANTI = ORANGE       # 반대 위상(주황) — 빨강/파랑은 보강/상쇄 전용
 C_SUM = GREEN         # 합성파
 
 V = 0.8               # 화면 속 파동 속력 (모든 장면 공통, 단위/초)

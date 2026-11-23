@@ -162,7 +162,7 @@ class E2Interference(CaseScene):
         self.add_sound(tone_amp(500, dur, amps, vol=0.35))
         self.play(sx.animate.set_value(WALK[1]), wiggle_icon(b, dur), run_time=dur, rate_func=linear)
         self.remove(b)
-        self.say("소리 크기가 거의 일정하다")
+        self.say("소리 크기가 크게 달라지지 않는다")
 
         # 스피커 2개
         dl = dim_line([-D_REAL / 2 * SC, SPK_Y + 0.85, 0], [D_REAL / 2 * SC, SPK_Y + 0.85, 0], "2 m",
@@ -262,7 +262,7 @@ class E2Interference(CaseScene):
         k2 = tag("마루 + 골 → 상쇄 (작게)", C_SOFT, 22)
         keys = VGroup(k1, k2).arrange(DOWN, aligned_edge=LEFT, buff=0.12).to_corner(UL, buff=0.3).shift(DOWN * 0.6)
         self.play(FadeIn(k1), run_time=0.4)
-        self.say("마루와 마루가 만나는 곳 → 보강 (빨간 점)")
+        self.say("마루와 마루가 만나는 곳 → 보강 (빨간 점)\n(골과 골이 만나는 곳도 보강)")
         self.show_blue = True
         self.play(FadeIn(k2), run_time=0.4)
         self.say("마루와 골이 만나는 곳 → 상쇄 (파란 점)")
@@ -290,7 +290,7 @@ class E2Interference(CaseScene):
         A, LL = 0.45, 1.6
         K = 2 * np.pi / LL
         X0, X1 = -4.0, 4.3
-        Y1, Y2, YS = 2.0, 0.65, -0.95
+        Y1, Y2, YS = 2.05, 0.8, -1.05
 
         def f1(x):
             return A * np.sin(K * (x - V * tt.get_value()))
@@ -306,9 +306,9 @@ class E2Interference(CaseScene):
         labs = VGroup(T("파동 1", 22, CYAN, bold=True).move_to([-5.3, Y1, 0]),
                       T("파동 2", 22, ORANGE, bold=True).move_to([-5.3, Y2, 0]),
                       T("합성파", 22, GREEN, bold=True).move_to([-5.3, YS, 0]))
-        sep = Line([X0, -0.05, 0], [X1, -0.05, 0], color=WHITE_T, stroke_width=1.5, stroke_opacity=0.5)
+        sep = Line([X0, 0.03, 0], [X1, 0.03, 0], color=WHITE_T, stroke_width=1.5, stroke_opacity=0.5)
         plus = T("+", 30, WHITE_T, bold=True).move_to([-5.3, (Y1 + Y2) / 2 + 0.05, 0])
-        eq = T("=", 30, WHITE_T, bold=True).move_to([-5.3, -0.05, 0])
+        eq = T("=", 30, WHITE_T, bold=True).move_to([-5.3, 0.03, 0])
 
         head1 = T("(가) 위상이 같을 때", 30, WHITE_T, bold=True).to_corner(UL, buff=0.35)
         head2 = T("(나) 위상이 반대일 때", 30, WHITE_T, bold=True).to_corner(UL, buff=0.35)
@@ -364,7 +364,7 @@ class E2Interference(CaseScene):
         rows = VGroup(
             T("경로차 = | S₁P − S₂P |", 28, WHITE_T, bold=True),
             colored([("P₂ :", C_LOUD), ("4λ − 3λ = λ", WHITE_T), ("→ 보강", C_LOUD)], 25),
-            colored([("P₁ :", C_SOFT), ("4λ − 3.5λ = λ/2", WHITE_T), ("→ 상쇄", C_SOFT)], 25),
+            colored([("P₁ :", C_SOFT), ("|3.5λ − 4λ| = λ/2", WHITE_T), ("→ 상쇄", C_SOFT)], 25),
             Line(LEFT * 2.9, RIGHT * 2.9, color=PANEL_STROKE, stroke_width=2),
             T("0, λ, 2λ, …  (반파장의 짝수 배)", 23, WHITE_T, bold=True),
             T("→ 보강 간섭 · 크게", 23, C_LOUD, bold=True),
@@ -414,5 +414,5 @@ class E2Interference(CaseScene):
         grp = VGroup(l1, l2).arrange(DOWN, buff=0.25)
         p = panel(grp, buff=0.5, pos=UP * 0.3)
         self.play(FadeIn(p, scale=0.96), run_time=0.8)
-        self.wait(4.5)
+        self.wait(3.4)
         self.play(FadeOut(p), run_time=0.6)

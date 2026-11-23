@@ -1,7 +1,7 @@
 """소음 제거 기술 (교과서 119쪽, 그림 III-22, III-23).
 
 소음 제거 이어폰: ① 외부 마이크가 소음 감지 ② 진폭·파장 같고 위상 반대인 소리 ③ 상쇄 간섭 →
-음악만 들린다 → 비행기 객실 → 자동차 배기관·실내 → 상쇄는 줄이고 보강은 키운다 → 한 줄 정리.
+음악이 더 깨끗하게 → 비행기 객실 → 자동차 배기관·실내 → 상쇄는 줄이고 보강은 키운다 → 한 줄 정리.
 """
 from ikit import *
 
@@ -64,7 +64,6 @@ class E3NoiseCancel(CaseScene):
     # ------------------------------------------------------------ 1. 소음 제거 이어폰
     def earphone(self):
         tt = time_driver(self)
-        sa = ValueTracker(1.0)      # 합성파에 남는 비율
         X0, X1 = -1.2, 5.8
         Y1, Y2, YS = 1.9, 0.45, -1.05
 
@@ -76,8 +75,8 @@ class E3NoiseCancel(CaseScene):
             Circle(radius=0.3, stroke_color=WHITE_T, stroke_width=2, fill_color="#F2F5F8",
                    fill_opacity=1).move_to(cp),
         )
-        mic = Dot(cp + RIGHT * 0.3 + UP * 0.05, radius=0.07, color=ORANGE)
-        micl = callout(mic.get_center(), "외부 마이크", None, direction=UR, length=0.9)
+        mic = Dot(cp + RIGHT * 0.3 + UP * 0.05, radius=0.07, color=CYAN)
+        micl = callout(mic.get_center(), "외부 마이크", None, direction=UR, length=0.9, color=CYAN)
 
         def nf(x):
             return A_N * noise_shape(KN * (x + V * tt.get_value()))
@@ -85,7 +84,7 @@ class E3NoiseCancel(CaseScene):
         wn = always_redraw(lambda: wave_line(nf, X0, X1, Y1, C_NOISE))
         wo = ValueTracker(1.0)      # 반대 위상 소리를 켜고 끄는 비율
         wa = always_redraw(lambda: wave_line(lambda x: -nf(x) * wo.get_value(), X0, X1, Y2, C_ANTI))
-        ws = always_redraw(lambda: wave_line(lambda x: nf(x) * sa.get_value(), X0, X1, YS, C_SUM, 5))
+        ws = always_redraw(lambda: wave_line(lambda x: nf(x) * (1 - wo.get_value()), X0, X1, YS, C_SUM, 5))
         ax = VGroup(*[Line([X0, y, 0], [X1, y, 0], color=GRAY_T, stroke_width=1.2, stroke_opacity=0.45)
                       for y in (Y1, Y2, YS)])
         ln = T("소음", 22, C_NOISE, bold=True).next_to([X0, Y1, 0], UP, buff=0.5).align_to([X0, 0, 0], LEFT)
@@ -105,9 +104,9 @@ class E3NoiseCancel(CaseScene):
         self.play(wiggle_icon(b, 2.0))
         self.remove(b)
 
-        step = tag("① 외부 마이크가 소음을 감지", ORANGE, 24).to_edge(UP, buff=0.3)
+        step = tag("① 외부 마이크가 소음을 감지", CYAN, 24).to_edge(UP, buff=0.3)
         self.play(FadeIn(step), FadeIn(mic), FadeIn(micl), run_time=0.5)
-        self.play(Flash(mic, color=ORANGE, line_length=0.18, num_lines=10), run_time=0.8)
+        self.play(Flash(mic, color=CYAN, line_length=0.18, num_lines=10), run_time=0.8)
         self.say("① 외부 마이크가 소음(파동)을 감지")
 
         step2 = tag("② 진폭·파장은 같고, 위상은 반대인 소리", C_ANTI, 24).to_edge(UP, buff=0.3)
@@ -124,14 +123,14 @@ class E3NoiseCancel(CaseScene):
         self.play(FadeOut(guide), run_time=0.3)
         tt.rate = 1.0
 
-        step3 = tag("③ 상쇄 간섭 → 소음이 사라진다", C_SUM, 24).to_edge(UP, buff=0.3)
+        step3 = tag("③ 상쇄 간섭 → 소음이 거의 사라진다", C_SUM, 24).to_edge(UP, buff=0.3)
         self.play(FadeOut(step2), FadeIn(step3), FadeIn(ax[2]), FadeIn(ws), FadeIn(ls), run_time=0.6)
         self.say("③ 둘이 만나면 상쇄 간섭", wait=1.6)
         b = badge("반대 위상 소리를 더하면", C_SUM).move_to([4.2, 3.35, 0])
         b.move_to([0, 0, 0]).to_corner(UR, buff=0.25)
         self.play(FadeOut(step3), FadeIn(b), run_time=0.3)
         self.add_sound(hum(2.0, quiet=0.1))
-        self.play(sa.animate.set_value(0.0), wiggle_icon(b, 0.7), run_time=0.7)
+        self.play(wiggle_icon(b, 0.7))
         self.play(wiggle_icon(b, 1.3))
         self.remove(b)
         self.say("소음이 거의 사라진다!")
@@ -142,12 +141,12 @@ class E3NoiseCancel(CaseScene):
         b2 = badge("반대 위상 소리를 더하면", C_SUM).to_corner(UR, buff=0.25)
         self.add(b1)
         self.add_sound(hum(1.8))
-        self.play(sa.animate.set_value(1.0), wo.animate.set_value(0.0), wiggle_icon(b1, 0.5), run_time=0.5)
+        self.play(wo.animate.set_value(0.0), wiggle_icon(b1, 0.5), run_time=0.5)
         self.play(wiggle_icon(b1, 1.3))
         self.remove(b1)
         self.add(b2)
         self.add_sound(hum(1.8, quiet=0.1))
-        self.play(sa.animate.set_value(0.0), wo.animate.set_value(1.0), wiggle_icon(b2, 0.5), run_time=0.5)
+        self.play(wo.animate.set_value(1.0), wiggle_icon(b2, 0.5), run_time=0.5)
         self.play(wiggle_icon(b2, 1.3))
         self.remove(b2)
         self.wait(0.6)
@@ -163,7 +162,7 @@ class E3NoiseCancel(CaseScene):
         self.play(LaggedStart(*[FadeIn(n, shift=UP * 0.3) for n in notes], lag_ratio=0.3),
                   wiggle_icon(bm, 1.7), run_time=1.7)
         self.remove(bm)
-        self.say("그래서 음악만 깨끗하게 들린다")
+        self.say("그래서 음악이 더 깨끗하게 들린다")
         tt.clear_updaters()
         self.clear_all()
 
@@ -187,7 +186,7 @@ class E3NoiseCancel(CaseScene):
                       fill_opacity=1).move_to(E)
         engl = label_bg(T("엔진", 22, WHITE_T, bold=True)).next_to(eng, DOWN, buff=0.12)
         wall = C + np.array([R * np.cos(-0.2), R * np.sin(-0.2), 0])
-        mic = Dot(wall + LEFT * 0.12, radius=0.08, color=ORANGE)
+        mic = Dot(wall + LEFT * 0.12, radius=0.08, color=CYAN)
         SP = C + np.array([1.2, 0.85, 0])
         spk = speaker_icon(C_ANTI, 0.4).rotate(PI).move_to(SP)
         view = tag("비행기 객실 단면", GRAY_T, 20).to_corner(UL, buff=0.3)
@@ -224,10 +223,10 @@ class E3NoiseCancel(CaseScene):
         self.play(wiggle_icon(b, 2.2))
         self.remove(b)
         self.wait(0.6)
-        ml = label_bg(T("마이크", 22, ORANGE, bold=True)).next_to(mic, LEFT, buff=0.15)
+        ml = label_bg(T("마이크", 22, CYAN, bold=True)).next_to(mic, LEFT, buff=0.15)
         sl = label_bg(T("스피커", 22, C_ANTI, bold=True)).next_to(spk, UP, buff=0.12)
         self.play(FadeIn(mic), FadeIn(ml), run_time=0.4)
-        self.play(Flash(mic, color=ORANGE, line_length=0.18), FadeIn(spk), FadeIn(sl), run_time=0.7)
+        self.play(Flash(mic, color=CYAN, line_length=0.18), FadeIn(spk), FadeIn(sl), run_time=0.7)
         self.say("마이크로 감지 → 스피커가 반대 위상 소리", wait=0)
         self.play(ra.animate.set_value(1.0), run_time=1.0)
         b = badge("반대 위상 소리를 더하면", C_SUM).to_corner(UR, buff=0.25)
@@ -256,8 +255,8 @@ class E3NoiseCancel(CaseScene):
                 if 0.1 < r < 3.2:
                     op = 1 - r / 3.2
                     g.add(ring_arc(P, r, LEFT, 0.8, C_NOISE, 3.5, op * (1 if r < 1.0 else 0.15)))
-                    if r > 0.5:
-                        g.add(ring_arc(P + LEFT * 0.5, r - 0.5, LEFT, 0.8, C_ANTI, 3, op * 0.9))
+                    if r > 0.76:   # 반 파장(0.26) 어긋나게: 마루 사이에 골
+                        g.add(ring_arc(P + LEFT * 0.5, r - 0.76, LEFT, 0.8, C_ANTI, 3, op * 0.9))
             return g
 
         wv = always_redraw(waves)
@@ -265,7 +264,7 @@ class E3NoiseCancel(CaseScene):
         t2 = tag("실내", GREEN, 22).next_to(cr, UP, buff=0.25)
         self.add(ground, cr, wv)
         self.play(FadeIn(t1), FadeIn(t2), run_time=0.5)
-        self.say("자동차 배기관·실내 소음에도 쓰인다")
+        self.say("자동차 배기관·실내 소음도\n같은 원리(반대 위상 소리)로 줄인다")
         self.wait(2.0)
         tt.clear_updaters()
         self.clear_all()
