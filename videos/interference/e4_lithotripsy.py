@@ -164,9 +164,10 @@ class E4Lithotripsy(CaseScene):
         f2l = label_bg(T("F₂ (초점)", 20, GRAY_T, bold=True)).next_to(F2, DOWN, buff=0.42)
         two = VGroup(rays[1].copy().set_stroke(GREEN, 4, 1), rays[6].copy().set_stroke(GREEN, 4, 1))
         tn = panel(T("F₁ → 반사판 → F₂ : 가는 길이가 모두 같아(= 2a) 동시에 도착", 20, GREEN), buff=0.16)
-        tn.to_edge(UP, buff=0.3)
+        tn.to_corner(UR, buff=0.3)
         self.play(FadeIn(f1l), FadeIn(f2l), Create(two), FadeIn(tn), run_time=0.8)
-        self.wait(3.4)
+        self.add_foreground_mobjects(f1l, f2l)
+        self.wait(4.0)
         self.play(FadeOut(two), FadeOut(tn), run_time=0.5)
 
         # 진폭 비교 막대
@@ -202,8 +203,8 @@ class E4Lithotripsy(CaseScene):
                   FadeIn(cr2), run_time=0.65, rate_func=linear)
         self.remove(fr)
         self.wait(1.6)
-        tissue = callout([CX + 3.7, CY - 1.05, 0], "주변 조직", "약한 파동만 지나감", direction=RIGHT,
-                         length=0.35, color=CYAN)
+        tissue = callout([CX + 3.2, CY - 1.05, 0], "주변 조직", "약한 파동만 지나감", direction=RIGHT,
+                         length=0.25, color=CYAN)
         self.play(FadeIn(tissue), run_time=0.5)
         self.say("다른 곳은 약한 파동만 지나가 손상이 적다", wait=2.8)
         self.play(FadeOut(tissue), FadeOut(b1), FadeOut(b2), run_time=0.4)

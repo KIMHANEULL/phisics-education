@@ -156,7 +156,7 @@ class E1Shock(CaseScene):
         wall = Line([wx, BY - 1.25, 0], [wx, BY + 1.25, 0], color=ORANGE, stroke_width=9)
         glow = wall.copy().set_stroke(width=26, opacity=0.25)
         wl = label_bg(T("압력의 벽", 21, ORANGE, bold=True)).next_to(wall, LEFT, buff=0.12)
-        wl.shift(UP * 1.05)
+        wl.shift(UP * 1.35)
         self.play(Create(wall), FadeIn(glow), FadeIn(wl), run_time=0.7)
         self.play(Indicate(wall, color=YELLOW, scale_factor=1.15), run_time=0.8)
         self.say("음속과 같으면 파면이 음원 앞에 겹겹이 쌓여\n진폭이 매우 커진다 (압력의 벽)", wait=4.2)
@@ -224,7 +224,7 @@ class E1Shock(CaseScene):
         tp = S0 + c * N * nrm
         r_ln = Line(S0, tp, color=CYAN, stroke_width=5)
         a_ln = Line(S0, S, color=C_S, stroke_width=5).shift(DOWN * 0.0)
-        r_lab = label_bg(T("vt", 24, CYAN, bold=True)).move_to((S0 + tp) / 2 + np.array([-0.3, 0.1, 0]))
+        r_lab = label_bg(T("vt", 24, CYAN, bold=True)).move_to((S0 + tp) / 2 + np.array([-0.45, 0.1, 0]))
         a_lab = label_bg(T("vₛt", 24, C_S, bold=True)).move_to((S0 + S) / 2 + DOWN * 0.42)
         ang = Arc(radius=0.75, start_angle=PI - th, angle=th, arc_center=S, stroke_color=WHITE_T,
                   stroke_width=3)
@@ -249,7 +249,7 @@ class E1Shock(CaseScene):
         self.add(cnl)
         self.say("충격파면은 음원과 함께 계속 나아간다", wait=0.1)
         self.play(tw.animate.set_value(N + 1.8), run_time=1.8 * TP, rate_func=linear)
-        self.wait(0.8)
+        self.wait(0.5)
         self.remove(waves, sd, cnl)
         self.clear_all()
 
@@ -279,7 +279,7 @@ class E1Shock(CaseScene):
         plane.shift(np.array([-7.6, JY, 0]))
         self.add(plane)
         self.add_foreground_mobject(jt)
-        hit_x = PX + (JY - GY) / np.tan(th)   # 기수가 이 자리일 때 충격파면이 사람에게 닿음
+        hit_x = PX + (JY - (GY + 0.8)) / np.tan(th)   # 기수가 이 자리일 때 충격파면이 사람 귀 높이에 닿음
         spd = 3.2
         t1 = (hit_x - (-7.6)) / spd
         self.say("음속보다 빠른 전투기", wait=0.1)
@@ -287,11 +287,11 @@ class E1Shock(CaseScene):
         self.play(plane.animate.shift(RIGHT * (hit_x + 7.6)), run_time=t1, rate_func=linear)
         bang = T("쾅!", 40, YELLOW, bold=True).next_to(man, UP, buff=0.25).shift(LEFT * 0.2)
         ring = Circle(radius=0.3, color=YELLOW, stroke_width=5).move_to(man.get_center())
-        rest = 10.0 - hit_x
-        self.play(plane.animate.shift(RIGHT * rest), FadeIn(bang, scale=1.6),
-                  ring.animate.scale(4).set_stroke(opacity=0),
-                  Wiggle(man, scale_value=1.1, rotation_angle=0.06 * TAU),
-                  run_time=rest / spd, rate_func=linear)
+        rest = 12.0 - hit_x
+        self.play(plane.animate(run_time=rest / spd, rate_func=linear).shift(RIGHT * rest),
+                  FadeIn(bang, scale=1.6, run_time=0.25),
+                  ring.animate(run_time=0.8).scale(4).set_stroke(opacity=0),
+                  Wiggle(man, scale_value=1.1, rotation_angle=0.06 * TAU, run_time=0.8))
         self.remove(ring)
         self.remove_foreground_mobject(jt)
         self.say("충격파면이 지나갈 때 '쾅' — 소닉 붐", wait=3.0)
@@ -304,7 +304,7 @@ class E1Shock(CaseScene):
         top = T("위에서 본 모습", 20, GRAY_T).to_corner(UL, buff=0.3)
         self.play(FadeIn(water), FadeIn(top), run_time=0.5)
         Y = 0.4
-        X0 = -5.4
+        X0 = -4.8
         TP = 0.3             # 물결 하나 내는 간격 (초)
         cw = U * TP          # 물결파 속력
         vb = 2.2 * cw        # 배 속력 (물결파의 2.2배)
@@ -341,5 +341,5 @@ class E1Shock(CaseScene):
                       T("파면이 겹쳐 원뿔 모양 충격파", 32, ORANGE, bold=True)).arrange(RIGHT, buff=0.25)
         p = panel(line, buff=0.45, pos=UP * 0.3)
         self.play(FadeIn(p, shift=UP * 0.15), run_time=0.8)
-        self.wait(3.2)
+        self.wait(2.9)
         self.play(FadeOut(p), run_time=0.6)
