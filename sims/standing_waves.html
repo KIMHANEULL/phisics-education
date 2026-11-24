@@ -353,9 +353,9 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
         <p>모든 정수 배: ${[1,2,3,4].map(k => f0(k * AIR.v / (2 * AIR.L))).join(', ')} Hz …</p>` : `
         <h2>한쪽이 닫힌 관</h2>
         <p>닫힌 끝은 공기가 움직이지 못해 <b style="color:var(--red)">마디</b>, 열린 끝은 <b style="color:var(--violet)">배</b>. 관 길이 안에 λ/4가 홀수 개.</p>
-        <div class="formula"><span class="c">L = (2n−1) · λ/4</span><br>→ <span class="g">λ = 4L / (2n−1)</span><br>→ <span class="o">f = (2n−1) · v / 4L</span></div>
+        <div class="formula"><span class="c">l = n · λ/4</span> (n = 1, 3, 5 …)<br>→ <span class="g">λₙ = 4l / n</span><br>→ <span class="o">fₙ = n · v / 4l</span></div>
         <dl class="kv">
-          <dt>2n − 1</dt><dd>${m}</dd><dt>관 길이 L</dt><dd>${AIR.L} m</dd><dt>소리 속력 v</dt><dd>${AIR.v} m/s</dd>
+          <dt>n (홀수)</dt><dd>${m}</dd><dt>관 길이 L</dt><dd>${AIR.L} m</dd><dt>소리 속력 v</dt><dd>${AIR.v} m/s</dd>
           <dt>파장 λ</dt><dd style="color:var(--green)">${lam.toFixed(3)} m</dd><dt>진동수 f</dt><dd style="color:var(--orange)">${f0(f)} Hz</dd>
         </dl>
         <p>홀수 배만: ${[1,3,5,7].map(k => f0(k * AIR.v / (4 * AIR.L))).join(', ')} Hz … (같은 길이의 열린관보다 기본음이 한 옥타브 낮다)</p>`;
@@ -382,7 +382,7 @@ canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%
     } else {
       const open = state.pipe === 'open';
       modeControls.innerHTML = `<div class="seg" role="group" aria-label="관 종류"><button aria-pressed="${open}" data-p="open">열린관</button><button aria-pressed="${!open}" data-p="closed">닫힌관</button></div>
-        <span style="color:var(--muted)">${open ? 'n =' : '2n−1 ='}</span><div class="seg" role="group" aria-label="몇 번째 공명">${[1,2,3,4].map(k => `<button aria-pressed="${k === state.pn}" data-k="${k}">${open ? k : 2 * k - 1}</button>`).join('')}</div>
+        <span style="color:var(--muted)">${open ? 'n =' : 'n (홀수) ='}</span><div class="seg" role="group" aria-label="몇 번째 공명">${[1,2,3,4].map(k => `<button aria-pressed="${k === state.pn}" data-k="${k}">${open ? k : 2 * k - 1}</button>`).join('')}</div>
         <button class="btn ${state.sound ? 'on' : ''}" id="snd">${state.sound ? '소리 끄기' : '소리 듣기'}</button>`;
       modeControls.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { state.pipe = b.dataset.p; soundUpdate(); refresh(); });
       modeControls.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { state.pn = +b.dataset.k; soundUpdate(); refresh(); });

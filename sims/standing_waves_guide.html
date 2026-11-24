@@ -1,0 +1,499 @@
+<title>정상파 풀어보기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: 교과서 121~125쪽 순서를 따라 내려가는 한 줄 읽기 문서. 절마다 설명 → 움직이는 그림 → 조작 버튼.
+   Single dark look on purpose: 같은 시리즈 영상·시뮬레이션(남색 배경)과 맞춘다. */
+:root {
+  --bg: #0a1220; --panel: #0f1b2d; --panel2: #0b1524; --line: #2a4560;
+  --fg: #eef3f8; --muted: #9aabbd;
+  --cyan: #3fd3ff; --orange: #ffb547; --green: #5be39b; --red: #ff6b6b; --violet: #c9a7ff; --blue: #6ea8ff;
+  --font: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 16.5px; line-height: 1.7;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 60px; }
+main { max-width: 980px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+header h1 { margin: 0; font-size: clamp(26px, 4vw, 38px); font-weight: 900; letter-spacing: -0.01em; text-wrap: balance; }
+header p { margin: 6px 0 0; color: var(--muted); }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+nav.toc a { color: var(--fg); text-decoration: none; font-size: 14px; font-weight: 700; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
+nav.toc a:hover { border-color: var(--cyan); color: var(--cyan); }
+section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 14px; scroll-margin-top: 12px; }
+.eyebrow { font-size: 13px; font-weight: 700; color: var(--cyan); letter-spacing: 0.04em; }
+h2 { margin: 0; font-size: clamp(20px, 2.6vw, 26px); font-weight: 900; text-wrap: balance; }
+p { margin: 0; max-width: 68ch; }
+.muted { color: var(--muted); }
+b.g { color: var(--green); } b.o { color: var(--orange); } b.c { color: var(--cyan); } b.r { color: var(--red); } b.v { color: var(--violet); }
+.key { background: var(--panel2); border-left: 3px solid var(--green); border-radius: 6px; padding: 10px 14px; max-width: 68ch; }
+.key strong { color: var(--green); }
+.formula { font-family: var(--mono); font-size: 17px; background: var(--panel2); border-radius: 8px; padding: 10px 14px; overflow-x: auto; white-space: nowrap; }
+.cv { position: relative; width: 100%; background: var(--panel2); border-radius: 10px; overflow: hidden; }
+.cv canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.h300 { height: 300px; } .h340 { height: 340px; } .h380 { height: 380px; } .h240 { height: 240px; }
+@media (max-width: 600px) { .h300 { height: 260px; } .h340 { height: 300px; } .h380 { height: 340px; } }
+.row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
+.btn { font: inherit; font-size: 15px; font-weight: 700; color: var(--fg); background: #16263b; border: 1px solid var(--line); border-radius: 8px; padding: 6px 13px; cursor: pointer; }
+.btn.on { background: var(--green); color: var(--bg); border-color: var(--green); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; flex-wrap: wrap; }
+.seg button { font: inherit; font-size: 15px; font-weight: 700; background: transparent; color: var(--muted); border: 0; padding: 6px 12px; cursor: pointer; min-width: 42px; }
+.seg button[aria-pressed="true"] { background: var(--cyan); color: var(--bg); }
+.seg button.bad { text-decoration: line-through; text-decoration-color: var(--red); }
+.seg button.bad[aria-pressed="true"] { background: var(--red); text-decoration: none; }
+label { color: var(--muted); font-size: 15px; display: inline-flex; gap: 8px; align-items: center; }
+input[type="range"] { accent-color: var(--cyan); width: 200px; max-width: 60vw; }
+.readout { font-family: var(--mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+.verdict { font-weight: 900; font-size: 17px; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 700px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.qa { display: grid; gap: 10px; }
+.qa details { background: var(--panel2); border-radius: 8px; padding: 10px 14px; }
+.qa summary { cursor: pointer; font-weight: 700; }
+.qa .formula { margin-top: 8px; }
+.btn:focus-visible, .seg button:focus-visible, input:focus-visible, summary:focus-visible, nav.toc a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+</style>
+
+<main>
+  <header>
+    <h1>정상파 풀어보기</h1>
+    <p>교과서 121~125쪽(줄·관의 정상파, 공명, 악기, 음색)을 순서대로, 움직이는 그림으로 하나씩 확인한다. 그림은 실제보다 아주 느리게 움직인다.</p>
+    <nav class="toc" aria-label="차례">
+      <a href="#s1">1 줄: 왜 정해진 소리만?</a><a href="#s2">2 관 그림 읽는 법</a><a href="#s3">3 닫힌관 · 열린관</a>
+      <a href="#s4">4 공명</a><a href="#s5">5 플루트 구멍</a><a href="#s6">6 음색</a><a href="#s7">개념 확인 풀이</a>
+    </nav>
+  </header>
+
+  <!-- 1 -->
+  <section id="s1">
+    <div class="eyebrow">121쪽 · 양 끝이 고정된 줄</div>
+    <h2>줄은 왜 정해진 진동수로만 떨까?</h2>
+    <p>줄의 양 끝은 묶여 있어서 <b class="r">절대 움직일 수 없다 → 항상 마디</b>. 그러니 줄 위에 생기는 물결 모양은 "양 끝이 둘 다 마디"인 모양만 살아남는다. 아래에서 진동수를 바꿔 보면, 대부분의 진동수에서는 줄이 거의 안 떨고 <b class="g">특정 진동수에서만 크게 떤다</b>.</p>
+    <div class="cv h340"><canvas id="c1"></canvas></div>
+    <div class="row">
+      <label for="f1">흔드는 진동수 <input type="range" id="f1" min="40" max="420" step="1" value="150"></label>
+      <span class="readout" id="f1out"></span>
+      <div class="seg" role="group" aria-label="고유 진동수로 맞추기"><button data-snap="100">f₁</button><button data-snap="200">f₂</button><button data-snap="300">f₃</button><button data-snap="400">f₄</button></div>
+      <button class="btn" id="snd1">소리 듣기</button>
+    </div>
+    <p class="verdict" id="v1"></p>
+    <div class="key"><strong>핵심:</strong> 줄 길이 l 안에 반파장(λ/2)이 <b>딱 정수 개</b> 들어가야 양 끝이 마디가 된다. l = n·λ/2 → <b class="g">λₙ = 2l/n</b>, <b class="o">fₙ = v/λₙ = n·v/2l</b>. 이 진동수들을 <b class="g">고유 진동수</b>라 하고, 그 사이 진동수(예: f₁과 f₂ 사이)로는 정상파가 생기지 않는다.</div>
+    <p class="muted">그림의 줄: 길이 l = 1.2 m, 줄에서 파동 속력 v = 240 m/s → f₁ = 240 ÷ (2 × 1.2) = 100 Hz, f₂ = 200 Hz, f₃ = 300 Hz …</p>
+  </section>
+
+  <!-- 2 -->
+  <section id="s2">
+    <div class="eyebrow">121~122쪽 · 관 그림의 두 곡선</div>
+    <h2>관 속 그림의 엇갈린 두 선은 무엇일까?</h2>
+    <p>소리는 <b>종파</b>라서 관 속 공기 알갱이는 <b>관 방향(좌우)으로</b> 앞뒤로 떤다. 교과서의 엇갈린 두 곡선은 "각 자리의 알갱이가 <b>좌우로 얼마나 크게 떠는지(진폭)</b>"를 보기 쉽게 <b>위아래 높이로 바꿔 그린 것</b>이다. 공기가 관 안에서 물결처럼 위아래로 출렁이는 게 아니다.</p>
+    <div class="cv h380"><canvas id="c2"></canvas></div>
+    <div class="row">
+      <div class="seg" role="group" aria-label="관 종류"><button data-p2="closed" aria-pressed="true">한쪽만 열린 관</button><button data-p2="open" aria-pressed="false">양쪽이 열린 관</button></div>
+      <label><input type="checkbox" id="track" checked> 알갱이 하나 따라가기</label>
+    </div>
+    <div class="key"><strong>읽는 법:</strong> 두 선이 <b class="r">만나는 곳 = 마디</b>(알갱이가 거의 안 움직임), 두 선이 <b class="v">가장 벌어진 곳 = 배</b>(가장 크게 떪).
+      <b>닫힌 끝</b>은 벽이라 공기가 움직일 수 없으니 <b class="r">마디</b>(고정단 반사), <b>열린 끝</b>은 공기가 자유롭게 드나드니 <b class="v">배</b>(자유단 반사).</div>
+  </section>
+
+  <!-- 3 -->
+  <section id="s3">
+    <div class="eyebrow">121~122쪽 · 고유 진동수</div>
+    <h2>닫힌관은 왜 홀수 배만 날까?</h2>
+    <p>규칙은 딱 두 개다. <b class="r">닫힌 끝 = 마디</b>, <b class="v">열린 끝 = 배</b>. 그리고 마디에서 이웃한 배까지는 언제나 <b class="g">λ/4</b>다. 관을 λ/4 조각으로 채운다고 생각해 보자. 줄을 긋는 번호(2, 4 …)를 눌러 보면 왜 안 되는지 보인다.</p>
+    <div class="cv h340"><canvas id="c3"></canvas></div>
+    <div class="row">
+      <div class="seg" role="group" aria-label="관 종류"><button data-p3="closed" aria-pressed="true">한쪽만 열린 관</button><button data-p3="open" aria-pressed="false">양쪽이 열린 관</button></div>
+      <span class="muted">n =</span><div class="seg" role="group" aria-label="몇 배 진동" id="n3"></div>
+      <button class="btn" id="snd3">소리 듣기</button>
+    </div>
+    <p class="verdict" id="v3"></p>
+    <div class="two">
+      <div class="formula">한쪽만 열린 관 (n = 1, 3, 5 …)<br>l = n · λ/4 → λₙ = 4l/n<br>fₙ = n · v/4l</div>
+      <div class="formula">양쪽이 열린 관 (n = 1, 2, 3 …)<br>l = n · λ/2 → λₙ = 2l/n<br>fₙ = n · v/2l</div>
+    </div>
+    <div class="key"><strong>왜 홀수만?</strong> 닫힌관은 한쪽 끝이 마디, 다른 끝이 배다. 마디→배→마디→배 … 순서로 λ/4씩 번갈아 오므로, "마디로 시작해서 배로 끝나려면" λ/4 조각이 <b>홀수 개</b>여야 한다. 짝수 개면 끝이 다시 마디가 되어 열린 끝 규칙(배)을 어긴다. 그래서 n = 1, 3, 5 …(교과서 기호 그대로 n은 홀수)만 생긴다.</div>
+    <p class="muted">그림의 관: 길이 l = 0.85 m, 소리 속력 v = 340 m/s → 닫힌관 f₁ = 340 ÷ (4 × 0.85) = 100 Hz, 열린관 f₁ = 340 ÷ (2 × 0.85) = 200 Hz. 같은 길이면 닫힌관의 기본음이 열린관의 절반(한 옥타브 낮음).</p>
+  </section>
+
+  <!-- 4 -->
+  <section id="s4">
+    <div class="eyebrow">124쪽 · 공명</div>
+    <h2>공명: 밖에서 들어온 소리가 고유 진동수와 맞을 때</h2>
+    <p>관 입구 앞의 스피커에서 여러 진동수의 소리를 넣어 본다. 들어온 소리의 진동수가 <b class="g">관의 고유 진동수와 같을 때만</b> 관 속 정상파의 진폭이 크게 자라 소리가 커진다. 이것이 <b>공명</b>이다. 악기의 울림통도, 관악기의 관도 이렇게 원하는 소리만 키운다.</p>
+    <div class="cv h340"><canvas id="c4"></canvas></div>
+    <div class="row">
+      <label for="f4">넣어 주는 소리 <input type="range" id="f4" min="40" max="560" step="1" value="160"></label>
+      <span class="readout" id="f4out"></span>
+      <div class="seg" role="group" aria-label="관 종류"><button data-p4="closed" aria-pressed="true">한쪽만 열린 관</button><button data-p4="open" aria-pressed="false">양쪽이 열린 관</button></div>
+      <button class="btn" id="snd4">소리 듣기</button>
+    </div>
+    <p class="verdict" id="v4"></p>
+    <p class="muted">오른쪽 그래프: 가로 = 넣어 준 진동수, 세로 = 관 속 정상파의 진폭. 뾰족한 봉우리들이 고유 진동수다. 닫힌관(l = 0.85 m)은 100, 300, 500 Hz, 열린관은 200, 400 Hz에서 봉우리가 생긴다.</p>
+  </section>
+
+  <!-- 5 -->
+  <section id="s5">
+    <div class="eyebrow">125쪽 · 플루트</div>
+    <h2>구멍을 열면 왜 음이 높아질까?</h2>
+    <p>플루트는 양쪽이 열린 관이다. 구멍을 열면 그 자리에서 공기가 밖으로 드나들 수 있어 <b class="v">그 자리가 배</b>가 된다. 소리를 내는 관의 길이가 <b>입구~열린 구멍까지로 짧아진 것</b>과 같으니, λ = 2l이 짧아지고 f = v/2l은 커진다.</p>
+    <div class="cv h300"><canvas id="c5"></canvas></div>
+    <div class="row">
+      <span class="muted">열린 구멍:</span><div class="seg" role="group" aria-label="열린 구멍" id="holes"></div>
+      <button class="btn" id="snd5">소리 듣기</button>
+      <span class="readout" id="v5"></span>
+    </div>
+    <p class="muted">그림의 관은 단순화한 모형이다(전체 길이 0.60 m). 실제 플루트는 구멍 크기, 관 끝 보정 등 때문에 계산값과 조금 다르다.</p>
+  </section>
+
+  <!-- 6 -->
+  <section id="s6">
+    <div class="eyebrow">125쪽 자료실 · 음색</div>
+    <h2>같은 음인데 악기마다 소리가 다른 이유</h2>
+    <p>실제 기타 줄은 기본 진동 하나만 하지 않는다. <b class="c">기본 진동(f₁)</b>, <b class="v">2배 진동(f₂)</b>, <b class="g">3배 진동(f₃)</b> … 여러 정상파가 <b>동시에</b> 생기고, 줄의 모양은 그 합(<b class="o">합성파</b>)이 된다. 우리 귀에는 진폭이 가장 큰 기본 진동의 높이로 들리지만, 섞인 비율이 달라지면 <b>음색</b>이 달라진다.</p>
+    <div class="two">
+      <div class="cv h300"><canvas id="c6a"></canvas></div>
+      <div class="cv h300"><canvas id="c6b"></canvas></div>
+    </div>
+    <div class="row">
+      <label for="a1">f₁ <input type="range" id="a1" min="0" max="1" step="0.01" value="1"></label>
+      <label for="a2">f₂ <input type="range" id="a2" min="0" max="1" step="0.01" value="0.35"></label>
+      <label for="a3">f₃ <input type="range" id="a3" min="0" max="1" step="0.01" value="0.12"></label>
+      <label for="a4">f₄ <input type="range" id="a4" min="0" max="1" step="0.01" value="0"></label>
+    </div>
+    <div class="row">
+      <div class="seg" role="group" aria-label="미리 정한 섞음"><button data-pre="book" aria-pressed="true">교과서 그림</button><button data-pre="pure" aria-pressed="false">기본 진동만</button><button data-pre="bright" aria-pressed="false">배음 많이</button></div>
+      <button class="btn" id="snd6">소리 듣기 (f₁ = 220 Hz)</button>
+    </div>
+    <p class="muted">왼쪽: 줄 위 모양(교과서 그림 (나)처럼 정상파 세 개와 그 합). 오른쪽: 줄의 한 점이 시간에 따라 떠는 모양(소리의 파형). 진동수(음 높이)는 같고 파형만 달라진다. 이것이 플루트와 오보에가 같은 음을 내도 다르게 들리는 이유다.</p>
+  </section>
+
+  <!-- 7 -->
+  <section id="s7">
+    <div class="eyebrow">122쪽 개념 확인</div>
+    <h2>개념 확인 풀이</h2>
+    <div class="qa">
+      <details><summary>1. 양 끝이 고정된 길이 0.5 m인 줄에 생기는 정상파 중 가장 긴 파장은?</summary>
+        <p>가장 긴 파장 = 기본 진동(n = 1). 줄 길이 안에 반파장이 1개 들어간다.</p>
+        <div class="formula">λ₁ = 2l = 2 × 0.5 m = 1 m</div></details>
+      <details><summary>2. 길이 17 cm인 한쪽 끝만 열린 관의 기본 진동수는? (소리 속력 340 m/s)</summary>
+        <p>한쪽만 열린 관의 기본 진동은 관 길이 안에 λ/4가 1개 → λ₁ = 4l.</p>
+        <div class="formula">λ₁ = 4 × 0.17 m = 0.68 m<br>f₁ = v/λ₁ = 340 ÷ 0.68 = 500 Hz</div></details>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const C = { cyan: css('--cyan'), orange: css('--orange'), green: css('--green'), red: css('--red'), violet: css('--violet'), blue: css('--blue'), fg: css('--fg'), muted: css('--muted'), line: css('--line') };
+  const FONT = css('--font');
+  const reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const SPEED = reduce ? 0.25 : 0.6;   // 화면에서 초당 진동 횟수
+
+  // ---------- 캔버스 도우미 ----------
+  function setup(id) {
+    const cv = document.getElementById(id), ctx = cv.getContext('2d');
+    const o = { cv, ctx, W: 0, H: 0, visible: true };
+    const fit = () => { const r = cv.parentElement.getBoundingClientRect(); const d = Math.min(devicePixelRatio || 1, 2);
+      o.W = r.width; o.H = r.height; cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); ctx.setTransform(d, 0, 0, d, 0, 0); };
+    new ResizeObserver(fit).observe(cv.parentElement); fit();
+    new IntersectionObserver(es => es.forEach(e => o.visible = e.isIntersecting)).observe(cv);
+    return o;
+  }
+  function T(c, s, x, y, col, size = 14, al = 'center', w = 700) { c.fillStyle = col; c.font = `${w} ${size}px ${FONT}`; c.textAlign = al; c.textBaseline = 'middle'; c.fillText(s, x, y); }
+  function curve(c, f, x0, x1, y0, sy, col, lw = 3, dash = null, a = 1) {
+    c.save(); c.globalAlpha = a; c.strokeStyle = col; c.lineWidth = lw; if (dash) c.setLineDash(dash); c.beginPath();
+    for (let i = 0; i <= 300; i++) { const u = i / 300, x = x0 + (x1 - x0) * u, y = y0 - f(u) * sy; i ? c.lineTo(x, y) : c.moveTo(x, y); }
+    c.stroke(); c.restore();
+  }
+  function dot(c, x, y, r, col) { c.fillStyle = col; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); }
+  function hline(c, x0, x1, y, col = C.line, dash = [4, 6]) { c.strokeStyle = col; c.lineWidth = 1; c.setLineDash(dash); c.beginPath(); c.moveTo(x0, y); c.lineTo(x1, y); c.stroke(); c.setLineDash([]); }
+  function wall(c, x, y, h) { c.fillStyle = '#3a4a5e'; c.fillRect(x - 5, y - h / 2, 10, h); }
+  function pipe(c, x0, x1, yc, ph, closedLeft) {
+    c.strokeStyle = '#8fb0cf'; c.lineWidth = 4; c.beginPath();
+    c.moveTo(x0, yc - ph / 2); c.lineTo(x1, yc - ph / 2); c.moveTo(x0, yc + ph / 2); c.lineTo(x1, yc + ph / 2); c.stroke();
+    if (closedLeft) { c.fillStyle = '#8fb0cf'; c.fillRect(x0 - 9, yc - ph / 2 - 2, 9, ph + 4); }
+  }
+
+  // ---------- 소리 ----------
+  let actx = null;
+  const voices = {};
+  function audio() { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); return actx; }
+  function startVoice(key, partials) {      // partials: [{f, a}]
+    stopVoice(key); const a = audio(); const g = a.createGain(); g.gain.value = 0; g.connect(a.destination);
+    const oscs = partials.map(p => { const o = a.createOscillator(), og = a.createGain(); o.type = 'sine'; o.frequency.value = p.f; og.gain.value = p.a; o.connect(og).connect(g); o.start(); return { o, og }; });
+    g.gain.linearRampToValueAtTime(0.16, a.currentTime + 0.05);
+    voices[key] = { g, oscs };
+  }
+  function updateVoice(key, partials, level = 0.16) {
+    const v = voices[key]; if (!v || !actx) return;
+    v.oscs.forEach((s, i) => { if (partials[i]) { s.o.frequency.setTargetAtTime(partials[i].f, actx.currentTime, 0.02); s.og.gain.setTargetAtTime(partials[i].a, actx.currentTime, 0.03); } });
+    v.g.gain.setTargetAtTime(level, actx.currentTime, 0.05);
+  }
+  function stopVoice(key) { const v = voices[key]; if (!v || !actx) return; v.g.gain.setTargetAtTime(0, actx.currentTime, 0.03); setTimeout(() => v.oscs.forEach(s => { try { s.o.stop(); } catch (e) {} }), 200); delete voices[key]; }
+  function soundButton(btn, key, partialsFn, levelFn) {
+    btn.addEventListener('click', () => {
+      try {
+        if (voices[key]) { stopVoice(key); btn.classList.remove('on'); btn.textContent = btn.dataset.label; }
+        else { startVoice(key, partialsFn()); if (levelFn) updateVoice(key, partialsFn(), levelFn()); btn.classList.add('on'); btn.textContent = '소리 끄기'; }
+      } catch (e) { btn.textContent = '이 기기에서는 소리를 낼 수 없어요'; }
+    });
+    btn.dataset.label = btn.textContent;
+  }
+
+  // ---------- 1. 줄: 진동수에 따른 진폭 ----------
+  const S1 = { f: 150, L: 1.2, v: 240 };
+  const c1 = setup('c1');
+  const f1 = document.getElementById('f1');
+  function resp1(f) {                   // 왼쪽 끝을 작게 흔들 때 정상 상태 진폭(감쇠 포함, 그림용)
+    const kL = 2 * Math.PI * f / S1.v * S1.L; const d = 0.06;
+    return 1 / Math.sqrt(Math.sin(kL) ** 2 + d * d);
+  }
+  function shape1(f, u) {                // y(x) ∝ sin(k(L−x)) / sin(kL) 를 크기만 맞춰 그림
+    const kL = 2 * Math.PI * f / S1.v * S1.L, d = 0.06;
+    return Math.sin(kL * (1 - u)) / Math.sqrt(Math.sin(kL) ** 2 + d * d);
+  }
+  function draw1(t) {
+    const { ctx: c, W, H } = c1; c.clearRect(0, 0, W, H);
+    const wide = W > 640, gx0 = wide ? W * 0.62 : 40, gW = wide ? W * 0.34 : W - 60;
+    const sx0 = 50, sx1 = wide ? W * 0.55 : W - 50, sy = wide ? H * 0.42 : H * 0.28;
+    const A = Math.min(H * 0.2, 70);
+    const amp = resp1(S1.f), norm = Math.min(1, amp / 16);
+    // 줄
+    hline(c, sx0, sx1, sy); wall(c, sx0 - 4, sy, 70); wall(c, sx1 + 4, sy, 70);
+    const ph = 2 * Math.PI * SPEED * t;
+    curve(c, u => shape1(S1.f, u) / 16 * Math.cos(ph), sx0, sx1, sy, A, C.green, 4);
+    T(c, '흔드는 쪽', sx0, sy + 52, C.muted, 12); T(c, '고정', sx1, sy + 52, C.muted, 12);
+    // 반파장 몇 개?
+    const lam = S1.v / S1.f, halves = S1.L / (lam / 2);
+    T(c, `줄 길이 안의 반파장(λ/2) 개수 = ${halves.toFixed(2)}개`, (sx0 + sx1) / 2, sy - A - 22, Math.abs(halves - Math.round(halves)) < 0.03 ? C.green : C.fg, 15);
+    // 공명 곡선
+    const gy0 = wide ? H - 40 : H - 30, gH = wide ? H * 0.62 : H * 0.32, gy1 = gy0 - gH;
+    c.strokeStyle = C.line; c.lineWidth = 1; c.beginPath(); c.moveTo(gx0, gy1); c.lineTo(gx0, gy0); c.lineTo(gx0 + gW, gy0); c.stroke();
+    const fx = f => gx0 + gW * (f - 40) / 380;
+    c.strokeStyle = C.cyan; c.lineWidth = 2; c.beginPath();
+    for (let i = 0; i <= 400; i++) { const f = 40 + 380 * i / 400, y = gy0 - gH * Math.min(1, resp1(f) / 16); i ? c.lineTo(fx(f), y) : c.moveTo(fx(f), y); }
+    c.stroke();
+    [100, 200, 300, 400].forEach((f, i) => T(c, `f${'₁₂₃₄'[i]}`, fx(f), gy0 + 14, C.muted, 12));
+    T(c, '진폭', gx0 - 4, gy1 - 10, C.muted, 12, 'left');
+    c.strokeStyle = C.orange; c.lineWidth = 2; c.beginPath(); c.moveTo(fx(S1.f), gy0); c.lineTo(fx(S1.f), gy0 - gH * norm); c.stroke(); dot(c, fx(S1.f), gy0 - gH * norm, 5, C.orange);
+  }
+  function upd1() {
+    S1.f = +f1.value; document.getElementById('f1out').textContent = `${S1.f} Hz`;
+    const n = S1.f / 100, near = Math.abs(n - Math.round(n)) < 0.03 && Math.round(n) >= 1;
+    document.getElementById('v1').innerHTML = near ? `<span style="color:var(--green)">고유 진동수 f${'₀₁₂₃₄'[Math.round(n)]} = ${Math.round(n) * 100} Hz → 정상파가 크게 생긴다 (${Math.round(n)}배 진동)</span>` : `<span style="color:var(--muted)">고유 진동수가 아니다 → 반사파와 어긋나 거의 떨지 않는다</span>`;
+    updateVoice('s1', [{ f: S1.f, a: 1 }], 0.03 + 0.15 * Math.min(1, resp1(S1.f) / 16));
+  }
+  f1.addEventListener('input', upd1);
+  document.querySelectorAll('[data-snap]').forEach(b => b.onclick = () => { f1.value = b.dataset.snap; upd1(); });
+  soundButton(document.getElementById('snd1'), 's1', () => [{ f: S1.f, a: 1 }], () => 0.03 + 0.15 * Math.min(1, resp1(S1.f) / 16));
+  upd1();
+
+  // ---------- 2. 관 그림 읽기 ----------
+  const S2 = { pipe: 'closed', track: true }; const c2 = setup('c2');
+  function draw2(t) {
+    const { ctx: c, W, H } = c2; c.clearRect(0, 0, W, H);
+    const x0 = 60, x1 = W - 60, yc = H * 0.5, ph = Math.min(H * 0.55, 190);
+    const closed = S2.pipe === 'closed';
+    const s = u => closed ? Math.sin(Math.PI * u / 2) : Math.cos(Math.PI * u);   // 기본 진동의 변위 진폭
+    pipe(c, x0, x1, yc, ph, closed);
+    // 교과서처럼 그린 두 곡선
+    curve(c, u => s(u), x0, x1, yc, ph * 0.42, C.red, 2.5, null, 0.9);
+    curve(c, u => -s(u), x0, x1, yc, ph * 0.42, C.red, 2.5, null, 0.9);
+    // 알갱이(좌우로만 떪)
+    const w = 2 * Math.PI * SPEED * t, amp = (x1 - x0) * 0.045;
+    const cols = 30, rows = 5;
+    for (let i = 0; i <= cols; i++) for (let r = 0; r < rows; r++) {
+      const u = i / cols, yy = yc - ph * 0.36 + ph * 0.72 * r / (rows - 1);
+      const x = Math.min(Math.max(x0 + (x1 - x0) * u + s(u) * Math.cos(w) * amp, x0 + 3), x1 - 3);
+      dot(c, x, yy, 2.6, 'rgba(238,243,248,0.8)');
+    }
+    if (S2.track) [0.15, 0.5, 0.92].forEach(u => {
+      const xb = x0 + (x1 - x0) * u, x = xb + s(u) * Math.cos(w) * amp;
+      c.strokeStyle = C.orange; c.lineWidth = 1.5; c.beginPath(); c.moveTo(xb - s(u) * amp, yc + ph * 0.5 + 16); c.lineTo(xb + s(u) * amp, yc + ph * 0.5 + 16); c.stroke();
+      dot(c, Math.min(Math.max(x, x0 + 3), x1 - 3), yc, 6, C.orange);
+      T(c, `떨림 폭`, xb, yc + ph * 0.5 + 30, C.orange, 12);
+    });
+    T(c, closed ? '닫힌 끝 = 마디' : '열린 끝 = 배', x0, yc - ph / 2 - 16, closed ? C.red : C.violet, 13);
+    T(c, '열린 끝 = 배', x1, yc - ph / 2 - 16, C.violet, 13);
+    if (!closed) T(c, '가운데 = 마디', (x0 + x1) / 2, yc - ph / 2 - 16, C.red, 13);
+    T(c, '빨간 선의 높이 = 그 자리 알갱이가 좌우로 떠는 폭', (x0 + x1) / 2, H - 14, C.muted, 13, 'center', 500);
+  }
+  document.querySelectorAll('[data-p2]').forEach(b => b.onclick = () => { S2.pipe = b.dataset.p2; document.querySelectorAll('[data-p2]').forEach(x => x.setAttribute('aria-pressed', x === b)); });
+  document.getElementById('track').onchange = e => S2.track = e.target.checked;
+
+  // ---------- 3. 닫힌관 · 열린관 고유 진동 ----------
+  const S3 = { pipe: 'closed', n: 1, L: 0.85, v: 340 }; const c3 = setup('c3');
+  const n3 = document.getElementById('n3');
+  function valid3() { return S3.pipe === 'closed' ? S3.n % 2 === 1 : true; }
+  function f3() { return S3.pipe === 'closed' ? S3.n * S3.v / (4 * S3.L) : S3.n * S3.v / (2 * S3.L); }
+  function build3() {
+    const ns = S3.pipe === 'closed' ? [1, 2, 3, 4, 5] : [1, 2, 3, 4];
+    n3.innerHTML = ns.map(k => `<button data-n="${k}" aria-pressed="${k === S3.n}" class="${S3.pipe === 'closed' && k % 2 === 0 ? 'bad' : ''}">${k}</button>`).join('');
+    n3.querySelectorAll('button').forEach(b => b.onclick = () => { S3.n = +b.dataset.n; build3(); upd3(); });
+  }
+  function upd3() {
+    const v = document.getElementById('v3');
+    if (!valid3()) { v.innerHTML = `<span style="color:var(--red)">n = ${S3.n} 은 불가능 — λ/4 조각이 짝수 개면 오른쪽 끝이 마디가 되는데, 열린 끝은 배여야 한다</span>`; stopVoice('s3'); const b = document.getElementById('snd3'); b.classList.remove('on'); b.textContent = b.dataset.label; return; }
+    const lam = S3.pipe === 'closed' ? 4 * S3.L / S3.n : 2 * S3.L / S3.n, f = f3();
+    v.innerHTML = `<span style="color:var(--green)">n = ${S3.n}: λ = ${lam.toFixed(3)} m, f = ${f.toFixed(0)} Hz = ${S3.n}f₁</span>`;
+    updateVoice('s3', [{ f, a: 1 }]);
+  }
+  function draw3(t) {
+    const { ctx: c, W, H } = c3; c.clearRect(0, 0, W, H);
+    const x0 = 60, x1 = W - 60, yc = H * 0.42, ph = Math.min(H * 0.42, 140);
+    const closed = S3.pipe === 'closed', n = S3.n;
+    // 조각 수: 닫힌관 n개의 λ/4, 열린관 2n개의 λ/4
+    const q = closed ? n : 2 * n;
+    // 변위 진폭: 닫힌관 sin(nπu/2) (n 짝수면 오른쪽 끝이 마디 → 규칙 위반), 열린관 cos(nπu)
+    const s = u => closed ? Math.sin(n * Math.PI * u / 2) : Math.cos(n * Math.PI * u);
+    pipe(c, x0, x1, yc, ph, closed);
+    const w = 2 * Math.PI * SPEED * t;
+    const col = valid3() ? C.green : C.red;
+    curve(c, u => s(u), x0, x1, yc, ph * 0.42, col, 2.5, null, 0.9);
+    curve(c, u => -s(u), x0, x1, yc, ph * 0.42, col, 2.5, null, 0.9);
+    curve(c, u => s(u) * Math.cos(w), x0, x1, yc, ph * 0.42, col, 1.2, [4, 4], 0.6);
+    // 마디·배 표시 (λ/4 경계마다 번갈아)
+    for (let i = 0; i <= q; i++) {
+      const u = i / q, x = x0 + (x1 - x0) * u;
+      const isNode = Math.abs(s(u)) < 0.01;
+      dot(c, x, yc, 6, isNode ? C.red : C.violet);
+      T(c, isNode ? '마디' : '배', x, yc + ph / 2 + 16, isNode ? C.red : C.violet, 12);
+    }
+    // λ/4 조각
+    const yb = yc + ph / 2 + 44;
+    for (let i = 0; i < q; i++) {
+      const xa = x0 + (x1 - x0) * i / q, xb = x0 + (x1 - x0) * (i + 1) / q;
+      c.fillStyle = i % 2 ? 'rgba(63,211,255,0.18)' : 'rgba(63,211,255,0.32)'; c.fillRect(xa + 1, yb - 12, xb - xa - 2, 24);
+      T(c, 'λ/4', (xa + xb) / 2, yb, C.cyan, 12);
+    }
+    T(c, `λ/4 조각 ${q}개 = 관 길이 l`, (x0 + x1) / 2, yb + 28, C.muted, 13, 'center', 500);
+    if (!valid3()) { c.strokeStyle = C.red; c.lineWidth = 3; c.beginPath(); c.arc(x1, yc, 22, 0, 7); c.stroke(); T(c, '열린 끝이 마디?! ✕', x1 - 6, yc - ph / 2 - 16, C.red, 14, 'right'); }
+    else { T(c, closed ? '닫힌 끝' : '열린 끝', x0, yc - ph / 2 - 16, C.muted, 13); T(c, '열린 끝', x1, yc - ph / 2 - 16, C.muted, 13); }
+  }
+  document.querySelectorAll('[data-p3]').forEach(b => b.onclick = () => { S3.pipe = b.dataset.p3; S3.n = 1; document.querySelectorAll('[data-p3]').forEach(x => x.setAttribute('aria-pressed', x === b)); build3(); upd3(); });
+  soundButton(document.getElementById('snd3'), 's3', () => [{ f: valid3() ? f3() : 100, a: valid3() ? 1 : 0 }]);
+  build3(); upd3();
+
+  // ---------- 4. 공명 ----------
+  const S4 = { f: 160, pipe: 'closed', L: 0.85, v: 340 }; const c4 = setup('c4');
+  const f4in = document.getElementById('f4');
+  function resp4(f) {
+    const kL = 2 * Math.PI * f / S4.v * S4.L, d = 0.07;
+    const den = S4.pipe === 'closed' ? Math.cos(kL) : Math.sin(kL);    // 닫힌관: cos(kL)=0 → kL=(2n−1)π/2, 열린관: sin(kL)=0
+    return Math.min(1, 1 / Math.sqrt(den * den + d * d) / 14);
+  }
+  function draw4(t) {
+    const { ctx: c, W, H } = c4; c.clearRect(0, 0, W, H);
+    const wide = W > 640;
+    const px0 = 90, px1 = wide ? W * 0.52 : W - 40, yc = wide ? H * 0.42 : H * 0.26, ph = Math.min(H * 0.3, 100);
+    const closed = S4.pipe === 'closed', a = resp4(S4.f), w = 2 * Math.PI * SPEED * t;
+    // 스피커
+    c.fillStyle = '#3a4a5e'; c.fillRect(px0 - 62, yc - 22, 22, 44); c.beginPath(); c.moveTo(px0 - 40, yc - 14); c.lineTo(px0 - 24, yc - 28); c.lineTo(px0 - 24, yc + 28); c.lineTo(px0 - 40, yc + 14); c.fill();
+    for (let k = 0; k < 3; k++) { c.strokeStyle = `rgba(63,211,255,${0.7 - 0.2 * k})`; c.lineWidth = 2; c.beginPath(); c.arc(px0 - 24, yc, 10 + k * 7 + 5 * ((SPEED * t * 2) % 1), -0.6, 0.6); c.stroke(); }
+    // 관: 스피커 쪽이 열린 끝, 닫힌관이면 반대쪽(오른쪽)이 닫힘
+    c.strokeStyle = '#8fb0cf'; c.lineWidth = 4; c.beginPath(); c.moveTo(px0, yc - ph / 2); c.lineTo(px1, yc - ph / 2); c.moveTo(px0, yc + ph / 2); c.lineTo(px1, yc + ph / 2); c.stroke();
+    if (closed) { c.fillStyle = '#8fb0cf'; c.fillRect(px1, yc - ph / 2 - 2, 9, ph + 4); }
+    const kL = 2 * Math.PI * S4.f / S4.v * S4.L;
+    const s = u => closed ? Math.cos(kL * u) : Math.cos(kL * u);        // 입구(왼쪽)에서 배
+    const env = u => closed ? Math.sin(kL * (1 - u)) / Math.max(0.25, Math.abs(Math.sin(kL))) : Math.cos(kL * u);
+    curve(c, u => env(u) * a * Math.cos(w), px0, px1, yc, ph * 0.42, C.green, 3);
+    T(c, `관 속 진폭`, (px0 + px1) / 2, yc - ph / 2 - 16, C.muted, 13);
+    // 막대
+    const bx = px0, by = yc + ph / 2 + 30, bw = px1 - px0;
+    c.fillStyle = '#16263b'; c.fillRect(bx, by, bw, 14); c.fillStyle = a > 0.6 ? C.green : C.orange; c.fillRect(bx, by, bw * a, 14);
+    T(c, '소리 크기', bx, by + 28, C.muted, 12, 'left');
+    // 공명 곡선
+    const gx0 = wide ? W * 0.6 : 40, gW = wide ? W * 0.36 : W - 70, gy0 = H - 30, gH = wide ? H * 0.7 : H * 0.3;
+    c.strokeStyle = C.line; c.lineWidth = 1; c.beginPath(); c.moveTo(gx0, gy0 - gH); c.lineTo(gx0, gy0); c.lineTo(gx0 + gW, gy0); c.stroke();
+    const fx = f => gx0 + gW * (f - 40) / 520;
+    c.strokeStyle = C.cyan; c.lineWidth = 2; c.beginPath();
+    for (let i = 0; i <= 500; i++) { const f = 40 + 520 * i / 500, y = gy0 - gH * resp4(f); i ? c.lineTo(fx(f), y) : c.moveTo(fx(f), y); }
+    c.stroke();
+    const peaks = closed ? [100, 300, 500] : [200, 400];
+    peaks.forEach(f => T(c, `${f}`, fx(f), gy0 + 14, C.muted, 12));
+    c.strokeStyle = C.orange; c.lineWidth = 2; c.beginPath(); c.moveTo(fx(S4.f), gy0); c.lineTo(fx(S4.f), gy0 - gH * a); c.stroke(); dot(c, fx(S4.f), gy0 - gH * a, 5, C.orange);
+  }
+  function upd4() {
+    S4.f = +f4in.value; document.getElementById('f4out').textContent = `${S4.f} Hz`;
+    const a = resp4(S4.f);
+    document.getElementById('v4').innerHTML = a > 0.6 ? `<span style="color:var(--green)">공명! 관의 고유 진동수와 일치 → 소리가 크게 증폭된다</span>` : `<span style="color:var(--muted)">고유 진동수와 다르다 → 관 속 정상파가 거의 자라지 않는다</span>`;
+    updateVoice('s4', [{ f: S4.f, a: 1 }], 0.02 + 0.16 * a);
+  }
+  f4in.addEventListener('input', upd4);
+  document.querySelectorAll('[data-p4]').forEach(b => b.onclick = () => { S4.pipe = b.dataset.p4; document.querySelectorAll('[data-p4]').forEach(x => x.setAttribute('aria-pressed', x === b)); upd4(); });
+  soundButton(document.getElementById('snd4'), 's4', () => [{ f: S4.f, a: 1 }], () => 0.02 + 0.16 * resp4(S4.f));
+  upd4();
+
+  // ---------- 5. 플루트 구멍 ----------
+  const S5 = { L: 0.6, v: 340, hole: 0 };   // hole: 0 = 모두 막음, 1~4 = 열린 구멍 번호(입구에서 가까울수록 큰 번호)
+  const HOLES = [0.85, 0.72, 0.6, 0.5];     // 관 길이에 대한 구멍 위치(입구 = 0)
+  const c5 = setup('c5'); const holesEl = document.getElementById('holes');
+  holesEl.innerHTML = ['모두 막음', '①', '②', '③', '④'].map((s, i) => `<button data-h="${i}" aria-pressed="${i === 0}">${s}</button>`).join('');
+  function leff() { return S5.hole === 0 ? S5.L : S5.L * HOLES[S5.hole - 1]; }
+  function f5() { return S5.v / (2 * leff()); }
+  holesEl.querySelectorAll('button').forEach(b => b.onclick = () => { S5.hole = +b.dataset.h; holesEl.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); upd5(); });
+  function upd5() { const l = leff(); document.getElementById('v5').textContent = `소리 내는 길이 l = ${l.toFixed(2)} m → f = 340 ÷ (2 × ${l.toFixed(2)}) ≈ ${f5().toFixed(0)} Hz`; updateVoice('s5', [{ f: f5(), a: 1 }]); }
+  soundButton(document.getElementById('snd5'), 's5', () => [{ f: f5(), a: 1 }]);
+  function draw5(t) {
+    const { ctx: c, W, H } = c5; c.clearRect(0, 0, W, H);
+    const x0 = 60, x1 = W - 40, yc = H * 0.45, ph = Math.min(H * 0.3, 70);
+    pipe(c, x0, x1, yc, ph, false);
+    const le = leff() / S5.L, xe = x0 + (x1 - x0) * le, w = 2 * Math.PI * SPEED * t;
+    // 구멍
+    HOLES.forEach((p, i) => { const x = x0 + (x1 - x0) * p, open = S5.hole === i + 1; c.fillStyle = open ? C.bg || '#0b1524' : '#5f7891'; c.strokeStyle = '#8fb0cf'; c.lineWidth = 2; c.beginPath(); c.arc(x, yc - ph / 2, 7, 0, 7); open ? c.stroke() : c.fill(); T(c, '①②③④'[i], x, yc - ph / 2 - 18, open ? C.violet : C.muted, 13); });
+    T(c, '입구(열림)', x0, yc + ph / 2 + 18, C.muted, 12);
+    // 기본 진동 정상파(열린관): 입구·열린 구멍이 배, 가운데 마디
+    curve(c, u => Math.cos(Math.PI * u), x0, xe, yc, ph * 0.4, C.green, 2.5);
+    curve(c, u => -Math.cos(Math.PI * u), x0, xe, yc, ph * 0.4, C.green, 2.5);
+    curve(c, u => Math.cos(Math.PI * u) * Math.cos(w), x0, xe, yc, ph * 0.4, C.green, 1.2, [4, 4], 0.6);
+    dot(c, xe, yc, 6, C.violet); dot(c, x0, yc, 6, C.violet); dot(c, (x0 + xe) / 2, yc, 6, C.red);
+    if (S5.hole) { c.fillStyle = 'rgba(10,18,32,0.55)'; c.fillRect(xe + 4, yc - ph / 2 + 3, x1 - xe - 4, ph - 6); T(c, '여기서부터는 소리에 거의 기여하지 않음', (xe + x1) / 2, yc + ph / 2 + 18, C.muted, 12); }
+    c.strokeStyle = C.orange; c.lineWidth = 1.5; const yd = H - 34; c.beginPath(); c.moveTo(x0, yd); c.lineTo(xe, yd); c.moveTo(x0, yd - 6); c.lineTo(x0, yd + 6); c.moveTo(xe, yd - 6); c.lineTo(xe, yd + 6); c.stroke();
+    T(c, `l = ${leff().toFixed(2)} m,  λ = 2l = ${(2 * leff()).toFixed(2)} m`, (x0 + xe) / 2, yd + 16, C.orange, 13);
+  }
+  upd5();
+
+  // ---------- 6. 음색 ----------
+  const amps = ['a1', 'a2', 'a3', 'a4'].map(id => document.getElementById(id));
+  const HC = [C.blue, C.violet, C.green, C.cyan];
+  const c6a = setup('c6a'), c6b = setup('c6b');
+  const PRE = { book: [1, 0.35, 0.12, 0], pure: [1, 0, 0, 0], bright: [1, 0.7, 0.55, 0.4] };
+  const A6 = () => amps.map(a => +a.value);
+  function partials6() { const a = A6(), s = a.reduce((p, q) => p + q, 0) || 1; return a.map((x, i) => ({ f: 220 * (i + 1), a: x / s })); }
+  amps.forEach(a => a.addEventListener('input', () => { document.querySelectorAll('[data-pre]').forEach(x => x.setAttribute('aria-pressed', 'false')); updateVoice('s6', partials6()); }));
+  document.querySelectorAll('[data-pre]').forEach(b => b.onclick = () => { PRE[b.dataset.pre].forEach((v, i) => amps[i].value = v); document.querySelectorAll('[data-pre]').forEach(x => x.setAttribute('aria-pressed', x === b)); updateVoice('s6', partials6()); });
+  soundButton(document.getElementById('snd6'), 's6', partials6);
+  function draw6(t) {
+    const a = A6();
+    { // 줄 위 모양 (교과서 그림 (가)(나))
+      const { ctx: c, W, H } = c6a; c.clearRect(0, 0, W, H);
+      const x0 = 40, x1 = W - 20, y0 = H * 0.72, sy = H * 0.42;
+      hline(c, x0, x1, y0); T(c, '줄 위의 모양 (한 순간)', x0, 18, C.muted, 13, 'left', 500);
+      a.forEach((v, i) => v > 0 && curve(c, u => v * Math.sin((i + 1) * Math.PI * u), x0, x1, y0, sy, HC[i], 2, null, 0.9));
+      curve(c, u => a.reduce((p, v, i) => p + v * Math.sin((i + 1) * Math.PI * u), 0), x0, x1, y0, sy, C.orange, 4);
+      T(c, '합성파', x1 - 6, 18, C.orange, 13, 'right');
+    }
+    { // 한 점의 시간 파형
+      const { ctx: c, W, H } = c6b; c.clearRect(0, 0, W, H);
+      const x0 = 20, x1 = W - 20, y0 = H * 0.5, sum = a.reduce((p, q) => p + q, 0) || 1, sy = H * 0.38 / sum;
+      hline(c, x0, x1, y0); T(c, '줄의 한 점이 시간에 따라 떠는 모양 (소리의 파형)', x0, 18, C.muted, 13, 'left', 500);
+      const shift = SPEED * t * 0.5;
+      curve(c, u => a.reduce((p, v, i) => p + v * Math.sin(2 * Math.PI * (i + 1) * (3 * u + shift)), 0), x0, x1, y0, sy, C.orange, 3);
+      T(c, '반복 주기는 그대로 → 음 높이 같음', (x0 + x1) / 2, H - 16, C.muted, 12, 'center', 500);
+    }
+  }
+
+  // ---------- 애니메이션 ----------
+  const draws = [[c1, draw1], [c2, draw2], [c3, draw3], [c4, draw4], [c5, draw5], [c6a, draw6]];
+  let t0 = performance.now();
+  function frame(now) {
+    const t = (now - t0) / 1000;
+    draws.forEach(([o, d]) => d(t));
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
