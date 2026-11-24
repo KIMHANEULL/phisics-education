@@ -62,7 +62,7 @@ input[type="range"] { accent-color: var(--cyan); width: 200px; max-width: 60vw; 
     <p>교과서 121~125쪽(줄·관의 정상파, 공명, 악기, 음색)을 순서대로, 움직이는 그림으로 하나씩 확인한다. 그림은 실제보다 아주 느리게 움직인다.</p>
     <nav class="toc" aria-label="차례">
       <a href="#s1">1 줄: 왜 정해진 소리만?</a><a href="#s2">2 관 그림 읽는 법</a><a href="#s3">3 닫힌관 · 열린관</a>
-      <a href="#s4">4 공명</a><a href="#s5">5 플루트 구멍</a><a href="#s6">6 음색</a><a href="#s7">개념 확인 풀이</a>
+      <a href="#s4">4 공명</a><a href="#s5">5 플루트 구멍</a><a href="#s6">6 음색</a><a href="#s8">7 악기 예시</a><a href="#s9">8 음계와 옥타브</a><a href="#s7">개념 확인 풀이</a>
     </nav>
   </header>
 
@@ -163,10 +163,39 @@ input[type="range"] { accent-color: var(--cyan); width: 200px; max-width: 60vw; 
       <label for="a4">f₄ <input type="range" id="a4" min="0" max="1" step="0.01" value="0"></label>
     </div>
     <div class="row">
-      <div class="seg" role="group" aria-label="미리 정한 섞음"><button data-pre="book" aria-pressed="true">교과서 그림</button><button data-pre="pure" aria-pressed="false">기본 진동만</button><button data-pre="bright" aria-pressed="false">배음 많이</button></div>
+      <div class="seg" role="group" aria-label="미리 정한 섞음"><button data-pre="book" aria-pressed="true">교과서 그림(기타)</button><button data-pre="pure" aria-pressed="false">기본 진동만</button><button data-pre="flute" aria-pressed="false">플루트 느낌</button><button data-pre="oboe" aria-pressed="false">오보에 느낌</button></div>
       <button class="btn" id="snd6">소리 듣기 (f₁ = 220 Hz)</button>
     </div>
-    <p class="muted">왼쪽: 줄 위 모양(교과서 그림 (나)처럼 정상파 세 개와 그 합). 오른쪽: 줄의 한 점이 시간에 따라 떠는 모양(소리의 파형). 진동수(음 높이)는 같고 파형만 달라진다. 이것이 플루트와 오보에가 같은 음을 내도 다르게 들리는 이유다.</p>
+    <p class="muted">왼쪽: 줄 위 모양(교과서 그림 (나)처럼 정상파 세 개와 그 합). 오른쪽: 줄의 한 점이 시간에 따라 떠는 모양(소리의 파형). 진동수(음 높이)는 같고 파형만 달라진다. "플루트 느낌"은 기본 진동이 대부분이라 파형이 매끈하고(교과서 (가)), "오보에 느낌"은 높은 배음이 많아 파형이 뾰족뾰족하다(교과서 (나)). 두 버튼의 비율은 이해를 돕기 위한 예시값이다.</p>
+  </section>
+
+  <!-- 7 악기 -->
+  <section id="s8">
+    <div class="eyebrow">121~125쪽 사진 속 악기들</div>
+    <h2>악기는 어떻게 소리를 낼까?</h2>
+    <p>교과서 사진에 나온 악기들은 모두 <b>세 가지 중 하나</b>로 정상파를 만든다. 악기를 골라 보고, 슬라이더로 <b>소리 내는 길이</b>를 바꿔 음 높이가 어떻게 변하는지 들어 보자.</p>
+    <div class="seg" role="group" aria-label="악기 고르기" id="inst"></div>
+    <div class="cv h300"><canvas id="c8"></canvas></div>
+    <div class="row">
+      <label for="len8"><span id="len8lab">누르는 위치</span> <input type="range" id="len8" min="0" max="0.5" step="0.005" value="0"></label>
+      <button class="btn" id="snd8">소리 듣기</button>
+      <span class="readout" id="out8"></span>
+    </div>
+    <div class="key" id="txt8"></div>
+  </section>
+
+  <!-- 8 음계 -->
+  <section id="s9">
+    <div class="eyebrow">121쪽 기본 음계와 진동수 · 125쪽 역량 키우기</div>
+    <h2>음계와 한 옥타브: 진동수 2배 = 길이 절반</h2>
+    <p>건반을 누르면 그 음의 소리가 나고, 그 음을 내는 <b>파이프오르간 관의 길이</b>가 함께 그려진다. 도(C4) 261.63 Hz와 높은 도(C5) 523.25 Hz를 비교해 보자. 진동수가 <b class="o">2배</b>가 되면 한 옥타브 높은 같은 이름의 음이 되고, 같은 종류의 관이라면 길이는 <b class="g">절반</b>이면 된다.</p>
+    <div class="cv h340"><canvas id="c9"></canvas></div>
+    <div class="row">
+      <div class="seg" role="group" aria-label="관 종류"><button data-p9="open" aria-pressed="true">양쪽 열린 관 (플루트·오르간)</button><button data-p9="closed" aria-pressed="false">한쪽만 열린 관 (클라리넷)</button></div>
+      <span class="readout" id="out9"></span>
+    </div>
+    <div class="key"><strong>한 옥타브의 원리:</strong> 양쪽 열린 관은 l = v/2f, 한쪽만 열린 관은 l = v/4f (기본 진동). 둘 다 길이 l은 진동수 f에 반비례하므로, 한 옥타브 위(f × 2)의 음은 길이를 절반(l ÷ 2)으로 하면 난다. 줄도 마찬가지로, 기타 줄의 한가운데(12번째 프렛)를 누르면 한 옥타브 높은 음이 난다.</div>
+    <p class="muted">관 길이는 소리 속력 340 m/s로 계산한 단순 모형 값이다(실제 오르간 관은 끝 보정 때문에 조금 짧다).</p>
   </section>
 
   <!-- 7 -->
@@ -460,7 +489,7 @@ input[type="range"] { accent-color: var(--cyan); width: 200px; max-width: 60vw; 
   const amps = ['a1', 'a2', 'a3', 'a4'].map(id => document.getElementById(id));
   const HC = [C.blue, C.violet, C.green, C.cyan];
   const c6a = setup('c6a'), c6b = setup('c6b');
-  const PRE = { book: [1, 0.35, 0.12, 0], pure: [1, 0, 0, 0], bright: [1, 0.7, 0.55, 0.4] };
+  const PRE = { book: [1, 0.35, 0.12, 0], pure: [1, 0, 0, 0], flute: [1, 0.2, 0.06, 0.02], oboe: [0.45, 0.8, 1, 0.7] };
   const A6 = () => amps.map(a => +a.value);
   function partials6() { const a = A6(), s = a.reduce((p, q) => p + q, 0) || 1; return a.map((x, i) => ({ f: 220 * (i + 1), a: x / s })); }
   amps.forEach(a => a.addEventListener('input', () => { document.querySelectorAll('[data-pre]').forEach(x => x.setAttribute('aria-pressed', 'false')); updateVoice('s6', partials6()); }));
@@ -486,8 +515,126 @@ input[type="range"] { accent-color: var(--cyan); width: 200px; max-width: 60vw; 
     }
   }
 
+  // ---------- 7. 악기 예시 ----------
+  const NOTES = [['도(C4)', 261.63], ['레(D4)', 293.66], ['미(E4)', 329.63], ['파(F4)', 349.23], ['솔(G4)', 392.0], ['라(A4)', 440.0], ['시(B4)', 493.88], ['도(C5)', 523.25]];
+  function nearestNote(f) {          // 가까운 음 이름 (C2~C6 범위, 12평균율)
+    const names = ['도', '도#', '레', '레#', '미', '파', '파#', '솔', '솔#', '라', '라#', '시'];
+    const m = Math.round(12 * Math.log2(f / 261.63)), oct = 4 + Math.floor(m / 12), k = ((m % 12) + 12) % 12;
+    return `${names[k]}${oct}`;
+  }
+  const INST = [
+    { id: 'guitar', name: '기타', kind: 'string', L: 0.65, f1: 110, lab: '누르는 위치(프렛)',
+      txt: '<strong>현악기(줄)</strong>: 양 끝이 고정된 줄 → f = n·v/2l. 손가락으로 줄을 누르면 떨리는 길이 l이 짧아져 음이 높아진다. 줄 가운데(길이 절반)를 누르면 정확히 <b>한 옥타브</b> 위. 줄 자체가 내는 소리는 작아서 <b>몸통(울림통)</b>이 공명으로 소리를 키운다.' },
+    { id: 'violin', name: '바이올린·첼로·해금', kind: 'string', L: 0.33, f1: 440, box: true, lab: '누르는 위치',
+      txt: '<strong>현악기 + 울림통</strong>: 활로 줄을 문질러 정상파를 만든다. 줄의 진동은 진폭이 작아, 바이올린의 <b>공명 장치</b>·해금의 <b>공명통</b>·첼로의 큰 몸통이 공명하여 소리를 증폭한다(교과서 124쪽). 첼로처럼 줄이 길고 굵으면 같은 방식이라도 낮은 음이 난다.' },
+    { id: 'clarinet', name: '클라리넷·태평소·색소폰', kind: 'closed', L: 0.6, lab: '구멍을 열어 짧아진 길이',
+      txt: '<strong>한쪽만 열린 관</strong>(교과서 분류): 입을 대는 <b>마우스피스</b> 쪽이 닫힌 끝(마디), 나팔 끝이 열린 끝(배). <b>리드</b>가 떨며 여러 진동수의 소리를 만들지만, 관의 고유 진동수(n = 1, 3, 5 …)와 맞는 소리만 공명으로 커진다. 홀수 배음만 있어 소리가 독특하게 "속이 빈" 느낌이 난다.<br><span class="muted">교사 참고: 원통 관인 클라리넷은 홀수 배음이 뚜렷하지만, 원뿔 관인 색소폰·오보에는 실제로는 정수 배음이 모두 나온다. 교과서는 마우스피스 구조를 기준으로 색소폰을 "한쪽이 닫힌 구조"로 분류한다.</span>' },
+    { id: 'flute', name: '플루트·리코더', kind: 'open', L: 0.6, lab: '구멍을 열어 짧아진 길이',
+      txt: '<strong>양쪽이 열린 관</strong>: 입김이 구멍 가장자리에 부딪쳐 생긴 <b>난기류</b>가 공기를 떨게 하고, 관의 고유 진동수(n = 1, 2, 3 …)와 맞는 소리가 공명한다. 구멍을 열면 그 자리가 배가 되어 소리 내는 길이가 짧아지고 음이 높아진다(교과서 그림 III-33).' },
+    { id: 'organ', name: '파이프오르간', kind: 'open', L: 0.65, lab: '다른 길이의 관 고르기',
+      txt: '<strong>양쪽이 열린 관 여러 개</strong>: 구멍 대신 <b>음마다 길이가 다른 관</b>을 따로 둔다. 관이 짧을수록 높은 음. 아래 "음계와 한 옥타브"에서 음마다 필요한 관 길이를 볼 수 있다.' },
+  ];
+  const S8 = { i: 0, p: 0 }; const c8 = setup('c8');
+  const instEl = document.getElementById('inst'), len8 = document.getElementById('len8');
+  instEl.innerHTML = INST.map((x, i) => `<button data-i="${i}" aria-pressed="${i === 0}">${x.name}</button>`).join('');
+  function inst() { return INST[S8.i]; }
+  function leff8() { return inst().L * (1 - S8.p); }
+  function f8() {
+    const x = inst(), l = leff8();
+    if (x.kind === 'string') return x.f1 * x.L / l;            // v 고정: f ∝ 1/l
+    return x.kind === 'closed' ? 340 / (4 * l) : 340 / (2 * l);
+  }
+  function partials8() {
+    const x = inst(), f = f8();
+    if (x.kind === 'string') return [1, 2, 3, 4, 5].map(n => ({ f: f * n, a: 0.55 / n }));
+    if (x.kind === 'closed') return [1, 3, 5, 7, 9].map((n, i) => ({ f: f * n, a: [0.6, 0.3, 0.18, 0.1, 0.06][i] }));
+    return [1, 2, 3, 4, 5].map((n, i) => ({ f: f * n, a: [0.75, 0.18, 0.07, 0.03, 0.01][i] }));
+  }
+  function upd8() {
+    const x = inst();
+    document.getElementById('len8lab').textContent = x.lab;
+    const l = leff8(), f = f8();
+    const law = x.kind === 'string' ? 'f = n·v/2l' : x.kind === 'closed' ? `f = v/4l = 340 ÷ (4 × ${l.toFixed(2)})` : `f = v/2l = 340 ÷ (2 × ${l.toFixed(2)})`;
+    document.getElementById('out8').textContent = `l = ${l.toFixed(2)} m → ${law} ≈ ${f.toFixed(0)} Hz (${nearestNote(f)} 근처)`;
+    document.getElementById('txt8').innerHTML = x.txt;
+    updateVoice('s8', partials8());
+  }
+  instEl.querySelectorAll('button').forEach(b => b.onclick = () => { S8.i = +b.dataset.i; S8.p = 0; len8.value = 0; instEl.querySelectorAll('button').forEach(y => y.setAttribute('aria-pressed', y === b)); stopVoice('s8'); const s = document.getElementById('snd8'); s.classList.remove('on'); s.textContent = s.dataset.label; upd8(); });
+  len8.addEventListener('input', () => { S8.p = +len8.value; upd8(); });
+  soundButton(document.getElementById('snd8'), 's8', partials8);
+  function draw8(t) {
+    const { ctx: c, W, H } = c8; c.clearRect(0, 0, W, H);
+    const x = inst(), x0 = 70, x1 = W - 50, yc = H * 0.45, w = 2 * Math.PI * SPEED * t;
+    const le = 1 - S8.p, xe = x0 + (x1 - x0) * le;
+    if (x.kind === 'string') {
+      if (x.box) { c.fillStyle = 'rgba(255,181,71,0.12)'; c.strokeStyle = C.orange; c.lineWidth = 2; c.beginPath(); c.ellipse(x0 + (x1 - x0) * 0.72, yc + 46, (x1 - x0) * 0.22, 34, 0, 0, 7); c.fill(); c.stroke(); T(c, '울림통 (공명)', x0 + (x1 - x0) * 0.72, yc + 46, C.orange, 13); }
+      wall(c, x0 - 4, yc, 50); wall(c, x1 + 4, yc, 50);
+      hline(c, x0, x1, yc, 'rgba(238,243,248,0.25)', []);
+      if (S8.p > 0) { dot(c, xe, yc, 8, C.cyan); T(c, '손가락', xe, yc - 26, C.cyan, 13); }
+      curve(c, u => Math.sin(Math.PI * u) * Math.cos(w), xe, x1, yc, 30, C.green, 3.5);
+      curve(c, u => Math.sin(Math.PI * u), xe, x1, yc, 30, C.green, 1, [4, 5], 0.5);
+      curve(c, u => -Math.sin(Math.PI * u), xe, x1, yc, 30, C.green, 1, [4, 5], 0.5);
+      T(c, '떨리는 길이 l', (xe + x1) / 2, yc - 48, C.green, 13);
+    } else {
+      const closed = x.kind === 'closed', ph = 70;
+      pipe(c, x0, x1, yc, ph, closed);
+      if (closed) { c.fillStyle = C.orange; c.fillRect(x0 - 26, yc - 6, 18, 12); T(c, '마우스피스 + 리드 (닫힌 끝)', x0 - 10, yc + ph / 2 + 18, C.orange, 12, 'left'); }
+      else T(c, x.id === 'organ' ? '열린 끝' : '입김 (열린 끝)', x0, yc + ph / 2 + 18, C.muted, 12);
+      const s = u => closed ? Math.sin(Math.PI * u / 2) : Math.cos(Math.PI * u);
+      curve(c, u => s(u), x0, xe, yc, ph * 0.4, C.green, 2.5); curve(c, u => -s(u), x0, xe, yc, ph * 0.4, C.green, 2.5);
+      curve(c, u => s(u) * Math.cos(w), x0, xe, yc, ph * 0.4, C.green, 1.2, [4, 4], 0.6);
+      if (S8.p > 0) {
+        if (x.id === 'organ') { c.clearRect(xe + 2, yc - ph / 2 - 6, x1 - xe + 14, ph + 12); T(c, '더 짧은 관', xe, yc - ph / 2 - 16, C.muted, 12); }
+        else { c.strokeStyle = C.violet; c.lineWidth = 2; c.beginPath(); c.arc(xe, yc - ph / 2, 7, 0, 7); c.stroke(); T(c, '열린 구멍 = 배', xe, yc - ph / 2 - 18, C.violet, 12); c.fillStyle = 'rgba(10,18,32,0.55)'; c.fillRect(xe + 4, yc - ph / 2 + 3, x1 - xe - 4, ph - 6); }
+      }
+    }
+    const yd = H - 30; c.strokeStyle = C.orange; c.lineWidth = 1.5; c.beginPath();
+    const xa = x.kind === 'string' ? xe : x0, xb = x.kind === 'string' ? x1 : xe;
+    c.moveTo(xa, yd); c.lineTo(xb, yd); c.moveTo(xa, yd - 6); c.lineTo(xa, yd + 6); c.moveTo(xb, yd - 6); c.lineTo(xb, yd + 6); c.stroke();
+    T(c, `소리 내는 길이 l = ${leff8().toFixed(2)} m`, (xa + xb) / 2, yd + 16, C.orange, 13);
+  }
+  upd8();
+
+  // ---------- 8. 음계와 한 옥타브 ----------
+  const S9 = { pipe: 'open', sel: 0 }; const c9 = setup('c9');
+  const len9 = f => S9.pipe === 'open' ? 340 / (2 * f) : 340 / (4 * f);
+  let ready9 = false;
+  function sel9(i) {
+    S9.sel = i; const [nm, f] = NOTES[i];
+    document.getElementById('out9').textContent = `${nm} ${f.toFixed(2)} Hz → 관 길이 l = ${len9(f).toFixed(3)} m`;
+    if (ready9) try { startVoice('s9', [{ f, a: 0.75 }, { f: 2 * f, a: S9.pipe === 'open' ? 0.18 : 0 }, { f: 3 * f, a: 0.07 }]); setTimeout(() => stopVoice('s9'), 700); } catch (e) {}
+  }
+  document.querySelectorAll('[data-p9]').forEach(b => b.onclick = () => { S9.pipe = b.dataset.p9; document.querySelectorAll('[data-p9]').forEach(x => x.setAttribute('aria-pressed', x === b)); sel9(S9.sel); });
+  let keys9 = [];
+  c9.cv.addEventListener('click', e => { const r = c9.cv.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top; const k = keys9.findIndex(q => mx >= q.x && mx <= q.x + q.w && my >= q.y && my <= q.y + q.h); if (k >= 0) sel9(k); });
+  c9.cv.style.cursor = 'pointer';
+  function draw9() {
+    const { ctx: c, W, H } = c9; c.clearRect(0, 0, W, H);
+    const n = NOTES.length, gap = 8, kw = (W - 40 - gap * (n - 1)) / n, x0 = 20;
+    const maxL = len9(NOTES[0][1]), topY = 46, bottomY = H - 96, scale = (bottomY - topY) / maxL;
+    keys9 = [];
+    NOTES.forEach(([nm, f], i) => {
+      const x = x0 + i * (kw + gap), l = len9(f), h = l * scale, on = i === S9.sel;
+      const pw = Math.min(kw * 0.42, 26), px = x + (kw - pw) / 2;
+      c.fillStyle = on ? 'rgba(91,227,155,0.35)' : 'rgba(143,176,207,0.25)'; c.fillRect(px, bottomY - h, pw, h);
+      c.strokeStyle = on ? C.green : '#8fb0cf'; c.lineWidth = 2; c.strokeRect(px, bottomY - h, pw, h);
+      if (S9.pipe === 'closed') { c.fillStyle = on ? C.green : '#8fb0cf'; c.fillRect(px - 2, bottomY - 4, pw + 4, 5); }
+      T(c, `${(l * 100).toFixed(0)} cm`, x + kw / 2, bottomY - h - 14, on ? C.green : C.muted, 12);
+      const ky = H - 84, kh = 60;
+      c.fillStyle = on ? C.cyan : '#e9eef4'; c.fillRect(x, ky, kw, kh); c.strokeStyle = '#0a1220'; c.strokeRect(x, ky, kw, kh);
+      T(c, nm.split('(')[0], x + kw / 2, ky + 20, '#0a1220', 15, 'center', 900);
+      T(c, `${f.toFixed(0)}`, x + kw / 2, ky + 42, '#33465c', 12);
+      keys9.push({ x, y: ky, w: kw, h: kh });
+    });
+    // 옥타브 연결 표시
+    const xa = x0 + kw / 2, xb = x0 + 7 * (kw + gap) + kw / 2;
+    c.strokeStyle = C.orange; c.lineWidth = 1.5; c.setLineDash([5, 5]); c.beginPath(); c.moveTo(xa, 24); c.lineTo(xb, 24); c.stroke(); c.setLineDash([]);
+    T(c, '도(C4) → 도(C5): 진동수 2배, 관 길이 절반 = 한 옥타브', (xa + xb) / 2, 14, C.orange, 13);
+  }
+  sel9(0); ready9 = true;
+
   // ---------- 애니메이션 ----------
-  const draws = [[c1, draw1], [c2, draw2], [c3, draw3], [c4, draw4], [c5, draw5], [c6a, draw6]];
+  const draws = [[c1, draw1], [c2, draw2], [c3, draw3], [c4, draw4], [c5, draw5], [c6a, draw6], [c8, draw8], [c9, draw9]];
   let t0 = performance.now();
   function frame(now) {
     const t = (now - t0) / 1000;
